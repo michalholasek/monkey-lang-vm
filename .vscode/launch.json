@@ -1,0 +1,16 @@
+{
+   "version": "0.2.0",
+   "configurations": [
+        {
+            "name": ".NET Core Launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/Monkey.Shared/bin/Debug/netcoreapp2.2/Monkey.Shared.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Monkey.Shared",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}
