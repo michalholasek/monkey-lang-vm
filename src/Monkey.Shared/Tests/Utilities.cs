@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Newtonsoft.Json;
+
 using A = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace Monkey.Tests.Utilities
@@ -25,10 +27,9 @@ namespace Monkey.Tests.Utilities
             }
         }
 
-        public static void AreDeeplyEqual<T, U>(Dictionary<T, U> a, Dictionary<T, U> b)
+        public static void AreDeeplyEqual(object a, object b)
         {
-            A.AreEqual(a.Count, b.Count);
-            a.Keys.ToList().ForEach(key => { A.AreEqual(a[key], b[key]); });
+            A.AreEqual(JsonConvert.SerializeObject(a), JsonConvert.SerializeObject(b));
         }
     }
 }
