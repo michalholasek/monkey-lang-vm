@@ -5,126 +5,236 @@ using System.Text;
 
 namespace Monkey.Shared.Scanner
 {
-    public partial class Scanner
+    public class Scanner
     {
-        private List<Token> tokens = new List<Token>();
+        private abstract class InternalState
+        {
+            public StringBuilder Buffer { get; set; }
+            public char[] Characters { get; set; }
+            public int Column { get; set; }
+            public char CurrentCharacter { get; set; }
+            public int Line { get; set; }
+            public int Position { get; set; }
+            public List<Token> Tokens { get; set; }
+        }
 
-        private char[] characters;
-        private StringBuilder buffer;
-        private int position = 0;
-        private int currentColumn = 2;
-        private int currentLine = 1;
-        private char currentCharacter;
+        private class Options : InternalState {}
+
+        private class State : InternalState
+        {
+            public State(Options opts)
+            {
+                Buffer = opts.Buffer;
+                Characters = opts.Characters;
+                Column = opts.Column;
+                CurrentCharacter = opts.CurrentCharacter;
+                Line = opts.Line;
+                Position = opts.Position;
+                Tokens = opts.Tokens;
+            }
+        }
+
+        private readonly State initialState;
 
         public Scanner(string source)
         {
-            characters = source.ToCharArray();
+            var characters = source.ToCharArray();
+            var options = new Options {
+                Buffer = new StringBuilder(),
+                Characters = source.ToCharArray(),
+                Column = 2,
+                CurrentCharacter = characters[0],
+                Line = 1,
+                Position = 0,
+                Tokens = new List<Token>()
+            };
+
+            initialState = new State(options);
         }
 
         public List<Token> Scan()
         {
-            buffer = new StringBuilder();
+            var currentState = new State(new Options {
+                Buffer = initialState.Buffer,
+                Characters = initialState.Characters,
+                Column = initialState.Column,
+                CurrentCharacter = initialState.CurrentCharacter,
+                Line = initialState.Line,
+                Position = initialState.Position,
+                Tokens = initialState.Tokens
+            });
+            
+            currentState.Buffer.Clear();
 
-            while (position < characters.Length)
+            while (currentState.Position < currentState.Characters.Length)
             {
-                currentCharacter = characters[position];
+                currentState.CurrentCharacter = currentState.Characters[currentState.Position];
 
-                if (Utilities.IsQuote(currentCharacter))
+                if (Utilities.IsQuote(currentState.CurrentCharacter))
                 {
-                    tokens.Add(TokenizeString());
+                    currentState = TokenizeString(currentState);
                 }
-                else if (Utilities.IsValidLetterCharacter(currentCharacter)|| Char.IsNumber(currentCharacter))
+                else if (Utilities.IsValidLetterCharacter(currentState.CurrentCharacter)|| Char.IsNumber(currentState.CurrentCharacter))
                 {
-                    buffer.Append(currentCharacter);
+                    currentState.Buffer.Append(currentState.CurrentCharacter);
                 }
-                else if (Utilities.IsStickyOperator(currentCharacter))
+                else if (Utilities.IsStickyOperator(currentState.CurrentCharacter))
                 {
-                    tokens.Add(TokenizeStickyOperator());
+                    currentState = TokenizeStickyOperator(currentState);
                 }
                 else
                 {
-                    if (buffer.Length > 0)
+                    currentState = TokenizeBuffer(currentState);
+
+                    if (!Char.IsWhiteSpace(currentState.CurrentCharacter))
                     {
-                        tokens.Add(Utilities.CreateToken(String.Join(String.Empty, buffer), currentColumn - buffer.Length, currentLine));
-                        buffer.Clear();
-                    }
-
-                    if (!Char.IsWhiteSpace(currentCharacter)) {
-                        tokens.Add(Utilities.CreateToken(currentCharacter.ToString(), currentColumn, currentLine));
+                        currentState.Tokens.Add(Utilities.CreateToken(
+                            currentState.CurrentCharacter.ToString(), currentState.Column, currentState.Line)
+                        );
                     }
                 }
 
-                if (Utilities.IsNewlineOrReturnCharacter(currentCharacter))
-                {
-                    // Handle CRLF
-                    if (Utilities.IsNewlineOrReturnCharacter(PeekCharacter())) position++;
-
-                    currentColumn = 2;
-                    currentLine++;
-                }
-                else
-                {
-                    currentColumn++;
-                }
-
-                position++;
+                currentState = DetermineNextStatePositions(currentState);
             }
 
             // Flush buffered characters
-            if (buffer.Length > 0)
+            if (currentState.Buffer.Length > 0)
             {
-                tokens.Add(Utilities.CreateToken(String.Join(String.Empty, buffer), currentColumn - buffer.Length, currentLine));
+                currentState.Tokens.Add(Utilities.CreateToken(
+                    String.Join(String.Empty, currentState.Buffer), currentState.Column - currentState.Buffer.Length, currentState.Line)
+                );
             }
 
             // Create SyntaxKind.EOF token
-            tokens.Add(Utilities.CreateToken(String.Empty, currentColumn, currentLine));
+            currentState.Tokens.Add(Utilities.CreateToken(String.Empty, currentState.Column, currentState.Line));
 
-            return tokens;
+            return currentState.Tokens;
         }
 
-        private char PeekCharacter()
+        private State DetermineNextStatePositions(State previousState)
         {
-            return characters[position + 1];
-        }
+            var newState = new State(new Options {
+                Buffer = previousState.Buffer,
+                Characters = previousState.Characters,
+                Column = previousState.Column,
+                CurrentCharacter = previousState.CurrentCharacter,
+                Line = previousState.Line,
+                Position = previousState.Position,
+                Tokens = previousState.Tokens
+            });
 
-        private Token TokenizeStickyOperator()
-        {
-            Token token;
-
-            if (Utilities.IsValidStickyOperator(currentCharacter, PeekCharacter()))
+            if (Utilities.IsNewlineOrReturnCharacter(newState.CurrentCharacter)) 
             {
-                token = Utilities.CreateToken(String.Join(String.Empty, currentCharacter, PeekCharacter()), currentColumn, currentLine);
-                currentColumn++;
-                position++;
+                // Handle CRLF
+                if (Utilities.IsNewlineOrReturnCharacter(PeekCharacter(newState)))
+                {
+                    newState.Position++;
+                }
+                newState.Column = 2;
+                newState.Line++;
             }
             else
             {
-                token = Utilities.CreateToken(currentCharacter.ToString(), currentColumn, currentLine);
+                newState.Column++;
             }
 
-            return token;
+            newState.Position++;
+
+            return newState;
         }
 
-        private Token TokenizeString()
+        private char PeekCharacter(State currentState)
         {
-            StringBuilder buffer = new StringBuilder("\"");
-            var column = currentColumn;
+            return currentState.Characters[currentState.Position + 1];
+        }
 
-            position++;
-            currentColumn++;
-            currentCharacter = characters[position];
-
-            while (!Utilities.IsQuote(currentCharacter) && position < characters.Length)
+        private State TokenizeBuffer(State previousState)
+        {
+            var newState = new State(new Options
             {
-                buffer.Append(currentCharacter);
-                currentColumn++;
-                position++;
-                currentCharacter = characters[position];
+                Buffer = previousState.Buffer,
+                Characters = previousState.Characters,
+                Column = previousState.Column,
+                CurrentCharacter = previousState.CurrentCharacter,
+                Line = previousState.Line,
+                Position = previousState.Position,
+                Tokens = previousState.Tokens
+            });
+
+            if (newState.Buffer.Length > 0)
+            {
+                newState.Tokens.Add(Utilities.CreateToken(
+                    String.Join(String.Empty, newState.Buffer),
+                    newState.Column - newState.Buffer.Length,
+                    newState.Line
+                ));
+                newState.Buffer.Clear();
+            }
+
+            return newState;
+        }
+
+        private State TokenizeStickyOperator(State previousState)
+        {
+            var newState = new State(new Options
+            {
+                Buffer = previousState.Buffer,
+                Characters = previousState.Characters,
+                Column = previousState.Column,
+                CurrentCharacter = previousState.CurrentCharacter,
+                Line = previousState.Line,
+                Position = previousState.Position,
+                Tokens = previousState.Tokens
+            });
+
+            if (Utilities.IsValidStickyOperator(newState.CurrentCharacter, PeekCharacter(newState)))
+            {
+                newState.Tokens.Add(Utilities.CreateToken(
+                    String.Join(String.Empty, newState.CurrentCharacter, PeekCharacter(newState)), newState.Column, newState.Line)
+                );
+                newState.Column++;
+                newState.Position++;
+            }
+            else
+            {
+                newState.Tokens.Add(Utilities.CreateToken(newState.CurrentCharacter.ToString(), newState.Column, newState.Line));
+            }
+
+            return newState;
+        }
+
+        private State TokenizeString(State previousState)
+        {
+            var newState = new State(new Options
+            {
+                Buffer = previousState.Buffer,
+                Characters = previousState.Characters,
+                Column = previousState.Column,
+                CurrentCharacter = previousState.CurrentCharacter,
+                Line = previousState.Line,
+                Position = previousState.Position,
+                Tokens = previousState.Tokens
+            });
+
+            StringBuilder buffer = new StringBuilder("\"");
+
+            newState.Position++;
+            newState.Column++;
+            newState.CurrentCharacter = newState.Characters[newState.Position];
+
+            while (!Utilities.IsQuote(newState.CurrentCharacter) && newState.Position < newState.Characters.Length)
+            {
+                buffer.Append(newState.CurrentCharacter);
+                newState.Column++;
+                newState.Position++;
+                newState.CurrentCharacter = newState.Characters[newState.Position];
             }
 
             buffer.Append("\"");
 
-            return Utilities.CreateToken(buffer.ToString(), column, currentLine);
+            newState.Tokens.Add(Utilities.CreateToken(buffer.ToString(), previousState.Column, newState.Line));
+
+            return newState;
         }
     }
 }
