@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 
 namespace Monkey.Shared.Scanner
@@ -10,11 +10,10 @@ namespace Monkey.Shared.Scanner
         private abstract class InternalState
         {
             public StringBuilder Buffer { get; set; }
-            public char[] Characters { get; set; }
+            public StringReader Characters { get; set; }
             public int Column { get; set; }
             public char CurrentCharacter { get; set; }
             public int Line { get; set; }
-            public int Position { get; set; }
             public List<Token> Tokens { get; set; }
         }
 
@@ -29,7 +28,6 @@ namespace Monkey.Shared.Scanner
                 Column = opts.Column;
                 CurrentCharacter = opts.CurrentCharacter;
                 Line = opts.Line;
-                Position = opts.Position;
                 Tokens = opts.Tokens;
             }
         }
@@ -38,14 +36,12 @@ namespace Monkey.Shared.Scanner
 
         public Scanner(string source)
         {
-            var characters = source.ToCharArray();
             var options = new Options {
                 Buffer = new StringBuilder(),
-                Characters = source.ToCharArray(),
+                Characters = new StringReader(source),
                 Column = 2,
-                CurrentCharacter = characters[0],
+                CurrentCharacter = char.MinValue,
                 Line = 1,
-                Position = 0,
                 Tokens = new List<Token>()
             };
 
@@ -60,15 +56,14 @@ namespace Monkey.Shared.Scanner
                 Column = initialState.Column,
                 CurrentCharacter = initialState.CurrentCharacter,
                 Line = initialState.Line,
-                Position = initialState.Position,
                 Tokens = initialState.Tokens
             });
             
             currentState.Buffer.Clear();
 
-            while (currentState.Position < currentState.Characters.Length)
+            while (currentState.Characters.Peek() > -1)
             {
-                currentState.CurrentCharacter = currentState.Characters[currentState.Position];
+                currentState.CurrentCharacter = (char)currentState.Characters.Read();
 
                 if (Utilities.IsQuote(currentState.CurrentCharacter))
                 {
@@ -97,6 +92,8 @@ namespace Monkey.Shared.Scanner
                 currentState = DetermineNextStatePositions(currentState);
             }
 
+            currentState.Characters.Close();
+            
             // Flush buffered characters
             if (currentState.Buffer.Length > 0)
             {
@@ -119,7 +116,6 @@ namespace Monkey.Shared.Scanner
                 Column = previousState.Column,
                 CurrentCharacter = previousState.CurrentCharacter,
                 Line = previousState.Line,
-                Position = previousState.Position,
                 Tokens = previousState.Tokens
             });
 
@@ -128,7 +124,8 @@ namespace Monkey.Shared.Scanner
                 // Handle CRLF
                 if (Utilities.IsNewlineOrReturnCharacter(PeekCharacter(newState)))
                 {
-                    newState.Position++;
+                    // Skip peeked LF character
+                    newState.Characters.Read();
                 }
                 newState.Column = 2;
                 newState.Line++;
@@ -138,14 +135,12 @@ namespace Monkey.Shared.Scanner
                 newState.Column++;
             }
 
-            newState.Position++;
-
             return newState;
         }
 
         private char PeekCharacter(State currentState)
         {
-            return currentState.Characters[currentState.Position + 1];
+            return (char)currentState.Characters.Peek();
         }
 
         private State TokenizeBuffer(State previousState)
@@ -157,7 +152,6 @@ namespace Monkey.Shared.Scanner
                 Column = previousState.Column,
                 CurrentCharacter = previousState.CurrentCharacter,
                 Line = previousState.Line,
-                Position = previousState.Position,
                 Tokens = previousState.Tokens
             });
 
@@ -183,7 +177,6 @@ namespace Monkey.Shared.Scanner
                 Column = previousState.Column,
                 CurrentCharacter = previousState.CurrentCharacter,
                 Line = previousState.Line,
-                Position = previousState.Position,
                 Tokens = previousState.Tokens
             });
 
@@ -193,7 +186,9 @@ namespace Monkey.Shared.Scanner
                     String.Join(String.Empty, newState.CurrentCharacter, PeekCharacter(newState)), newState.Column, newState.Line)
                 );
                 newState.Column++;
-                newState.Position++;
+
+                // Skip peeked character
+                newState.Characters.Read();
             }
             else
             {
@@ -212,22 +207,19 @@ namespace Monkey.Shared.Scanner
                 Column = previousState.Column,
                 CurrentCharacter = previousState.CurrentCharacter,
                 Line = previousState.Line,
-                Position = previousState.Position,
                 Tokens = previousState.Tokens
             });
 
             StringBuilder buffer = new StringBuilder("\"");
 
-            newState.Position++;
             newState.Column++;
-            newState.CurrentCharacter = newState.Characters[newState.Position];
+            newState.CurrentCharacter = (char)newState.Characters.Read();
 
-            while (!Utilities.IsQuote(newState.CurrentCharacter) && newState.Position < newState.Characters.Length)
+            while (!Utilities.IsQuote(newState.CurrentCharacter) && newState.Characters.Peek() > -1)
             {
                 buffer.Append(newState.CurrentCharacter);
                 newState.Column++;
-                newState.Position++;
-                newState.CurrentCharacter = newState.Characters[newState.Position];
+                newState.CurrentCharacter = (char)newState.Characters.Read();
             }
 
             buffer.Append("\"");
