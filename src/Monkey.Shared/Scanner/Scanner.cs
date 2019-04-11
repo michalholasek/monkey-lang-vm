@@ -34,11 +34,11 @@ namespace Monkey.Shared.Scanner
 
         private readonly State initialState;
 
-        public Scanner(string source)
+        public Scanner()
         {
-            var options = new Options {
+            var options = new Options
+            {
                 Buffer = new StringBuilder(),
-                Characters = new StringReader(source),
                 Column = 2,
                 CurrentCharacter = char.MinValue,
                 Line = 1,
@@ -48,11 +48,12 @@ namespace Monkey.Shared.Scanner
             initialState = new State(options);
         }
 
-        public List<Token> Scan()
+        public List<Token> Scan(string source)
         {
-            var currentState = new State(new Options {
+            var currentState = new State(new Options
+            {
                 Buffer = initialState.Buffer,
-                Characters = initialState.Characters,
+                Characters = new StringReader(source),
                 Column = initialState.Column,
                 CurrentCharacter = initialState.CurrentCharacter,
                 Line = initialState.Line,
@@ -110,7 +111,8 @@ namespace Monkey.Shared.Scanner
 
         private State DetermineNextStatePositions(State previousState)
         {
-            var newState = new State(new Options {
+            var newState = new State(new Options
+            {
                 Buffer = previousState.Buffer,
                 Characters = previousState.Characters,
                 Column = previousState.Column,

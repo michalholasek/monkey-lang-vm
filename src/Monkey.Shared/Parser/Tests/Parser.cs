@@ -21,7 +21,7 @@ namespace Monkey.Tests
         [DataRow("return ,;")]
         public void InvalidStatements(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Statements.Invalid[source]);
         }
@@ -31,7 +31,7 @@ namespace Monkey.Tests
         [DataRow("let x = 5; let y = 10; let foobar = 838383;")]
         public void LetStatements(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Statements.Let[source]);
         }
@@ -42,7 +42,7 @@ namespace Monkey.Tests
         [DataRow("return \"Hello!\";")]
         public void ReturnStatements(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Statements.Return[source]);
         }
@@ -51,7 +51,7 @@ namespace Monkey.Tests
         [DataRow("foobar")]
         public void IdentifierExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Identifier[source]);
         }
@@ -60,7 +60,7 @@ namespace Monkey.Tests
         [DataRow("42")]
         public void IntegerExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Integer[source]);
         }
@@ -69,7 +69,7 @@ namespace Monkey.Tests
         [DataRow("\"foo bar\"")]
         public void StringExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.String[source]);
         }
@@ -81,7 +81,7 @@ namespace Monkey.Tests
         [DataRow("!false")]
         public void PrefixExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Prefix[source]);
         }
@@ -100,7 +100,7 @@ namespace Monkey.Tests
         [DataRow("false == false")]
         public void InfixExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Infix[source]);
         }
@@ -129,7 +129,7 @@ namespace Monkey.Tests
         [DataRow("add(a + b + c * d / f + g)")]
         public void OperatorPrecedences(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.OperatorPrecedences[source]);
         }
@@ -139,7 +139,7 @@ namespace Monkey.Tests
         [DataRow("if (x < y) { x; } else { y; }")]
         public void IfElseExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.IfElse[source]);
         }
@@ -149,7 +149,7 @@ namespace Monkey.Tests
         [DataRow("fn(x, y) { x + y; }")]
         public void FunctionExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Function[source]);
         }
@@ -160,7 +160,7 @@ namespace Monkey.Tests
         [DataRow("fortyTwo([])")]
         public void CallExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Call[source]);
         }
@@ -171,7 +171,7 @@ namespace Monkey.Tests
         [DataRow("myArray[1 + 1]")]
         public void ArrayExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Array[source]);
         }
@@ -182,7 +182,7 @@ namespace Monkey.Tests
         [DataRow("{ \"abc\": 42 }[\"abc\"]")]
         public void HashExpression(string source)
         {
-            var tokens = new Scanner(source).Scan();
+            var tokens = new Scanner().Scan(source);
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Hash[source]);
         }
