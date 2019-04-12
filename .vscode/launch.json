@@ -2,14 +2,14 @@
    "version": "0.2.0",
    "configurations": [
         {
-            "name": ".NET Core Launch",
+            "name": "Launch REPL",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/Monkey.Shared/bin/Debug/netcoreapp2.2/Monkey.Shared.dll",
+            "program": "${workspaceFolder}/src/Monkey.Repl/bin/Debug/netcoreapp2.2/Monkey.Repl.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Monkey.Shared",
-            "console": "internalConsole",
+            "cwd": "${workspaceFolder}/src/Monkey.Repl",
+            "console": "integratedTerminal",
             "stopAtEntry": false
         }
     ]

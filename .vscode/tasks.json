@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Monkey.Shared/Monkey.Shared.csproj"
+                "${workspaceFolder}/src/monkey-lang-vm.sln"
             ],
             "problemMatcher": "$tsc"
         }
