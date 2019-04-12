@@ -138,12 +138,12 @@ namespace Monkey.Shared.Parser
 
             var elementsParseResult = ParseExpressionList(newState, SyntaxKind.RightBracket);
 
-            nextToken = GetToken(newState, elementsParseResult.Position);
+            nextToken = GetToken(newState, elementsParseResult.Position + Skip.Bracket);
 
             return Factory.ExpressionParseResult()
                     .Assign(newState)
                     .Expression(new ArrayExpression(elementsParseResult.Expressions))
-                    .Position(elementsParseResult.Position)
+                    .Position(elementsParseResult.Position + Skip.Bracket)
                     .Precedence(DetermineOperatorPrecedence(nextToken))
                     .Create();
         }
@@ -334,7 +334,7 @@ namespace Monkey.Shared.Parser
 
                 var valueParseResult = ParseExpression(newState);
 
-                nextToken = GetToken(newState, newState.Position + 1);
+                nextToken = GetToken(newState, valueParseResult.Position);
 
                 newState = Factory.ExpressionParseResult()
                     .Assign(newState)
@@ -411,11 +411,13 @@ namespace Monkey.Shared.Parser
 
             var expression = new IndexExpression(left: newState.Expression, index: indexExpresionParseResult.Expression);
 
+            var nextToken = GetToken(indexExpresionParseResult, indexExpresionParseResult.Position + Skip.Bracket);
+
             return Factory.ExpressionParseResult()
                 .Assign(newState)
                 .Expression(expression)
                 .Position(indexExpresionParseResult.Position + Skip.Bracket)
-                .Precedence(indexExpresionParseResult.Precedence)
+                .Precedence(DetermineOperatorPrecedence(nextToken))
                 .Create();
         }
         
@@ -492,26 +494,29 @@ namespace Monkey.Shared.Parser
 
         public ExpressionBuilder DetermineTokenRange()
         {
-            var statementTokens = internalState.Tokens
-                    .Skip(internalState.Position)
-                    .Take(internalState.Range)
-                    .ToList();
-
-            var assignTokenPosition = statementTokens
-                    .FindIndex(token => token.Kind == SyntaxKind.Assign);
-
-            if (assignTokenPosition >= 0)
+            int position = 0;
+            int range = 0;
+            
+            switch (internalState.Statement.Kind)
             {
-                 internalState.Tokens = statementTokens
-                    .Skip(assignTokenPosition + Skip.Assign)
-                    .ToList();
+                case NodeKind.Let:
+                    position = internalState.Position + Skip.Let + Skip.Identifier + Skip.Assign;
+                    range = internalState.Range - Skip.Let - Skip.Identifier - Skip.Assign;
+                    break;
+                case NodeKind.Return:
+                    position = internalState.Position + Skip.Return;
+                    range = internalState.Range - Skip.Return;
+                    break;
+                default:
+                    position = internalState.Position;
+                    range = internalState.Range;
+                    break;
             }
-            else
-            {
-                internalState.Tokens = statementTokens
-                    .Where(token => token.Kind != SyntaxKind.Return)
-                    .ToList();
-            }
+
+            internalState.Tokens = internalState.Tokens
+                        .Skip(position)
+                        .Take(range)
+                        .ToList();
 
             // Since we sliced tokens to contain only the ones of current expression,
             // reset cursor position back to the beginning

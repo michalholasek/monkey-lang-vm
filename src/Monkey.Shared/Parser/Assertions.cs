@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using Monkey.Shared;
 using Monkey.Shared.Parser.Ast;
 using Monkey.Shared.Scanner;
 
@@ -21,12 +22,6 @@ namespace Monkey.Shared.Parser
             }
         }
 
-        private static Dictionary<AssertionErrorKind, string> AssertionErrorKindString = new Dictionary<AssertionErrorKind, string>
-        {
-            { AssertionErrorKind.InvalidToken, "invalid token" },
-            { AssertionErrorKind.UnexpectedToken, "unexpected token" }
-        };
-
         private static List<AssertionError> AssertLetStatementSyntax(StatementBuilderState currentState)
         {
             var identifierToken = currentState.Tokens[currentState.Position + Skip.Let];
@@ -36,16 +31,16 @@ namespace Monkey.Shared.Parser
             if (identifierToken == null || assignToken == null)
             {
                 var eofToken = currentState.Tokens[currentState.Tokens.Count - 1];
-                errors.Add(CreateAssertionError(AssertionErrorKind.UnexpectedToken, eofToken, SyntaxKind.EOF));
+                errors.Add(Error.CreateAssertionError(AssertionErrorKind.UnexpectedToken, eofToken, SyntaxKind.EOF));
                 return errors;
             }
 
             if (identifierToken.Kind != SyntaxKind.Identifier) {
-                errors.Add(CreateAssertionError(AssertionErrorKind.InvalidToken, identifierToken, SyntaxKind.Identifier));
+                errors.Add(Error.CreateAssertionError(AssertionErrorKind.InvalidToken, identifierToken, SyntaxKind.Identifier));
             }
 
             if (assignToken.Kind != SyntaxKind.Assign) {
-                errors.Add(CreateAssertionError(AssertionErrorKind.InvalidToken, assignToken, SyntaxKind.Assign));
+                errors.Add(Error.CreateAssertionError(AssertionErrorKind.InvalidToken, assignToken, SyntaxKind.Assign));
             }
 
             return errors;
@@ -59,7 +54,7 @@ namespace Monkey.Shared.Parser
             if (nextToken == null)
             {
                 var eofToken = currentState.Tokens[currentState.Tokens.Count - 1];
-                errors.Add(CreateAssertionError(AssertionErrorKind.UnexpectedToken, eofToken));
+                errors.Add(Error.CreateAssertionError(AssertionErrorKind.UnexpectedToken, eofToken));
                 return errors;
             }
 
@@ -76,27 +71,9 @@ namespace Monkey.Shared.Parser
                 case SyntaxKind.Semicolon:
                     return errors;
                 default:
-                    errors.Add(CreateAssertionError(AssertionErrorKind.UnexpectedToken, nextToken));
+                    errors.Add(Error.CreateAssertionError(AssertionErrorKind.UnexpectedToken, nextToken));
                     return errors;
             }
-        }
-
-        private static AssertionError CreateAssertionError(AssertionErrorKind kind, Token actual, SyntaxKind expected = SyntaxKind.Illegal)
-        {
-            string common = $"{AssertionErrorKindString[kind]}({actual.Column}, {actual.Line}):";
-            string body;
-
-            switch (kind)
-            {
-                case AssertionErrorKind.InvalidToken:
-                    body = $"got {Enum.GetName(typeof(SyntaxKind), actual.Kind)}, expected {Enum.GetName(typeof(SyntaxKind), expected)}";
-                    break;
-                default:
-                    body = $"got {Enum.GetName(typeof(SyntaxKind), actual.Kind)}";
-                    break;
-            }
-
-            return new AssertionError($"{common} {body}");
         }
     }
 }

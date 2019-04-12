@@ -29,6 +29,7 @@ namespace Monkey.Shared.Parser
         public Expression Expression { get; set; }
         public int Position { get; set; }
         public int Range { get; set; }
+        public StatementBuilderState Statement { get; set; }
         public List<Token> Tokens { get; set; }
     }
 

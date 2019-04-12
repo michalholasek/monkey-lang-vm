@@ -54,9 +54,15 @@ namespace Monkey.Shared.Parser
                 }
             }
 
+            var semicolon = newState.Tokens
+                    .Skip(newState.Position + Skip.Brace)
+                    .Take(1)
+                    .Where(token => token.Kind == SyntaxKind.Semicolon)
+                    .FirstOrDefault();
+
             return new BlockStatementParseResult
             {
-                Position = newState.Position + Skip.Brace,
+                Position = newState.Position + Skip.Brace + (semicolon != null ? Skip.Semicolon : 0),
                 Statements = statements
             };
         }
@@ -104,7 +110,7 @@ namespace Monkey.Shared.Parser
 
         public StatementBuilder DetermineTokenRange()
         {
-            internalState.Range = DetermineTokenRangeInternal(internalState, internalState.Position, ignoreSemicolon: false);
+            internalState.Range = DetermineTokenRangeInternal(internalState);
             return this;
         }
 
@@ -118,6 +124,7 @@ namespace Monkey.Shared.Parser
             internalState.Expression = Factory.ExpressionBuilder()
                 .Position(internalState.Position)
                 .Range(internalState.Range)
+                .Statement(internalState)
                 .Tokens(internalState.Tokens)
                 .Create()
                 .DetermineTokenRange()
@@ -151,55 +158,67 @@ namespace Monkey.Shared.Parser
                 .Create();
         }
         
-        private int DetermineTokenRangeInternal(StatementBuilderState internalState, int position, bool ignoreSemicolon)
+        private int DetermineTokenRangeInternal(StatementBuilderState state)
         {
-            var internalPosition = position;
-            Token currentToken;
-            var range = 0;
+            var noOfLeftBraces = 0;
+            var noOfRightBraces = 0;
+            var position = state.Position;
+            var ignoreSemicolon = false;
 
-            Func<StatementBuilderState, bool> HasAlternative = (state) =>
+            while (position < state.Tokens.Count)
             {
-                var nextToken = state.Tokens.Skip(internalPosition + Skip.Brace).Take(1).FirstOrDefault();
-
-                if (nextToken != null && nextToken.Kind == SyntaxKind.Else)
+                var currentToken = state.Tokens.Skip(position).Take(1).FirstOrDefault();
+                
+                // Enable parsing of simple expressions, eg. '1 + 1' without semicolon
+                if (currentToken.Kind == SyntaxKind.EOF)
                 {
-                    return true;
+                    return position;
                 }
-
-                return false;
-            };
-
-            while (internalPosition < internalState.Tokens.Count)
-            {
-                currentToken = internalState.Tokens.Skip(internalPosition).Take(1).FirstOrDefault();
-
-                if (currentToken.Kind == SyntaxKind.RightBrace && HasAlternative(internalState))
+                // Top-level semicolons, eg. let a = 42;<< or if (true) { 1; };<<
+                else if (currentToken.Kind == SyntaxKind.Semicolon && !ignoreSemicolon && noOfLeftBraces == noOfRightBraces)
                 {
-                    internalPosition++;
+                    return position + Include.Semicolon - state.Position;
                 }
-                else if (currentToken.Kind == SyntaxKind.RightBrace || (!ignoreSemicolon && currentToken.Kind == SyntaxKind.Semicolon))
+                // Brace after consequence body in If-Else expression, eg. if (true) { 1 }<< else...
+                if (currentToken.Kind == SyntaxKind.RightBrace && IsIfElseExpression(state, position))
                 {
-                    internalPosition++;
-                    range = internalPosition - internalState.Position;
-                    break;
+                    noOfRightBraces++;
+                    position++;
                 }
+                // Inside the block, ie. { ...<< }
+                else if (currentToken.Kind == SyntaxKind.RightBrace && noOfLeftBraces != noOfRightBraces)
+                {
+                    ignoreSemicolon = false;
+                    noOfRightBraces++;
+                    position++;
+                }
+                // Block opening, eg. {<< ... }. We ignore semicolons inside blocks
                 else if (currentToken.Kind == SyntaxKind.LeftBrace)
                 {
-                    internalPosition += DetermineTokenRangeInternal(internalState, internalPosition + Skip.Brace, ignoreSemicolon: true);
+                    ignoreSemicolon = true;
+                    noOfLeftBraces++;
+                    position++;
                 }
+                // Everything else
                 else
                 {
-                    internalPosition++;
+                    position++;
                 }
             }
 
-            // Enable parsing of simple expressions, eg. '1 + 1' without semicolon
-            if (range == 0)
+            return -1;
+        }
+
+        private static bool IsIfElseExpression(StatementBuilderState state, int position)
+        {
+            var nextToken = state.Tokens.Skip(position + Skip.Brace).Take(1).FirstOrDefault();
+
+            if (nextToken != null && nextToken.Kind == SyntaxKind.Else)
             {
-                range = internalState.Tokens.Count - 1;
+                return true;
             }
 
-            return range;
+            return false;
         }
     }
 }

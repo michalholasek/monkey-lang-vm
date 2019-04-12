@@ -24,6 +24,7 @@ namespace Monkey.Shared.Parser.Ast
         InvalidIdentifier,
         InvalidIndex,
         InvalidToken,
+        InvalidType,
         UnexpectedToken,
         UnknownOperator
     }

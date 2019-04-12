@@ -1,6 +1,11 @@
 namespace Monkey.Shared
 {
-    public static class Skip
+    internal static class Include
+    {
+        public static int Semicolon { get { return 1; } }
+    }
+    
+    internal static class Skip
     {
         public static int Assign { get { return 1; } }
         public static int Brace { get { return 1; } }

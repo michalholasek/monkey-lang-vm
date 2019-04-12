@@ -43,6 +43,7 @@ namespace Monkey.Shared.Parser
             private Expression expression { get; set; }
             private int position { get; set; }
             private int range { get; set; }
+            private StatementBuilderState statement { get; set; }
             private List<Token> tokens { get; set; }
 
             public ExpressionBuilder Create()
@@ -52,6 +53,7 @@ namespace Monkey.Shared.Parser
                     Expression = expression,
                     Position = position,
                     Range = range,
+                    Statement = statement,
                     Tokens = tokens
                 };
 
@@ -73,6 +75,12 @@ namespace Monkey.Shared.Parser
             public ExpressionBuilderFactory Range(int range)
             {
                 this.range = range;
+                return this;
+            }
+
+            public ExpressionBuilderFactory Statement(StatementBuilderState statement)
+            {
+                this.statement = statement;
                 return this;
             }
 
