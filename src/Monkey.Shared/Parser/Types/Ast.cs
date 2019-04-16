@@ -7,28 +7,6 @@ using Monkey.Shared.Scanner;
 
 namespace Monkey.Shared.Parser.Ast
 {
-    public struct AssertionError
-    {
-        [JsonProperty]
-        string Message { get; set; }
-
-        public AssertionError(string message)
-        {
-            Message = message;
-        }
-    }
-
-    public enum AssertionErrorKind
-    {
-        InvalidArgument,
-        InvalidIdentifier,
-        InvalidIndex,
-        InvalidToken,
-        InvalidType,
-        UnexpectedToken,
-        UnknownOperator
-    }
-
     public enum NodeKind
     {
         Illegal,

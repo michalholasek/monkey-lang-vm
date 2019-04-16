@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+using Monkey.Shared;
 using Monkey.Shared.Parser;
 using Monkey.Shared.Parser.Ast;
 using Monkey.Shared.Scanner;
