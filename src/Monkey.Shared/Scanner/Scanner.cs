@@ -32,11 +32,11 @@ namespace Monkey.Shared.Scanner
             }
         }
 
-        private readonly State initialState;
+        private readonly Options defaults;
 
         public Scanner()
         {
-            var options = new Options
+            defaults = new Options
             {
                 Buffer = new StringBuilder(),
                 Column = 2,
@@ -44,20 +44,18 @@ namespace Monkey.Shared.Scanner
                 Line = 1,
                 Tokens = new List<Token>()
             };
-
-            initialState = new State(options);
         }
 
         public List<Token> Scan(string source)
         {
             var currentState = new State(new Options
             {
-                Buffer = initialState.Buffer,
+                Buffer = new StringBuilder(),
                 Characters = new StringReader(source),
-                Column = initialState.Column,
-                CurrentCharacter = initialState.CurrentCharacter,
-                Line = initialState.Line,
-                Tokens = initialState.Tokens
+                Column = defaults.Column,
+                CurrentCharacter = defaults.CurrentCharacter,
+                Line = defaults.Line,
+                Tokens = new List<Token>()
             });
             
             currentState.Buffer.Clear();
