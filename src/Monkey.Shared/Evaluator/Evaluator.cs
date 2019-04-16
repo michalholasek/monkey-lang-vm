@@ -6,7 +6,7 @@ using Object = Monkey.Shared.Evaluator.Object;
 
 namespace Monkey.Shared.Evaluator
 {
-    internal partial class Evaluator
+    public partial class Evaluator
     {
         public Object Evaluate(Program program, IEnvironment env)
         {

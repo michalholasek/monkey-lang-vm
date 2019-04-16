@@ -6,13 +6,13 @@ using Object = Monkey.Shared.Evaluator.Object;
 
 namespace Monkey.Shared.Evaluator
 {
-    internal interface IEnvironment
+    public interface IEnvironment
     {
         Object Get(string identifier);
         void Set(string identifier, Object value);
     }
 
-    internal class Environment : IEnvironment
+    public class Environment : IEnvironment
     {
         private Dictionary<string, Object> symbols;
 
@@ -32,7 +32,7 @@ namespace Monkey.Shared.Evaluator
         }
     }
 
-    internal class EnclosedEnvironment : IEnvironment
+    public class EnclosedEnvironment : IEnvironment
     {
         private IEnvironment outer;
         private IEnvironment inner;
@@ -55,7 +55,7 @@ namespace Monkey.Shared.Evaluator
         }
     }
 
-    internal enum ObjectKind
+    public enum ObjectKind
     {
         Array,
         Boolean,
@@ -71,7 +71,7 @@ namespace Monkey.Shared.Evaluator
         Puts
     }
     
-    internal class Object
+    public class Object
     {
         public IEnvironment Environment { get; set; }
         public ObjectKind Kind { get; set; }

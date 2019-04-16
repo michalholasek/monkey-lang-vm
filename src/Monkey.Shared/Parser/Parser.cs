@@ -7,9 +7,9 @@ using Monkey.Shared.Parser.Ast;
 
 namespace Monkey.Shared.Parser
 {
-    internal partial class Parser
+    public partial class Parser
     {
-        internal Program Parse(List<Token> tokens)
+        public Program Parse(List<Token> tokens)
         {
             var ast = CreateProgramNode(tokens);
             var currentState = CreateInitialState(tokens);

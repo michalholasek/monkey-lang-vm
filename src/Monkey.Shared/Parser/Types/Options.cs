@@ -5,7 +5,7 @@ using Monkey.Shared.Scanner;
 
 namespace Monkey.Shared.Parser
 {
-    internal class ProgramOptions
+    public class ProgramOptions
     {
         public List<AssertionError> Errors { get; set; }
         public NodeKind Kind { get; set; }
@@ -15,7 +15,7 @@ namespace Monkey.Shared.Parser
         public List<Token> Tokens { get; set; }
     }
 
-    internal class StatementOptions
+    public class StatementOptions
     {
         public Expression Expression { get; set; }
         public NodeKind Kind { get; set; }

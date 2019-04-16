@@ -1,6 +1,6 @@
 namespace Monkey.Shared.Parser
 {
-    internal enum Precedence {
+    public enum Precedence {
         Lowest = 1,
         Equals,
         LessGreater,

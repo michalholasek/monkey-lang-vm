@@ -7,7 +7,7 @@ using Monkey.Shared.Scanner;
 
 namespace Monkey.Shared.Parser
 {
-    internal partial class Parser
+    public partial class Parser
     {
         private static Dictionary<SyntaxKind, Func<ExpressionParseResult, ExpressionParseResult>> ParsingFunctions;
 

@@ -7,7 +7,7 @@ using Monkey.Shared.Scanner;
 
 namespace Monkey.Shared.Parser.Ast
 {
-    internal struct AssertionError
+    public struct AssertionError
     {
         [JsonProperty]
         string Message { get; set; }
@@ -18,7 +18,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal enum AssertionErrorKind
+    public enum AssertionErrorKind
     {
         InvalidArgument,
         InvalidIdentifier,
@@ -29,7 +29,7 @@ namespace Monkey.Shared.Parser.Ast
         UnknownOperator
     }
 
-    internal enum NodeKind
+    public enum NodeKind
     {
         Illegal,
 
@@ -40,7 +40,7 @@ namespace Monkey.Shared.Parser.Ast
         Program = 101
     }
     
-    internal enum ExpressionKind
+    public enum ExpressionKind
     {
         Illegal,
         Integer,
@@ -57,12 +57,12 @@ namespace Monkey.Shared.Parser.Ast
         Hash
     }
 
-    internal class Expression
+    public class Expression
     {
         public ExpressionKind Kind { get; set; }
     }
 
-    internal class ArrayExpression : Expression
+    public class ArrayExpression : Expression
     {
         public List<Expression> Elements { get; set; }
 
@@ -73,7 +73,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class BooleanExpression : Expression
+    public class BooleanExpression : Expression
     {
         public bool Value { get; set; }
 
@@ -84,7 +84,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class CallExpression : Expression
+    public class CallExpression : Expression
     {
         public List<Expression> Arguments { get; set; }
         public FunctionExpression Function { get; set; }
@@ -99,7 +99,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class FunctionExpression : Expression
+    public class FunctionExpression : Expression
     {
         public BlockStatement Body { get; set; }
         public List<Token> Parameters { get; set; }
@@ -112,7 +112,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class HashExpression : Expression
+    public class HashExpression : Expression
     {
         public List<Expression> Keys { get; set; }
         public List<Expression> Values { get; set; }
@@ -125,7 +125,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class IndexExpression : Expression
+    public class IndexExpression : Expression
     {
         public Expression Index { get; set; }
         public Expression Left { get; set; }
@@ -138,7 +138,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class IdentifierExpression : Expression
+    public class IdentifierExpression : Expression
     {
         public string Value { get; set; }
 
@@ -149,7 +149,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class IfElseExpression : Expression
+    public class IfElseExpression : Expression
     {
         public BlockStatement Alternative { get; set; }
         public Expression Condition { get; set; }
@@ -164,7 +164,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class InfixExpression : Expression
+    public class InfixExpression : Expression
     {
         public Expression Left { get; set; }
         public Token Operator { get; set; }
@@ -179,7 +179,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class IntegerExpression : Expression
+    public class IntegerExpression : Expression
     {
         public int Value { get; set; }
 
@@ -190,7 +190,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class PrefixExpression : Expression
+    public class PrefixExpression : Expression
     {
         public Expression Left { get; set; }
         public Expression Right { get; set; }
@@ -203,7 +203,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class StringExpression : Expression
+    public class StringExpression : Expression
     {
         public string Value { get; set; }
 
@@ -214,7 +214,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class Node
+    public class Node
     {
         public NodeKind Kind { get; set; }
         public int Position { get; set; }
@@ -228,7 +228,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class Program : Node
+    public class Program : Node
     {
         public List<AssertionError> Errors { get; set; }
         public List<Statement> Statements { get; set; }
@@ -242,7 +242,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class Statement : Node
+    public class Statement : Node
     {
         public Expression Expression { get; set; }
         public Token Identifier { get; set; }
@@ -254,7 +254,7 @@ namespace Monkey.Shared.Parser.Ast
         }
     }
 
-    internal class BlockStatement
+    public class BlockStatement
     {
         public List<Statement> Statements { get; set; }
     }

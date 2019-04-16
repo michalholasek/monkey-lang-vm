@@ -10,7 +10,7 @@ using Object = Monkey.Shared.Evaluator.Object;
 
 namespace Monkey.Shared.Evaluator
 {
-    internal partial class Evaluator
+    public partial class Evaluator
     {
         private static Object ApplyFunction(Object obj, List<Object> args)
         {

@@ -7,7 +7,7 @@ using Monkey.Shared.Scanner;
 
 namespace Monkey.Shared.Parser
 {
-    internal partial class Parser
+    public partial class Parser
     {
         public static StatementParseResult ParseStatement(StatementParseResult previousState)
         {

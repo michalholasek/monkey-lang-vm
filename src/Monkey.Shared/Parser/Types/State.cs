@@ -6,7 +6,7 @@ using Monkey.Shared.Scanner;
 
 namespace Monkey.Shared.Parser
 {
-    internal class BlockStatementParseResult
+    public class BlockStatementParseResult
     {
         public int Position { get; set; }
         public List<Statement> Statements { get; set; }
@@ -33,7 +33,7 @@ namespace Monkey.Shared.Parser
         public List<Token> Tokens { get; set; }
     }
 
-    internal class ExpressionParseResult
+    public class ExpressionParseResult
     {
         public Expression Expression { get; set; }
         public int Position { get; set; }
@@ -51,7 +51,7 @@ namespace Monkey.Shared.Parser
         public List<Token> Tokens { get; set; }
     }
 
-    internal class StatementParseResult
+    public class StatementParseResult
     {
         public List<AssertionError> Errors { get; set; }
         public int Position { get; set; }
