@@ -514,9 +514,9 @@ namespace Monkey.Shared.Parser
             }
 
             internalState.Tokens = internalState.Tokens
-                        .Skip(position)
-                        .Take(range)
-                        .ToList();
+                .Skip(position)
+                .Take(range)
+                .ToList();
 
             // Since we sliced tokens to contain only the ones of current expression,
             // reset cursor position back to the beginning

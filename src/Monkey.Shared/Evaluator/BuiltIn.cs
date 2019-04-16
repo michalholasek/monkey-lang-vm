@@ -27,7 +27,8 @@ namespace Monkey.Shared.Evaluator
         {
             if (args == null || args.Count != 1)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
                 );
@@ -37,7 +38,8 @@ namespace Monkey.Shared.Evaluator
 
             if (obj.Kind != ObjectKind.Array && obj.Kind != ObjectKind.String)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
                 );
@@ -58,7 +60,8 @@ namespace Monkey.Shared.Evaluator
         {
             if (args == null || args.Count != 1)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
                 );
@@ -68,7 +71,8 @@ namespace Monkey.Shared.Evaluator
 
             if (obj.Kind != ObjectKind.Array)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
                 );
@@ -83,7 +87,8 @@ namespace Monkey.Shared.Evaluator
         {
             if (args == null || args.Count != 1)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
                 );
@@ -93,7 +98,8 @@ namespace Monkey.Shared.Evaluator
 
             if (obj.Kind != ObjectKind.Array)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
                 );
@@ -108,7 +114,8 @@ namespace Monkey.Shared.Evaluator
         {
             if (args == null || args.Count != 1)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
                 );
@@ -118,7 +125,8 @@ namespace Monkey.Shared.Evaluator
 
             if (obj.Kind != ObjectKind.Array)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
                 );
@@ -136,7 +144,8 @@ namespace Monkey.Shared.Evaluator
         {
             if (args == null || args.Count != 2)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
                 );
@@ -146,7 +155,8 @@ namespace Monkey.Shared.Evaluator
 
             if (obj.Kind != ObjectKind.Array)
             {
-                return Utilities.CreateObject(
+                return Utilities.CreateObject
+                (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
                 );

@@ -82,7 +82,8 @@ namespace Monkey.Shared.Scanner
 
                     if (!Char.IsWhiteSpace(currentState.CurrentCharacter))
                     {
-                        currentState.Tokens.Add(Utilities.CreateToken(
+                        currentState.Tokens.Add(Utilities.CreateToken
+                        (
                             currentState.CurrentCharacter.ToString(), currentState.Column, currentState.Line)
                         );
                     }
@@ -96,9 +97,12 @@ namespace Monkey.Shared.Scanner
             // Flush buffered characters
             if (currentState.Buffer.Length > 0)
             {
-                currentState.Tokens.Add(Utilities.CreateToken(
-                    String.Join(String.Empty, currentState.Buffer), currentState.Column - currentState.Buffer.Length, currentState.Line)
-                );
+                currentState.Tokens.Add(Utilities.CreateToken
+                (
+                    String.Join(String.Empty, currentState.Buffer),
+                    currentState.Column - currentState.Buffer.Length,
+                    currentState.Line
+                ));
             }
 
             // Create SyntaxKind.EOF token
@@ -157,7 +161,8 @@ namespace Monkey.Shared.Scanner
 
             if (newState.Buffer.Length > 0)
             {
-                newState.Tokens.Add(Utilities.CreateToken(
+                newState.Tokens.Add(Utilities.CreateToken
+                (
                     String.Join(String.Empty, newState.Buffer),
                     newState.Column - newState.Buffer.Length,
                     newState.Line
@@ -182,7 +187,8 @@ namespace Monkey.Shared.Scanner
 
             if (Utilities.IsValidStickyOperator(newState.CurrentCharacter, PeekCharacter(newState)))
             {
-                newState.Tokens.Add(Utilities.CreateToken(
+                newState.Tokens.Add(Utilities.CreateToken
+                (
                     String.Join(String.Empty, newState.CurrentCharacter, PeekCharacter(newState)), newState.Column, newState.Line)
                 );
                 newState.Column++;
