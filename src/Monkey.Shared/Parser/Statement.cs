@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using static Monkey.Shared.Parser;
+
 namespace Monkey.Shared
 {
     public partial class Parser
     {
-        public static StatementParseResult ParseStatement(StatementParseResult previousState)
+        internal static StatementParseResult ParseStatement(StatementParseResult previousState)
         {
             return Factory.StatementBuilder()
                 .Assign(previousState)
@@ -18,7 +20,7 @@ namespace Monkey.Shared
                 .Result();
         }
 
-        public static BlockStatementParseResult ParseBlockStatement(ExpressionParseResult previousState)
+        internal static BlockStatementParseResult ParseBlockStatement(ExpressionParseResult previousState)
         {
             var statements = new List<Statement>();
 

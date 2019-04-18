@@ -6,7 +6,7 @@ using Object = Monkey.Shared.Object;
 
 namespace Monkey
 {
-    public class Compiler
+    public partial class Compiler
     {
         private CompilerState internalState;
 

@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Monkey.Shared
 {
-    public class Scanner
+    public partial class Scanner
     {
-        private abstract class InternalState
+        private class InternalState
         {
             public StringBuilder Buffer { get; set; }
             public StringReader Characters { get; set; }

@@ -6,9 +6,12 @@ using Object = Monkey.Shared.Object;
 
 namespace Monkey
 {
-    internal class CompilerState
+    public partial class Compiler
     {
-        public List<Object> Constants { get; set; }
-        public List<byte> Instructions { get; set; }
+        internal class CompilerState
+        {
+            public List<Object> Constants { get; set; }
+            public List<byte> Instructions { get; set; }
+        }
     }
 }

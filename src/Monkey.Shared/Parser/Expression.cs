@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using static Monkey.Shared.Parser;
+
 namespace Monkey.Shared
 {
     public partial class Parser
@@ -25,7 +27,7 @@ namespace Monkey.Shared
             };
         }
 
-        public static ExpressionParseResult ParseExpression(ExpressionParseResult currentState)
+        internal static ExpressionParseResult ParseExpression(ExpressionParseResult currentState)
         {
             var newState = Factory.ExpressionParseResult()
                     .Assign(ParsePrefixExpression(currentState))
