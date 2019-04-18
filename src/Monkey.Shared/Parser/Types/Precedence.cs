@@ -1,4 +1,4 @@
-namespace Monkey.Shared.Parser
+namespace Monkey.Shared
 {
     public enum Precedence {
         Lowest = 1,

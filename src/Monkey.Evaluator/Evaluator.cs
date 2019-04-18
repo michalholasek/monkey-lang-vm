@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-using Monkey.Shared.Parser.Ast;
-using Object = Monkey.Shared.Evaluator.Object;
+using static Monkey.Shared.Evaluator.Utilities;
+using Object = Monkey.Shared.Object;
 
-namespace Monkey.Shared.Evaluator
+namespace Monkey.Shared
 {
     public partial class Evaluator
     {
@@ -33,7 +33,7 @@ namespace Monkey.Shared.Evaluator
                 case NodeKind.Expression:
                     return EvaluateExpression(((Statement)node).Expression, env);
                 default:
-                    return Utilities.CreateObject(ObjectKind.Null, null);
+                    return CreateObject(ObjectKind.Null, null);
             }
         }
     }

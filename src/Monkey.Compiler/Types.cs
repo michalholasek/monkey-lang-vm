@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-using Monkey.Shared.Bytecode;
-using Object = Monkey.Shared.Evaluator.Object;
+using Monkey.Shared;
+using Object = Monkey.Shared.Object;
 
 namespace Monkey
 {

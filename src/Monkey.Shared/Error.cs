@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-using Monkey.Shared.Scanner;
-using Monkey.Shared.Parser.Ast;
-
 namespace Monkey.Shared
 {
     internal static class Error

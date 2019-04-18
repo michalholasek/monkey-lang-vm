@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
-using Monkey.Shared.Bytecode;
-using Monkey.Shared.Parser.Ast;
+using Monkey.Shared;
 
 namespace Monkey.Tests.Fixtures
 {

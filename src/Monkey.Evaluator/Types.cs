@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Object = Monkey.Shared.Evaluator.Object;
+using Object = Monkey.Shared.Object;
 
-namespace Monkey.Shared.Evaluator
+namespace Monkey.Shared
 {
     public interface IEnvironment
     {

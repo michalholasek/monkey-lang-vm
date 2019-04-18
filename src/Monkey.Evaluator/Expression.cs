@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Monkey.Shared;
-using Monkey.Shared.Scanner;
-using Monkey.Shared.Parser.Ast;
-using Environment = Monkey.Shared.Evaluator.Environment;
-using Object = Monkey.Shared.Evaluator.Object;
+using static Monkey.Shared.Evaluator.Utilities;
+using Environment = Monkey.Shared.Environment;
+using Object = Monkey.Shared.Object;
 
-namespace Monkey.Shared.Evaluator
+namespace Monkey.Shared
 {
     public partial class Evaluator
     {
@@ -27,7 +26,7 @@ namespace Monkey.Shared.Evaluator
                 return EvaluateStatements(functionExpression.Body.Statements, env);
             }
 
-            return Utilities.CreateObject(ObjectKind.Null, null);
+            return CreateObject(ObjectKind.Null, null);
         }
 
         private static IEnvironment EncloseEnvironment(List<Token> parameters, List<Object> args, IEnvironment env)
@@ -86,14 +85,14 @@ namespace Monkey.Shared.Evaluator
                 case ExpressionKind.Index:
                     return EvaluateIndexExpression(expression, env);
                 default:
-                    return Utilities.CreateObject(ObjectKind.Null, null);
+                    return CreateObject(ObjectKind.Null, null);
             }
         }
 
         private static Object EvaluateArrayExpression(Expression expression, IEnvironment env)
         {
             var arrayExpression = (ArrayExpression)expression;
-            return Utilities.CreateObject(ObjectKind.Array, EvaluateExpressionList(arrayExpression.Elements, env));
+            return CreateObject(ObjectKind.Array, EvaluateExpressionList(arrayExpression.Elements, env));
         }
 
         private static Object EvaluateArrayIndexExpression(Object array, Object index)
@@ -103,7 +102,7 @@ namespace Monkey.Shared.Evaluator
 
             if (elements.Count == 0 || indexValue < 0 || indexValue > elements.Count - 1)
             {
-                return Utilities.CreateObject(ObjectKind.Null, null);
+                return CreateObject(ObjectKind.Null, null);
             }
 
             return elements[indexValue];
@@ -116,11 +115,11 @@ namespace Monkey.Shared.Evaluator
             switch (obj.Kind)
             {
                 case ObjectKind.Integer:
-                    return Utilities.CreateObject(ObjectKind.Boolean, !((int)obj.Value != 0));
+                    return CreateObject(ObjectKind.Boolean, !((int)obj.Value != 0));
                 case ObjectKind.Boolean:
-                    return Utilities.CreateObject(ObjectKind.Boolean, !(bool)obj.Value);
+                    return CreateObject(ObjectKind.Boolean, !(bool)obj.Value);
                 default:
-                    return Utilities.CreateObject
+                    return CreateObject
                     (
                         ObjectKind.Error,
                         Error.CreateEvaluationError(AssertionErrorKind.InvalidType, obj.Kind)
@@ -130,7 +129,7 @@ namespace Monkey.Shared.Evaluator
 
         private static Object EvaluateBooleanExpression(Expression expression)
         {
-            return Utilities.CreateObject(ObjectKind.Boolean, ((BooleanExpression)expression).Value);
+            return CreateObject(ObjectKind.Boolean, ((BooleanExpression)expression).Value);
         }
 
         private static Object EvaluateBooleanInfixExpression(bool left, Token op, bool right)
@@ -138,11 +137,11 @@ namespace Monkey.Shared.Evaluator
             switch (op.Kind)
             {
                 case SyntaxKind.Equal:
-                    return Utilities.CreateObject(ObjectKind.Boolean, left == right);
+                    return CreateObject(ObjectKind.Boolean, left == right);
                 case SyntaxKind.NotEqual:
-                    return Utilities.CreateObject(ObjectKind.Boolean, left != right);
+                    return CreateObject(ObjectKind.Boolean, left != right);
                 default:
-                    return Utilities.CreateObject
+                    return CreateObject
                     (
                         ObjectKind.Error,
                         Error.CreateEvaluationError(AssertionErrorKind.UnknownOperator, op.Kind)
@@ -163,7 +162,7 @@ namespace Monkey.Shared.Evaluator
             }
             else
             {
-                obj = Utilities.CreateObject(ObjectKind.Function, callExpression.Function);
+                obj = CreateObject(ObjectKind.Function, callExpression.Function);
             }
 
             if (callExpression.Arguments != null)
@@ -196,7 +195,7 @@ namespace Monkey.Shared.Evaluator
 
         private static Object EvaluateFunctionExpression(Expression expression, IEnvironment env)
         {
-            var obj = Utilities.CreateObject(ObjectKind.Function, expression);
+            var obj = CreateObject(ObjectKind.Function, expression);
             obj.Environment = env;
             return obj;
         }
@@ -215,22 +214,22 @@ namespace Monkey.Shared.Evaluator
                 var previousKey = hash.Keys.Where(item => item == key.Value.ToString()).FirstOrDefault();
                 if (previousKey != null)
                 {
-                    hash[previousKey] = Utilities.CreateObject(value.Kind, value.Value);
+                    hash[previousKey] = CreateObject(value.Kind, value.Value);
                 }
                 else
                 {
-                    hash.Add(key.Value.ToString(), Utilities.CreateObject(value.Kind, value.Value));
+                    hash.Add(key.Value.ToString(), CreateObject(value.Kind, value.Value));
                 }
             }
 
-            return Utilities.CreateObject(ObjectKind.Hash, hash);
+            return CreateObject(ObjectKind.Hash, hash);
         }
 
         private static Object EvaluateHashIndexExpression(Object hash, Object key)
         {
             if (key.Kind != ObjectKind.Integer && key.Kind != ObjectKind.Boolean && key.Kind != ObjectKind.String)
             {
-                return Utilities.CreateObject
+                return CreateObject
                 (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidIndex, key.Kind)
@@ -242,13 +241,13 @@ namespace Monkey.Shared.Evaluator
 
             if (hashtable.Count == 0 || keyValue == String.Empty)
             {
-                return Utilities.CreateObject(ObjectKind.Null, null);
+                return CreateObject(ObjectKind.Null, null);
             }
 
             var hashKey = hashtable.Keys.Where(item => item == keyValue).FirstOrDefault();
             if (hashKey == null)
             {
-                return Utilities.CreateObject(ObjectKind.Null, null);
+                return CreateObject(ObjectKind.Null, null);
             }
 
             return hashtable[keyValue];
@@ -269,7 +268,7 @@ namespace Monkey.Shared.Evaluator
                 return BuiltIn.Functions[value];
             }
 
-            return Utilities.CreateObject
+            return CreateObject
             (
                 ObjectKind.Error,
                 Error.CreateEvaluationError(AssertionErrorKind.InvalidIdentifier, $"{value} not found")
@@ -296,7 +295,7 @@ namespace Monkey.Shared.Evaluator
             }
             else
             {
-                return Utilities.CreateObject(ObjectKind.Null, null);
+                return CreateObject(ObjectKind.Null, null);
             }
         }
 
@@ -334,7 +333,7 @@ namespace Monkey.Shared.Evaluator
 
             if (left.Kind != right.Kind)
             {
-                return Utilities.CreateObject
+                return CreateObject
                 (
                     ObjectKind.Error,
                     Error.CreateEvaluationError(AssertionErrorKind.InvalidToken, actual: right.Kind, expected: left.Kind)
@@ -350,7 +349,7 @@ namespace Monkey.Shared.Evaluator
                 case ObjectKind.String:
                     return EvaluateStringInfixExpression((string)left.Value, infixExpression.Operator, (string)right.Value);
                 default:
-                    return Utilities.CreateObject
+                    return CreateObject
                     (
                         ObjectKind.Error,
                         Error.CreateEvaluationError(AssertionErrorKind.InvalidType, left.Kind)
@@ -360,7 +359,7 @@ namespace Monkey.Shared.Evaluator
 
         private static Object EvaluateIntegerExpression(Expression expression)
         {
-            return Utilities.CreateObject(ObjectKind.Integer, ((IntegerExpression)expression).Value);
+            return CreateObject(ObjectKind.Integer, ((IntegerExpression)expression).Value);
         }
 
         private static Object EvaluateIntegerInfixExpression(int left, Token op, int right)
@@ -368,23 +367,23 @@ namespace Monkey.Shared.Evaluator
             switch (op.Kind)
             {
                 case SyntaxKind.Plus:
-                    return Utilities.CreateObject(ObjectKind.Integer, left + right);
+                    return CreateObject(ObjectKind.Integer, left + right);
                 case SyntaxKind.Minus:
-                    return Utilities.CreateObject(ObjectKind.Integer, left - right);
+                    return CreateObject(ObjectKind.Integer, left - right);
                 case SyntaxKind.Asterisk:
-                    return Utilities.CreateObject(ObjectKind.Integer, left * right);
+                    return CreateObject(ObjectKind.Integer, left * right);
                 case SyntaxKind.Slash:
-                    return Utilities.CreateObject(ObjectKind.Integer, left / right);
+                    return CreateObject(ObjectKind.Integer, left / right);
                 case SyntaxKind.GreaterThan:
-                    return Utilities.CreateObject(ObjectKind.Boolean, left > right);
+                    return CreateObject(ObjectKind.Boolean, left > right);
                 case SyntaxKind.LessThan:
-                    return Utilities.CreateObject(ObjectKind.Boolean, left < right);
+                    return CreateObject(ObjectKind.Boolean, left < right);
                 case SyntaxKind.Equal:
-                    return Utilities.CreateObject(ObjectKind.Boolean, left == right);
+                    return CreateObject(ObjectKind.Boolean, left == right);
                 case SyntaxKind.NotEqual:
-                    return Utilities.CreateObject(ObjectKind.Boolean, left != right);
+                    return CreateObject(ObjectKind.Boolean, left != right);
                 default:
-                    return Utilities.CreateObject
+                    return CreateObject
                     (
                         ObjectKind.Error,
                         Error.CreateEvaluationError(AssertionErrorKind.UnknownOperator, op.Kind)
@@ -403,7 +402,7 @@ namespace Monkey.Shared.Evaluator
 
             if (value.Kind != ObjectKind.Integer)
             {
-                return Utilities.CreateObject
+                return CreateObject
                 (
                     ObjectKind.Error,
                     Error.CreateEvaluationError
@@ -413,7 +412,7 @@ namespace Monkey.Shared.Evaluator
                 );
             }
 
-            return Utilities.CreateObject(ObjectKind.Integer, -(int)value.Value);
+            return CreateObject(ObjectKind.Integer, -(int)value.Value);
         }
 
         private static Object EvaluatePrefixExpression(Expression expression, IEnvironment env)
@@ -428,7 +427,7 @@ namespace Monkey.Shared.Evaluator
                 case SyntaxKind.Minus:
                     return EvaluateMinusOperatorExpression(prefixExpression.Right, env);
                 default:
-                    return Utilities.CreateObject
+                    return CreateObject
                     (
                         ObjectKind.Error,
                         Error.CreateEvaluationError(AssertionErrorKind.UnknownOperator, op.Kind)
@@ -438,7 +437,7 @@ namespace Monkey.Shared.Evaluator
 
         private static Object EvaluateStringExpression(Expression expression)
         {
-            return Utilities.CreateObject(ObjectKind.String, ((StringExpression)expression).Value);
+            return CreateObject(ObjectKind.String, ((StringExpression)expression).Value);
         }
 
         private static Object EvaluateStringInfixExpression(string left, Token op, string right)
@@ -446,13 +445,13 @@ namespace Monkey.Shared.Evaluator
             switch (op.Kind)
             {
                 case SyntaxKind.Plus:
-                    return Utilities.CreateObject(ObjectKind.String, string.Join(String.Empty, left, right));
+                    return CreateObject(ObjectKind.String, string.Join(String.Empty, left, right));
                 case SyntaxKind.Equal:
-                    return Utilities.CreateObject(ObjectKind.Boolean, left == right);
+                    return CreateObject(ObjectKind.Boolean, left == right);
                 case SyntaxKind.NotEqual:
-                    return Utilities.CreateObject(ObjectKind.Boolean, left != right);
+                    return CreateObject(ObjectKind.Boolean, left != right);
                 default:
-                    return Utilities.CreateObject
+                    return CreateObject
                     (
                         ObjectKind.Error,
                         Error.CreateEvaluationError(AssertionErrorKind.UnknownOperator, op.Kind)

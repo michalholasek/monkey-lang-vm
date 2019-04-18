@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
 
-using Monkey.Shared.Parser.Ast;
-using Environment = Monkey.Shared.Evaluator.Environment;
-using Object = Monkey.Shared.Evaluator.Object;
+using Monkey.Shared;
+using static Monkey.Shared.Evaluator.Utilities;
+using Environment = Monkey.Shared.Environment;
+using Object = Monkey.Shared.Object;
 
-namespace Monkey.Shared.Evaluator
+namespace Monkey.Shared
 {
     public partial class Evaluator
     {
         private static Object EvaluateStatements(List<Statement> statements, IEnvironment env)
         {
-            var obj = Utilities.CreateObject(ObjectKind.Null, null);
+            var obj = CreateObject(ObjectKind.Null, null);
 
             foreach (var statement in statements)
             {
@@ -28,7 +29,7 @@ namespace Monkey.Shared.Evaluator
 
         private static Object EvaluateLetStatement(Statement statement, IEnvironment env)
         {
-            var obj = Utilities.CreateObject(ObjectKind.Null, null);
+            var obj = CreateObject(ObjectKind.Null, null);
 
             if (statement.Identifier == null || statement.Expression == null)
             {
@@ -49,7 +50,7 @@ namespace Monkey.Shared.Evaluator
 
         private static Object EvaluateReturnStatement(Statement statement, IEnvironment env)
         {
-            return Utilities.CreateObject(ObjectKind.Return, EvaluateExpression(statement.Expression, env));
+            return CreateObject(ObjectKind.Return, EvaluateExpression(statement.Expression, env));
         }
     }
 }

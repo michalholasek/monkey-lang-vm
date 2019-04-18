@@ -3,9 +3,7 @@ using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
-using Monkey.Shared.Scanner;
-
-namespace Monkey.Shared.Parser.Ast
+namespace Monkey.Shared
 {
     public enum NodeKind
     {

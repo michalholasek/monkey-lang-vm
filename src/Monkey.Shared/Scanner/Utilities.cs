@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Monkey.Shared.Scanner
+namespace Monkey.Shared
 {
     public static class Utilities
     {

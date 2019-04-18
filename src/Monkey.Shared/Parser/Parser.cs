@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Monkey.Shared;
-using Monkey.Shared.Scanner;
-using Monkey.Shared.Parser.Ast;
-
-namespace Monkey.Shared.Parser
+namespace Monkey.Shared
 {
     public partial class Parser
     {

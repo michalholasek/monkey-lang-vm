@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-using Monkey.Shared.Parser.Ast;
-using Monkey.Shared.Scanner;
-
-namespace Monkey.Shared.Parser
+namespace Monkey.Shared
 {
     internal static class Factory
     {

@@ -1,7 +1,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Monkey.Shared.Scanner;
+using Monkey.Shared;
 
 namespace Monkey.Tests
 {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Monkey.Shared.Bytecode;
+using Monkey.Shared;
 
 namespace Monkey.Tests
 {

@@ -2,11 +2,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Monkey;
-using Monkey.Shared.Bytecode;
-using Monkey.Shared.Scanner;
-using Monkey.Shared.Parser;
-using Monkey.Shared.Parser.Ast;
-using Monkey.Shared.Evaluator;
+using Monkey.Shared;
 
 namespace Monkey.Tests
 {

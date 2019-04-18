@@ -1,18 +1,21 @@
 using System;
 
-using Object = Monkey.Shared.Evaluator.Object;
+using Object = Monkey.Shared.Object;
 
-namespace Monkey.Shared.Evaluator
+namespace Monkey.Shared
 {
-	internal static class Utilities
-    {        
-        public static Object CreateObject(ObjectKind kind, object value)
-        {
-            return new Object
+    public partial class Evaluator
+    {
+        internal static class Utilities
+        {        
+            public static Object CreateObject(ObjectKind kind, object value)
             {
-                Kind = kind,
-                Value = value
-            };
+                return new Object
+                {
+                    Kind = kind,
+                    Value = value
+                };
+            }
         }
     }
 }

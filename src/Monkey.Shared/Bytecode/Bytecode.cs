@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Monkey.Shared.Bytecode
+namespace Monkey.Shared
 {
     public static class Bytecode
     {

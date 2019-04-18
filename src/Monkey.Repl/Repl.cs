@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Monkey.Shared.Scanner;
-using Monkey.Shared.Parser;
-using Monkey.Shared.Evaluator;
-using Environment = Monkey.Shared.Evaluator.Environment;
+using Monkey.Shared;
+using Environment = Monkey.Shared.Environment;
 
 namespace Monkey.Repl
 {

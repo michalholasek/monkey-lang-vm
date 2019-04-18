@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-using Monkey.Shared.Scanner;
-
-namespace Monkey.Shared.Evaluator
+namespace Monkey.Shared
 {
     internal static class Error
     {

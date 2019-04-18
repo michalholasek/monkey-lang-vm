@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Monkey.Shared.Scanner
+namespace Monkey.Shared
 {
     public enum SyntaxKind
     {

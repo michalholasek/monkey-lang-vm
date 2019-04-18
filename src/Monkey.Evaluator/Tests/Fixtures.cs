@@ -1,12 +1,8 @@
 using System.Collections.Generic;
 
 using Monkey.Shared;
-using Monkey.Shared.Scanner;
-using Monkey.Shared.Parser;
-using Monkey.Shared.Parser.Ast;
-using Monkey.Shared.Evaluator;
-using Environment = Monkey.Shared.Evaluator.Environment;
-using Object = Monkey.Shared.Evaluator.Object;
+using Environment = Monkey.Shared.Environment;
+using Object = Monkey.Shared.Object;
 
 namespace Monkey.Tests.Fixtures
 {
