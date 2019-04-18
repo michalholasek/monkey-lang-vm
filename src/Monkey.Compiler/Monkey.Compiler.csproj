@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Monkey.Evaluator\Monkey.Evaluator.csproj" />
     <ProjectReference Include="..\Monkey.Shared\Monkey.Shared.csproj" />
   </ItemGroup>
 
