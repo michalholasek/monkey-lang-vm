@@ -1,8 +1,9 @@
 using System;
 
+using Monkey.Shared;
 using Object = Monkey.Shared.Object;
 
-namespace Monkey.Shared
+namespace Monkey
 {
     public partial class Evaluator
     {

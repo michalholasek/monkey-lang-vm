@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Monkey.Shared;
-using static Monkey.Shared.Evaluator.Utilities;
+using static Monkey.Evaluator.Utilities;
 using Environment = Monkey.Shared.Environment;
 using Object = Monkey.Shared.Object;
 
-namespace Monkey.Shared
+namespace Monkey
 {
     public partial class Evaluator
     {

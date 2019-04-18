@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-using static Monkey.Shared.Evaluator.Utilities;
+using Monkey.Shared;
+using static Monkey.Evaluator.Utilities;
 using Object = Monkey.Shared.Object;
 
-namespace Monkey.Shared
+namespace Monkey
 {
     public partial class Evaluator
     {

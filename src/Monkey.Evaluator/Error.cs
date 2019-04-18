@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Monkey.Shared
+using Monkey.Shared;
+
+namespace Monkey
 {
     public partial class Evaluator
     {

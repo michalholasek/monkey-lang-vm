@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Monkey.Shared;
 using Object = Monkey.Shared.Object;
-using static Monkey.Shared.Evaluator.Utilities;
+using static Monkey.Evaluator.Utilities;
 
-namespace Monkey.Shared
+namespace Monkey
 {
     public partial class Evaluator
     {
