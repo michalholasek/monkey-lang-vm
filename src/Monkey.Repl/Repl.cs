@@ -13,7 +13,8 @@ namespace Monkey.Repl
         private static Environment env;
         private static Scanner scanner;
         private static Parser parser;
-        private static Evaluator evaluator;
+        private static Compiler compiler;
+        private static VirtualMachine vm;
 
         static Repl()
         {
@@ -21,7 +22,8 @@ namespace Monkey.Repl
             env = new Environment();
             scanner = new Scanner();
             parser = new Parser();
-            evaluator = new Evaluator();
+            compiler = new Compiler();
+            vm = new VirtualMachine();
         }
 
         static void Main(string[] args)
@@ -44,12 +46,14 @@ namespace Monkey.Repl
             if (command == String.Empty && commands.Count > 0)
             {
                 var source = string.Join(" ", commands);
-                var result = evaluator.Evaluate(parser.Parse(scanner.Scan(source)), env);
+                var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+
+                vm.Run(compilationResult.Instructions, compilationResult.Constants);
 
                 commands.Clear();
 
                 Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 1);
-                Console.WriteLine(result.Value.ToString());
+                Console.WriteLine(vm.StackTop().Value.ToString());
             }
             else
             {

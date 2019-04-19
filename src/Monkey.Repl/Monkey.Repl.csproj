@@ -2,7 +2,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Monkey.Shared\Monkey.Shared.csproj" />
-    <ProjectReference Include="..\Monkey.Evaluator\Monkey.Evaluator.csproj" />
+    <ProjectReference Include="..\Monkey.Compiler\Monkey.Compiler.csproj" />
+    <ProjectReference Include="..\Monkey.VM\Monkey.VM.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
