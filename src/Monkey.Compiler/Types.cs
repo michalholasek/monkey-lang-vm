@@ -10,7 +10,9 @@ namespace Monkey
     {
         internal class CompilerState
         {
-            public List<Object> Constants { get; set; }
+            public Dictionary<string, Object> Constants { get; set; }
+            public Expression Expression { get; set; }
+            public Node Node { get; set; }
             public List<byte> Instructions { get; set; }
         }
     }

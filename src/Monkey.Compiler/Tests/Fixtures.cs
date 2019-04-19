@@ -8,7 +8,14 @@ namespace Monkey.Tests.Fixtures
     {
         public static Dictionary<string, List<byte>> Compile = new Dictionary<string, List<byte>>
         {
-            { "1 + 2", new List<byte>() }
+            {
+                "1 + 2",
+                new List<byte>
+                {
+                    1, 0, 1,
+                    1, 0, 2
+                }
+            }
         };
     }
 }

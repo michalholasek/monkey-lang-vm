@@ -7,7 +7,7 @@ namespace Monkey
 {
     public partial class Evaluator
     {
-        internal static class Utilities
+        public static class Utilities
         {        
             public static Object CreateObject(ObjectKind kind, object value)
             {
