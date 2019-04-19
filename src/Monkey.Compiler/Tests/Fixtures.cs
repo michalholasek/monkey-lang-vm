@@ -12,8 +12,9 @@ namespace Monkey.Tests.Fixtures
                 "1 + 2",
                 new List<byte>
                 {
-                    1, 0, 1,
-                    1, 0, 2
+                    1, 1, 0,
+                    1, 2, 0,
+                    2
                 }
             }
         };

@@ -23,8 +23,7 @@ namespace Monkey.Shared
                 switch (length)
                 {
                     case 2:
-                        // Reverse result to get Big endian byte order
-                        instruction.AddRange(BitConverter.GetBytes(Convert.ToUInt16(operands[i])).Reverse());
+                        instruction.AddRange(BitConverter.GetBytes(Convert.ToUInt16(operands[i])));
                         break;
                 }
             }

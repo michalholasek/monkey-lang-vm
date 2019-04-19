@@ -14,7 +14,8 @@ namespace Monkey.Shared
         private static Dictionary<byte, Definition> Opcodes = new Dictionary<byte, Definition>
         {
             { 0, new Definition { Name = "Invalid", OperandLengths = new List<int> { 0 } }},
-            { 1, new Definition { Name = "Constant", OperandLengths = new List<int> { 2 }  }}
+            { 1, new Definition { Name = "Constant", OperandLengths = new List<int> { 2 } }},
+            { 2, new Definition { Name = "Add", OperandLengths = new List<int> { 0 } }}
         };
 
         public static Definition Find(byte code)

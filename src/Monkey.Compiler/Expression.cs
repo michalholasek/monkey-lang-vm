@@ -33,9 +33,23 @@ namespace Monkey
             var infixExpression = (InfixExpression)expression;
             var leftExpressionState = CompileExpressionInner(infixExpression.Left, previousState);
             var rightExpressionState = CompileExpressionInner(infixExpression.Right, leftExpressionState);
-            var instructions = new List<byte>();
+            
+            List<byte> op;
 
-            return rightExpressionState;
+            switch (infixExpression.Operator.Kind)
+            {
+                case SyntaxKind.Plus:
+                    op = Bytecode.Create(2, new List<int>());
+                    break;
+                default:
+                    op = new List<byte>();
+                    break;
+            }
+
+            return Factory.CompilerState()
+                .Assign(rightExpressionState)
+                .Instructions(op)
+                .Create();
         }
 
         private CompilerState CompileIntegerExpression(Expression expression, CompilerState previousState)

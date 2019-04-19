@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monkey.Evaluator", "Monkey.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monkey.Compiler", "Monkey.Compiler\Monkey.Compiler.csproj", "{85AD3DC9-3D17-4D5E-A31D-D063974FD36E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monkey.VM", "Monkey.VM\Monkey.VM.csproj", "{309425D4-C435-48EF-95B8-0DDD0E342073}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,17 @@ Global
 		{85AD3DC9-3D17-4D5E-A31D-D063974FD36E}.Release|x64.Build.0 = Release|Any CPU
 		{85AD3DC9-3D17-4D5E-A31D-D063974FD36E}.Release|x86.ActiveCfg = Release|Any CPU
 		{85AD3DC9-3D17-4D5E-A31D-D063974FD36E}.Release|x86.Build.0 = Release|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Debug|x64.Build.0 = Debug|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Debug|x86.Build.0 = Debug|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Release|Any CPU.Build.0 = Release|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Release|x64.ActiveCfg = Release|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Release|x64.Build.0 = Release|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Release|x86.ActiveCfg = Release|Any CPU
+		{309425D4-C435-48EF-95B8-0DDD0E342073}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

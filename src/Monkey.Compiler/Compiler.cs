@@ -19,14 +19,14 @@ namespace Monkey
             };
         }
 
-        public List<byte> Compile(Node node)
+        public CompilerState Compile(Node node)
         {
             var newState = Factory.CompilerState()
                     .Assign(initialState)
                     .Node(node)
                     .Create();
 
-            return CompileNode(newState).Instructions;
+            return CompileNode(newState);
         }
 
         private CompilerState CompileNode(CompilerState previousState)

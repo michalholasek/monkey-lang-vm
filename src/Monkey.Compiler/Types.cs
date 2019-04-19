@@ -8,7 +8,7 @@ namespace Monkey
 {
     public partial class Compiler
     {
-        internal class CompilerState
+        public class CompilerState
         {
             public Dictionary<string, Object> Constants { get; set; }
             public Expression Expression { get; set; }
