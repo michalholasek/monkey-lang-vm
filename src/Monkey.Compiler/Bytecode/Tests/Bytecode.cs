@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Monkey.Shared;
+using Monkey;
 
 namespace Monkey.Tests
 {

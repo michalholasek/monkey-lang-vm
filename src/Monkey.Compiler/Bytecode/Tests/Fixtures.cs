@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-using Monkey.Shared;
+using Monkey;
 
 namespace Monkey.Tests.Fixtures
 {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Monkey.Shared
+namespace Monkey
 {
     public static class Opcode
     {
