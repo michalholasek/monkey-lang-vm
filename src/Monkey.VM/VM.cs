@@ -13,6 +13,8 @@ namespace Monkey
     {
         private VirtualMachineState internalState;
 
+        public Object LastStackElement { get { return internalState.Stack.LastElement; } }
+
         public void Run(List<byte> instructions, Dictionary<string, Object> constants)
         {
             internalState = new VirtualMachineState
@@ -20,7 +22,7 @@ namespace Monkey
                 Constants = constants,
                 Instructions = instructions,
                 InstructionPointer = 0,
-                Stack = new Stack<Object>()
+                Stack = new VirtualMachineStack()
             };
 
             while (internalState.InstructionPointer < internalState.Instructions.Count)
@@ -39,18 +41,11 @@ namespace Monkey
                         var leftValue = (int)internalState.Stack.Pop().Value;
                         internalState.Stack.Push(CreateObject(ObjectKind.Integer, leftValue + rightValue));
                         break;
+                    case 3: // Opcode.Pop
+                        internalState.Stack.Pop();
+                        break;
                 }
             }
-        }
-
-        public Object StackTop()
-        {
-            if (internalState.Stack.Count == 0)
-            {
-                return null;
-            }
-
-            return internalState.Stack.Pop();
         }
 
         private string DecodeOperand(int length)

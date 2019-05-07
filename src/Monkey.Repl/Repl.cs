@@ -53,7 +53,7 @@ namespace Monkey.Repl
                 commands.Clear();
 
                 Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 1);
-                Console.WriteLine(vm.StackTop().Value.ToString());
+                Console.WriteLine(vm.LastStackElement.Value.ToString());
             }
             else
             {

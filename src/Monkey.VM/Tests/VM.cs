@@ -22,7 +22,7 @@ namespace Monkey.Tests
 
             vm.Run(compilationResult.Instructions, compilationResult.Constants);
 
-            Utilities.Assert.AreDeeplyEqual(vm.StackTop(), Fixtures.VM.Run[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Run[source]);
         }
     }
 }

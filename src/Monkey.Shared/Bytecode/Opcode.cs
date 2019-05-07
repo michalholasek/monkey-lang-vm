@@ -15,7 +15,8 @@ namespace Monkey.Shared
         {
             { 0, new Definition { Name = "Invalid", OperandLengths = new List<int> { 0 } }},
             { 1, new Definition { Name = "Constant", OperandLengths = new List<int> { 2 } }},
-            { 2, new Definition { Name = "Add", OperandLengths = new List<int> { 0 } }}
+            { 2, new Definition { Name = "Add", OperandLengths = new List<int> { 0 } }},
+            { 3, new Definition { Name = "Pop", OperandLengths = new List<int> { 0 } }}
         };
 
         public static Definition Find(byte code)

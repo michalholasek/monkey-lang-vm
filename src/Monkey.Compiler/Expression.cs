@@ -12,7 +12,13 @@ namespace Monkey
         private CompilerState CompileExpression(CompilerState previousState)
         {
             var expression = ((Statement)previousState.Node).Expression;
-            return CompileExpressionInner(expression, previousState);
+            var expressionState = CompileExpressionInner(expression, previousState);
+
+            // Add Pop instruction after every expression to clean up the stack
+            return Factory.CompilerState()
+                .Assign(expressionState)
+                .Instructions(Bytecode.Create(3, new List<int>()))
+                .Create();
         }
 
         private CompilerState CompileExpressionInner(Expression expression, CompilerState previousState)
