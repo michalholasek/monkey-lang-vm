@@ -25,6 +25,9 @@ namespace Monkey
                 Stack = new VirtualMachineStack()
             };
 
+            Object left;
+            Object right;
+
             while (internalState.InstructionPointer < internalState.Instructions.Count)
             {
                 internalState.Opcode = internalState.Instructions[internalState.InstructionPointer];
@@ -36,13 +39,16 @@ namespace Monkey
                         internalState.Stack.Push(internalState.Constants[DecodeOperand(2)]);
                         internalState.InstructionPointer += 2;
                         break;
-                    case 2: // Opcode.Add
-                        var rightValue = (int)internalState.Stack.Pop().Value;
-                        var leftValue = (int)internalState.Stack.Pop().Value;
-                        internalState.Stack.Push(CreateObject(ObjectKind.Integer, leftValue + rightValue));
-                        break;
                     case 3: // Opcode.Pop
                         internalState.Stack.Pop();
+                        break;
+                    case 2: // Opcode.Add
+                    case 4: // Opcode.Subtract
+                    case 5: // Opcode.Multiply
+                    case 6: // Opcode.Divide
+                        right = internalState.Stack.Pop();
+                        left = internalState.Stack.Pop();
+                        ExecuteBinaryOperation(internalState.Opcode, left, right);
                         break;
                 }
             }
@@ -58,6 +64,33 @@ namespace Monkey
             }
 
             return BitConverter.ToInt16(buffer, startIndex: 0).ToString();
+        }
+
+        private void ExecuteBinaryOperation(byte op, Object left, Object right)
+        {
+            if (left.Kind == ObjectKind.Integer && right.Kind == ObjectKind.Integer)
+            {
+                ExecuteBinaryIntegerOperation(op, (int)left.Value, (int)right.Value);
+            }
+        }
+
+        private void ExecuteBinaryIntegerOperation(byte op, int left, int right)
+        {
+            switch (op)
+            {
+                case 2: // Opcode.Add
+                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left + right));
+                    break;
+                case 4: // Opcode.Subtract
+                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left - right));
+                    break;
+                case 5: // Opcode.Multiply
+                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left * right));
+                    break;
+                case 6: // Opcode.Divide
+                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left / right));
+                    break;
+            }
         }
     }
 }

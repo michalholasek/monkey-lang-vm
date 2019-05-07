@@ -16,6 +16,15 @@ namespace Monkey.Tests
 
         [TestMethod]
         [DataRow("1 + 2")]
+        [DataRow("2 - 1")]
+        [DataRow("2 * 2")]
+        [DataRow("4 / 2")]
+        [DataRow("50 / 2 * 2 + 10 - 5")]
+        [DataRow("5 + 5 + 5 + 5 - 10")]
+        [DataRow("2 * 2 * 2 * 2 * 2")]
+        [DataRow("5 * 2 + 10")]
+        [DataRow("5 + 2 * 10")]
+        [DataRow("5 * (2 + 10)")]
         public void Compile(string source)
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));

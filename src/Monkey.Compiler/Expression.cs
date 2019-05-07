@@ -47,6 +47,15 @@ namespace Monkey
                 case SyntaxKind.Plus:
                     op = Bytecode.Create(2, new List<int>());
                     break;
+                case SyntaxKind.Minus:
+                    op = Bytecode.Create(4, new List<int>());
+                    break;
+                case SyntaxKind.Asterisk:
+                    op = Bytecode.Create(5, new List<int>());
+                    break;
+                case SyntaxKind.Slash:
+                    op = Bytecode.Create(6, new List<int>());
+                    break;
                 default:
                     op = new List<byte>();
                     break;
