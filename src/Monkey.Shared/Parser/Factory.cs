@@ -37,61 +37,61 @@ namespace Monkey.Shared
                 }
             }
 
-            internal class ExpressionBuilderFactory
+            internal class ExpressionParseResultBuilderFactory
             {
                 private List<AssertionError> errors { get; set; }
                 private Expression expression { get; set; }
                 private int position { get; set; }
                 private int range { get; set; }
-                private StatementBuilderState statement { get; set; }
+                private NodeKind statementKind { get; set; }
                 private List<Token> tokens { get; set; }
 
-                public ExpressionBuilder Create()
+                public ExpressionParseResultBuilder Create()
                 {
-                    var initialState = new ExpressionBuilderState
+                    var initialState = new ExpressionParseResultBuilderState
                     {
                         Errors = errors,
                         Expression = expression,
                         Position = position,
                         Range = range,
-                        Statement = statement,
+                        StatementKind = statementKind,
                         Tokens = tokens
                     };
 
-                    return new ExpressionBuilder(initialState);
+                    return new ExpressionParseResultBuilder(initialState);
                 }
 
-                public ExpressionBuilderFactory Errors(List<AssertionError> errors)
+                public ExpressionParseResultBuilderFactory Errors(List<AssertionError> errors)
                 {
                     this.errors = errors;
                     return this;
                 }
 
-                public ExpressionBuilderFactory Expression(Expression expression)
+                public ExpressionParseResultBuilderFactory Expression(Expression expression)
                 {
                     this.expression = expression;
                     return this;
                 }
 
-                public ExpressionBuilderFactory Position(int position)
+                public ExpressionParseResultBuilderFactory Position(int position)
                 {
                     this.position = position;
                     return this;
                 }
 
-                public ExpressionBuilderFactory Range(int range)
+                public ExpressionParseResultBuilderFactory Range(int range)
                 {
                     this.range = range;
                     return this;
                 }
 
-                public ExpressionBuilderFactory Statement(StatementBuilderState statement)
+                public ExpressionParseResultBuilderFactory StatementKind(NodeKind kind)
                 {
-                    this.statement = statement;
+                    this.statementKind = kind;
                     return this;
                 }
 
-                public ExpressionBuilderFactory Tokens(List<Token> tokens)
+                public ExpressionParseResultBuilderFactory Tokens(List<Token> tokens)
                 {
                     this.tokens = tokens;
                     return this;
@@ -297,22 +297,22 @@ namespace Monkey.Shared
                 }
             }
             
-            internal class StatementBuilderFactory
+            internal class StatementParseResultBuilderFactory
             {
                 private StatementParseResult previousState;
 
-                public StatementBuilderFactory Assign(StatementParseResult previousState)
+                public StatementParseResultBuilderFactory Assign(StatementParseResult previousState)
                 {
                     this.previousState = previousState;
                     return this;
                 }
 
-                public StatementBuilder Create()
+                public StatementParseResultBuilder Create()
                 {
-                    return new StatementBuilder(previousState);
+                    return new StatementParseResultBuilder(previousState);
                 }
 
-                public StatementBuilderFactory Errors(List<AssertionError> errors)
+                public StatementParseResultBuilderFactory Errors(List<AssertionError> errors)
                 {
                     this.previousState.Errors = errors;
                     return this;
@@ -386,9 +386,9 @@ namespace Monkey.Shared
                 return new CallExpressionFactory();
             }
             
-            public static ExpressionBuilderFactory ExpressionBuilder()
+            public static ExpressionParseResultBuilderFactory ExpressionParseResultBuilder()
             {
-                return new ExpressionBuilderFactory();
+                return new ExpressionParseResultBuilderFactory();
             }
             
             public static ExpressionParseResultFactory ExpressionParseResult()
@@ -416,9 +416,9 @@ namespace Monkey.Shared
                 return new StatementFactory();
             }
             
-            public static StatementBuilderFactory StatementBuilder()
+            public static StatementParseResultBuilderFactory StatementParseResultBuilder()
             {
-                return new StatementBuilderFactory();
+                return new StatementParseResultBuilderFactory();
             }
 
             public static StatementParseResultFactory StatementParseResult()

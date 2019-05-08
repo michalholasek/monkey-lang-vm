@@ -10,7 +10,7 @@ namespace Monkey.Shared
     {
         internal static StatementParseResult ParseStatement(StatementParseResult previousState)
         {
-            return Factory.StatementBuilder()
+            return Factory.StatementParseResultBuilder()
                 .Assign(previousState)
                 .Errors(new List<AssertionError>())
                 .Create()
@@ -68,13 +68,13 @@ namespace Monkey.Shared
         }
     }
 
-    internal class StatementBuilder
+    internal class StatementParseResultBuilder
     {
-        private StatementBuilderState internalState;
+        private StatementParseResultBuilderState internalState;
 
-        public StatementBuilder(StatementParseResult currentState)
+        public StatementParseResultBuilder(StatementParseResult currentState)
         {
-            internalState = new StatementBuilderState
+            internalState = new StatementParseResultBuilderState
             {
                 Errors = currentState.Errors,
                 Position = currentState.Position,
@@ -82,13 +82,13 @@ namespace Monkey.Shared
             };
         }
 
-        public StatementBuilder AssertSyntax()
+        public StatementParseResultBuilder AssertSyntax()
         {
             internalState.Errors.AddRange(Assert.Syntax(internalState));
             return this;
         }
         
-        public StatementBuilder DetermineKind()
+        public StatementParseResultBuilder DetermineKind()
         {
             var token = internalState.Tokens[internalState.Position];
 
@@ -108,24 +108,24 @@ namespace Monkey.Shared
             return this;
         }
 
-        public StatementBuilder DetermineTokenRange()
+        public StatementParseResultBuilder DetermineTokenRange()
         {
             internalState.Range = DetermineTokenRangeInternal(internalState);
             return this;
         }
 
-        public StatementBuilder ParseExpression()
+        public StatementParseResultBuilder ParseExpression()
         {
             if (internalState.Errors.Count > 0)
             {
                 return this;
             }
 
-            var expressionParseResult = Factory.ExpressionBuilder()
+            var expressionParseResult = Factory.ExpressionParseResultBuilder()
                     .Errors(internalState.Errors)
                     .Position(internalState.Position)
                     .Range(internalState.Range)
-                    .Statement(internalState)
+                    .StatementKind(internalState.Kind)
                     .Tokens(internalState.Tokens)
                     .Create()
                     .DetermineTokenRange()
@@ -161,7 +161,7 @@ namespace Monkey.Shared
                 .Create();
         }
         
-        private int DetermineTokenRangeInternal(StatementBuilderState state)
+        private int DetermineTokenRangeInternal(StatementParseResultBuilderState state)
         {
             var noOfLeftBraces = 0;
             var noOfRightBraces = 0;
@@ -212,9 +212,9 @@ namespace Monkey.Shared
             return -1;
         }
 
-        private static bool IsIfElseExpression(StatementBuilderState state, int position)
+        private static bool IsIfElseExpression(StatementParseResultBuilderState currentState, int position)
         {
-            var nextToken = state.Tokens.Skip(position + Skip.Brace).Take(1).FirstOrDefault();
+            var nextToken = currentState.Tokens.Skip(position + Skip.Brace).Take(1).FirstOrDefault();
 
             if (nextToken != null && nextToken.Kind == SyntaxKind.Else)
             {

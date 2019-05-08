@@ -22,7 +22,7 @@ namespace Monkey.Shared
                 }
             }
 
-            internal static List<AssertionError> Syntax(StatementBuilderState currentState)
+            internal static List<AssertionError> Syntax(StatementParseResultBuilderState currentState)
             {
                 switch (currentState.Kind)
                 {
@@ -35,7 +35,7 @@ namespace Monkey.Shared
                 }
             }
 
-            private static List<AssertionError> AssertLetStatementSyntax(StatementBuilderState currentState)
+            private static List<AssertionError> AssertLetStatementSyntax(StatementParseResultBuilderState currentState)
             {
                 var identifierToken = currentState.Tokens[currentState.Position + Skip.Let];
                 var assignToken = currentState.Tokens[currentState.Position + Skip.Let + Skip.Identifier];
@@ -59,7 +59,7 @@ namespace Monkey.Shared
                 return errors;
             }
 
-            private static List<AssertionError> AssertReturnStatementSyntax(StatementBuilderState currentState)
+            private static List<AssertionError> AssertReturnStatementSyntax(StatementParseResultBuilderState currentState)
             {
                 var nextToken = currentState.Tokens[currentState.Position + Skip.Return];
                 var errors = new List<AssertionError>();

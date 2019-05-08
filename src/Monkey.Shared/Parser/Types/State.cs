@@ -21,13 +21,13 @@ namespace Monkey.Shared
         public List<Token> Parameters { get; set; }
     }
 
-    internal class ExpressionBuilderState
+    internal class ExpressionParseResultBuilderState
     {
         public List<AssertionError> Errors { get; set; }
         public Expression Expression { get; set; }
         public int Position { get; set; }
         public int Range { get; set; }
-        public StatementBuilderState Statement { get; set; }
+        public NodeKind StatementKind { get; set; }
         public List<Token> Tokens { get; set; }
     }
 
@@ -40,7 +40,7 @@ namespace Monkey.Shared
         public List<Token> Tokens { get; set; }
     }
 
-    internal class StatementBuilderState
+    internal class StatementParseResultBuilderState
     {
         public List<AssertionError> Errors { get; set; }
         public Expression Expression { get; set; }

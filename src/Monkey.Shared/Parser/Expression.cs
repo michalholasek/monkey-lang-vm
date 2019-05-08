@@ -502,21 +502,21 @@ namespace Monkey.Shared
         }
     }
     
-    internal class ExpressionBuilder
+    internal class ExpressionParseResultBuilder
     {
-        private ExpressionBuilderState internalState;
+        private ExpressionParseResultBuilderState internalState;
 
-        public ExpressionBuilder(ExpressionBuilderState currentState)
+        public ExpressionParseResultBuilder(ExpressionParseResultBuilderState currentState)
         {
             internalState = currentState;
         }
 
-        public ExpressionBuilder DetermineTokenRange()
+        public ExpressionParseResultBuilder DetermineTokenRange()
         {
             int position = 0;
             int range = 0;
             
-            switch (internalState.Statement.Kind)
+            switch (internalState.StatementKind)
             {
                 case NodeKind.Let:
                     position = internalState.Position + Skip.Let + Skip.Identifier + Skip.Assign;
