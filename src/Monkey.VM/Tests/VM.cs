@@ -25,13 +25,25 @@ namespace Monkey.Tests
         [DataRow("5 * 2 + 10")]
         [DataRow("5 + 2 * 10")]
         [DataRow("5 * (2 + 10)")]
-        public void Compile(string source)
+        public void IntegerExpressions(string source)
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
             vm.Run(compilationResult.Instructions, compilationResult.Constants);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Run[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Integer[source]);
+        }
+
+        [TestMethod]
+        [DataRow("true")]
+        [DataRow("false")]
+        public void BooleanExpressions(string source)
+        {
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+
+            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+
+            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Boolean[source]);
         }
     }
 }

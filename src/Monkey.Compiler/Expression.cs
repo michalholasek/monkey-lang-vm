@@ -27,11 +27,24 @@ namespace Monkey
             {
                 case ExpressionKind.Integer:
                     return CompileIntegerExpression(expression, previousState);
+                case ExpressionKind.Boolean:
+                    return CompileBooleanExpression(expression, previousState);
                 case ExpressionKind.Infix:
                     return CompileInfixExpression(expression, previousState);
             }
 
             return previousState;
+        }
+
+        private CompilerState CompileBooleanExpression(Expression expression, CompilerState previousState)
+        {
+            var expressionValue = (bool)((BooleanExpression)expression).Value;
+            var instruction = Bytecode.Create(expressionValue == true ? (byte)7 : (byte)8, new List<int> {});
+
+            return Factory.CompilerState()
+                .Assign(previousState)
+                .Instructions(instruction)
+                .Create();
         }
 
         private CompilerState CompileInfixExpression(Expression expression, CompilerState previousState)

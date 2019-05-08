@@ -24,10 +24,19 @@ namespace Monkey.Tests
         [DataRow("5 * 2 + 10")]
         [DataRow("5 + 2 * 10")]
         [DataRow("5 * (2 + 10)")]
-        public void Compile(string source)
+        public void IntegerExpression(string source)
         {
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.Integer[source]);
+        }
+
+        [TestMethod]
+        [DataRow("true")]
+        [DataRow("false")]
+        public void BooleanExpression(string source)
+        {
+            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
+            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.Boolean[source]);
         }
     }
 }

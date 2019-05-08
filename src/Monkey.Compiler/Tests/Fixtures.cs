@@ -8,6 +8,26 @@ namespace Monkey.Tests.Fixtures
     {
         public static class Expression
         {
+            public static Dictionary<string, List<byte>> Boolean = new Dictionary<string, List<byte>>
+            {
+                {
+                    "true",
+                    new List<byte>
+                    {
+                        7,       // Opcode.True
+                        3        // Pop
+                    }
+                },
+                {
+                    "false",
+                    new List<byte>
+                    {
+                        8,       // Opcode.False
+                        3        // Pop
+                    }
+                }
+            };
+            
             public static Dictionary<string, List<byte>> Integer = new Dictionary<string, List<byte>>
             {
                 {

@@ -17,11 +17,18 @@ namespace Monkey
 
         public void Run(List<byte> instructions, Dictionary<string, Object> constants)
         {
+            var invariants = new Dictionary<object, Object>
+            {
+                { true, CreateObject(ObjectKind.Boolean, true) },
+                { false, CreateObject(ObjectKind.Boolean, false) }
+            };
+
             internalState = new VirtualMachineState
             {
                 Constants = constants,
                 Instructions = instructions,
                 InstructionPointer = 0,
+                Invariants = invariants,
                 Stack = new VirtualMachineStack()
             };
 
@@ -50,6 +57,12 @@ namespace Monkey
                         left = internalState.Stack.Pop();
                         ExecuteBinaryOperation(internalState.Opcode, left, right);
                         break;
+                    case 7: // Opcode.True
+                        ExecuteBooleanOperation(internalState.Opcode);
+                        break;
+                    case 8: // Opcode.False
+                        ExecuteBooleanOperation(internalState.Opcode);
+                        break;
                 }
             }
         }
@@ -64,6 +77,19 @@ namespace Monkey
             }
 
             return BitConverter.ToInt16(buffer, startIndex: 0).ToString();
+        }
+
+        private void ExecuteBooleanOperation(byte op)
+        {
+            switch (op)
+            {
+                case 7: // Opcode.True
+                    internalState.Stack.Push(internalState.Invariants[true]);
+                    break;
+                case 8: // Opcode.False
+                    internalState.Stack.Push(internalState.Invariants[false]);
+                    break;
+            }
         }
 
         private void ExecuteBinaryOperation(byte op, Object left, Object right)

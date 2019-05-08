@@ -19,7 +19,9 @@ namespace Monkey
             { 2, new Definition { Name = "Add", OperandLengths = new List<int> { 0 } }},
             { 4, new Definition { Name = "Subtract", OperandLengths = new List<int> { 0 } }},
             { 5, new Definition { Name = "Multiply", OperandLengths = new List<int> { 0 } }},
-            { 6, new Definition { Name = "Divide", OperandLengths = new List<int> { 0 } }}
+            { 6, new Definition { Name = "Divide", OperandLengths = new List<int> { 0 } }},
+            { 7, new Definition { Name = "True", OperandLengths = new List<int> { 0 } }},
+            { 8, new Definition { Name = "False", OperandLengths = new List<int> { 0 } }}
         };
 
         public static Definition Find(byte code)
