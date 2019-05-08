@@ -25,6 +25,66 @@ namespace Monkey.Tests.Fixtures
                         8,       // Opcode.False
                         3        // Pop
                     }
+                },
+                {
+                    "1 > 2",
+                    new List<byte>
+                    {
+                        1, 1, 0, // 1
+                        1, 2, 0, // 2
+                        11,      // >
+                        3        // Pop
+                    }
+                },
+                {
+                    "1 < 2",
+                    new List<byte>
+                    {
+                        1, 2, 0, // 2
+                        1, 1, 0, // 1
+                        11,      // >
+                        3        // Pop
+                    }
+                },
+                {
+                    "1 == 2",
+                    new List<byte>
+                    {
+                        1, 1, 0, // 1
+                        1, 2, 0, // 2
+                        9,       // ==
+                        3        // Pop
+                    }
+                },
+                {
+                    "1 != 2",
+                    new List<byte>
+                    {
+                        1, 1, 0, // 1
+                        1, 2, 0, // 2
+                        10,       // !=
+                        3        // Pop
+                    }
+                },
+                {
+                    "true == false",
+                    new List<byte>
+                    {
+                        7, // true
+                        8, // false
+                        9, // ==
+                        3  // Pop
+                    }
+                },
+                {
+                    "true != false",
+                    new List<byte>
+                    {
+                        7, // true
+                        8, // false
+                        10, // !=
+                        3  // Pop
+                    }
                 }
             };
             

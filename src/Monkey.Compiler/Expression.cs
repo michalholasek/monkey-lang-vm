@@ -50,10 +50,26 @@ namespace Monkey
         private CompilerState CompileInfixExpression(Expression expression, CompilerState previousState)
         {
             var infixExpression = (InfixExpression)expression;
-            var leftExpressionState = CompileExpressionInner(infixExpression.Left, previousState);
-            var rightExpressionState = CompileExpressionInner(infixExpression.Right, leftExpressionState);
+
+            CompilerState leftExpressionState;
+            CompilerState rightExpressionState;
             
             List<byte> op;
+
+            // Handle special cases, such as 1 < 2, where we are switching
+            // operands and turning it into 2 > 1 (GreaterThan) expression
+            // to keep the instruction set small
+            switch (infixExpression.Operator.Kind)
+            {
+                case SyntaxKind.LessThan:
+                    rightExpressionState = CompileExpressionInner(infixExpression.Right, previousState);
+                    leftExpressionState = CompileExpressionInner(infixExpression.Left, rightExpressionState);
+                    break;
+                default:
+                    leftExpressionState = CompileExpressionInner(infixExpression.Left, previousState);
+                    rightExpressionState = CompileExpressionInner(infixExpression.Right, leftExpressionState);
+                    break;
+            }
 
             switch (infixExpression.Operator.Kind)
             {
@@ -68,6 +84,16 @@ namespace Monkey
                     break;
                 case SyntaxKind.Slash:
                     op = Bytecode.Create(6, new List<int>());
+                    break;
+                case SyntaxKind.Equal:
+                    op = Bytecode.Create(9, new List<int>());
+                    break;
+                case SyntaxKind.NotEqual:
+                    op = Bytecode.Create(10, new List<int>());
+                    break;
+                case SyntaxKind.GreaterThan:
+                case SyntaxKind.LessThan:
+                    op = Bytecode.Create(11, new List<int>());
                     break;
                 default:
                     op = new List<byte>();

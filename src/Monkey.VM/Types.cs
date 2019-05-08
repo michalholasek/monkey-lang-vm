@@ -11,7 +11,6 @@ namespace Monkey
         public Dictionary<string, Object> Constants { get; set; }
         public List<byte> Instructions { get; set; }
         public int InstructionPointer { get; set; }
-        public Dictionary<object, Object> Invariants { get; set; }
         public byte Opcode { get; set; }
         public VirtualMachineStack Stack { get; set; }
     }

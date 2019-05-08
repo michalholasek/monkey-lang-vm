@@ -33,6 +33,12 @@ namespace Monkey.Tests
         [TestMethod]
         [DataRow("true")]
         [DataRow("false")]
+        [DataRow("1 > 2")]
+        [DataRow("1 < 2")]
+        [DataRow("1 == 2")]
+        [DataRow("1 != 2")]
+        [DataRow("true == false")]
+        [DataRow("true != false")]
         public void BooleanExpression(string source)
         {
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;

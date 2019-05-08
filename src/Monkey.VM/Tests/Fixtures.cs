@@ -19,6 +19,74 @@ namespace Monkey.Tests.Fixtures
                 {
                     "false",
                     CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "1 < 2",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "1 > 2",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "1 < 1",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "1 > 1",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "1 == 1",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "1 != 1",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "1 == 2",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "1 != 2",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "true == true",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "false == false",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "true == false",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "true != false",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "false != true",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "(1 < 2) == true",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "(1 < 2) == false",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "(1 > 2) == true",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "(1 > 2) == false",
+                    CreateObject(ObjectKind.Boolean, true)
                 }
             };
 
