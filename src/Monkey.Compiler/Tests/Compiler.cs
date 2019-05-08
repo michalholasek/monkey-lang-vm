@@ -24,6 +24,7 @@ namespace Monkey.Tests
         [DataRow("5 * 2 + 10")]
         [DataRow("5 + 2 * 10")]
         [DataRow("5 * (2 + 10)")]
+        [DataRow("-1")]
         public void IntegerExpression(string source)
         {
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
@@ -39,6 +40,7 @@ namespace Monkey.Tests
         [DataRow("1 != 2")]
         [DataRow("true == false")]
         [DataRow("true != false")]
+        [DataRow("!true")]
         public void BooleanExpression(string source)
         {
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;

@@ -85,6 +85,15 @@ namespace Monkey.Tests.Fixtures
                         10, // !=
                         3  // Pop
                     }
+                },
+                {
+                    "!true",
+                    new List<byte>
+                    {
+                        7,  // true
+                        13, // Bang
+                        3   // Pop
+                    }
                 }
             };
             
@@ -212,6 +221,15 @@ namespace Monkey.Tests.Fixtures
                         2,        // +
                         5,        // *
                         3         // Pop
+                    }
+                },
+                {
+                    "-1",
+                    new List<byte>
+                    {
+                        1, 1, 0, // 1
+                        12,      // -
+                        3        // Pop
                     }
                 }
             };

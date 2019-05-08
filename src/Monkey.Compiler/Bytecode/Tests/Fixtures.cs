@@ -19,7 +19,9 @@ namespace Monkey.Tests.Fixtures
             { 8, new Opcode.Definition { Name = "False", OperandLengths = new List<int> { 0 } }},
             { 9, new Opcode.Definition { Name = "Equal", OperandLengths = new List<int> { 0 } }},
             { 10, new Opcode.Definition { Name = "NotEqual", OperandLengths = new List<int> { 0 } }},
-            { 11, new Opcode.Definition { Name = "GreaterThan", OperandLengths = new List<int> { 0 } }}
+            { 11, new Opcode.Definition { Name = "GreaterThan", OperandLengths = new List<int> { 0 } }},
+            { 12, new Opcode.Definition { Name = "Minus", OperandLengths = new List<int> { 0 } }},
+            { 13, new Opcode.Definition { Name = "Bang", OperandLengths = new List<int> { 0 } }}
         };
     }
 

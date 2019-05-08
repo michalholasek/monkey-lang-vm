@@ -29,6 +29,8 @@ namespace Monkey
                     return CompileIntegerExpression(expression, previousState);
                 case ExpressionKind.Boolean:
                     return CompileBooleanExpression(expression, previousState);
+                case ExpressionKind.Prefix:
+                    return CompilePrefixExpression(expression, previousState);
                 case ExpressionKind.Infix:
                     return CompileInfixExpression(expression, previousState);
             }
@@ -115,6 +117,33 @@ namespace Monkey
                 .Assign(previousState)
                 .Constant(integerExpression.Value.ToString(), CreateObject(ObjectKind.Integer, integerExpression.Value))
                 .Instructions(instruction)
+                .Create();
+        }
+
+        private CompilerState CompilePrefixExpression(Expression expression, CompilerState previousState)
+        {
+            var prefixExpression = (PrefixExpression)expression;
+            var rightExpressionState = CompileExpressionInner(prefixExpression.Right, previousState);
+            var op = ((InfixExpression)prefixExpression.Left).Operator;
+
+            List<byte> operatorInstruction;
+            
+            switch (op.Kind)
+            {
+                case SyntaxKind.Minus:
+                    operatorInstruction = Bytecode.Create(12, new List<int> {});
+                    break;
+                case SyntaxKind.Bang:
+                    operatorInstruction = Bytecode.Create(13, new List<int> {});
+                    break;
+                default:
+                    operatorInstruction = new List<byte>();
+                    break;
+            }
+
+            return Factory.CompilerState()
+                .Assign(rightExpressionState)
+                .Instructions(operatorInstruction)
                 .Create();
         }
     }

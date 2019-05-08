@@ -24,7 +24,9 @@ namespace Monkey
             { 8, new Definition { Name = "False", OperandLengths = new List<int> { 0 } }},
             { 9, new Definition { Name = "Equal", OperandLengths = new List<int> { 0 } }},
             { 10, new Definition { Name = "NotEqual", OperandLengths = new List<int> { 0 } }},
-            { 11, new Definition { Name = "GreaterThan", OperandLengths = new List<int> { 0 } }}
+            { 11, new Definition { Name = "GreaterThan", OperandLengths = new List<int> { 0 } }},
+            { 12, new Definition { Name = "Minus", OperandLengths = new List<int> { 0 } }},
+            { 13, new Definition { Name = "Bang", OperandLengths = new List<int> { 0 } }}
         };
 
         public static Definition Find(byte code)

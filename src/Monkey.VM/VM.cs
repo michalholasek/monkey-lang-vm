@@ -69,6 +69,12 @@ namespace Monkey
                         left = internalState.Stack.Pop();
                         ExecuteBinaryOperation(internalState.Opcode, left, right);
                         break;
+                    case 12: // Opcode.Minus
+                        ExecuteMinusOperation();
+                        break;
+                    case 13: // Opcode.Bang
+                        ExecuteBangOperation();
+                        break;
                 }
             }
         }
@@ -83,6 +89,29 @@ namespace Monkey
             }
 
             return BitConverter.ToInt16(buffer, startIndex: 0).ToString();
+        }
+
+        private void ExecuteBangOperation()
+        {
+            Object operand = internalState.Stack.Pop();
+
+            if (operand.Kind != ObjectKind.Boolean)
+            {
+                internalState.Stack.Push(Invariants[false]);
+                return;
+            }
+
+            bool value = (bool)operand.Value;
+
+            switch (value)
+            {
+                case true:
+                    internalState.Stack.Push(Invariants[false]);
+                    break;
+                case false:
+                    internalState.Stack.Push(Invariants[true]);
+                    break;
+            }
         }
 
         private void ExecuteBooleanOperation(byte op)
@@ -121,6 +150,20 @@ namespace Monkey
                     internalState.Stack.Push(left != right ? Invariants[true] : Invariants[false]);
                     break;
             }
+        }
+
+        private void ExecuteMinusOperation()
+        {
+            Object operand = internalState.Stack.Pop();
+
+            if (operand.Kind != ObjectKind.Integer)
+            {
+                return;
+            }
+
+            int value = (int)operand.Value;
+
+            internalState.Stack.Push(CreateObject(ObjectKind.Integer, -value));
         }
 
         private void ExecuteBinaryIntegerOperation(byte op, int left, int right)

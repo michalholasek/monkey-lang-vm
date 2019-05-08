@@ -87,6 +87,30 @@ namespace Monkey.Tests.Fixtures
                 {
                     "(1 > 2) == false",
                     CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "!true",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "!false",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "!5",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "!!true",
+                    CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "!!false",
+                    CreateObject(ObjectKind.Boolean, false)
+                },
+                {
+                    "!!5",
+                    CreateObject(ObjectKind.Boolean, true)
                 }
             };
 
@@ -131,6 +155,22 @@ namespace Monkey.Tests.Fixtures
                 {
                     "5 * (2 + 10)",
                     CreateObject(ObjectKind.Integer, 60)
+                },
+                {
+                    "-5",
+                    CreateObject(ObjectKind.Integer, -5)
+                },
+                {
+                    "-10",
+                    CreateObject(ObjectKind.Integer, -10)
+                },
+                {
+                    "-50 + 100 + -50",
+                    CreateObject(ObjectKind.Integer, 0)
+                },
+                {
+                    "(5 + 10 * 2 + 15 / 3) * 2 + -10",
+                    CreateObject(ObjectKind.Integer, 50)
                 }
             };
         }
