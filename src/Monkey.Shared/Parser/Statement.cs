@@ -12,6 +12,7 @@ namespace Monkey.Shared
         {
             return Factory.StatementBuilder()
                 .Assign(previousState)
+                .Errors(new List<AssertionError>())
                 .Create()
                 .DetermineKind()
                 .DetermineTokenRange()
@@ -120,15 +121,18 @@ namespace Monkey.Shared
                 return this;
             }
 
-            internalState.Expression = Factory.ExpressionBuilder()
-                .Position(internalState.Position)
-                .Range(internalState.Range)
-                .Statement(internalState)
-                .Tokens(internalState.Tokens)
-                .Create()
-                .DetermineTokenRange()
-                .Result()
-                .Expression;
+            var expressionParseResult = Factory.ExpressionBuilder()
+                    .Errors(internalState.Errors)
+                    .Position(internalState.Position)
+                    .Range(internalState.Range)
+                    .Statement(internalState)
+                    .Tokens(internalState.Tokens)
+                    .Create()
+                    .DetermineTokenRange()
+                    .Result();
+
+            internalState.Expression = expressionParseResult.Expression;
+            internalState.Errors.AddRange(expressionParseResult.Errors);
 
             return this;
         }

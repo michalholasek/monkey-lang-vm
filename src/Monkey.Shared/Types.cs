@@ -6,8 +6,7 @@ namespace Monkey.Shared
 {
     public struct AssertionError
     {
-        [JsonProperty]
-        string Message { get; set; }
+        public string Message { get; set; }
 
         public AssertionError(string message)
         {

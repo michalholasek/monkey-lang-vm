@@ -33,11 +33,21 @@ namespace Monkey.Shared
                     .Assign(ParsePrefixExpression(currentState))
                     .Create();
 
+            if (newState.Errors.Count > 0)
+            {
+                return newState;
+            }
+
             while (newState.Position < currentState.Tokens.Count && currentState.Precedence < newState.Precedence)
             {
                 newState = Factory.ExpressionParseResult()
                     .Assign(ParseInfixExpression(newState))
                     .Create();
+
+                if (newState.Errors.Count > 0)
+                {
+                    return newState;
+                }
             }
 
             return newState;
@@ -89,6 +99,16 @@ namespace Monkey.Shared
         private static ExpressionParseResult ExpandPrefixExpression(ExpressionParseResult currentState)
         {
             var op = currentState.Tokens.Skip(currentState.Position).Take(1).First();
+
+            var errors = Assert.PrefixExpressionOperator(op);
+
+            if (errors.Count > 0)
+            {
+                return Factory.ExpressionParseResult()
+                    .Assign(currentState)
+                    .Errors(errors)
+                    .Create();
+            }
 
             var newState = Factory.ExpressionParseResult()
                     .Assign(currentState)
@@ -527,6 +547,7 @@ namespace Monkey.Shared
         public ExpressionParseResult Result()
         {
             var initialState = Factory.ExpressionParseResult()
+                    .Errors(internalState.Errors)
                     .Position(internalState.Position)
                     .Precedence(Precedence.Lowest)
                     .Tokens(internalState.Tokens)

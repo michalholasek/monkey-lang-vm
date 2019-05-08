@@ -14,9 +14,18 @@ namespace Monkey
                     .Assign(previousState)
                     .Create();
 
-            var statements = ((Program)newState.Node).Statements;
+            var program = (Program)newState.Node;
 
-            statements.ForEach(statement => {
+            if (program.Errors.Count > 0)
+            {
+                return Factory.CompilerState()
+                    .Assign(newState)
+                    .Errors(program.Errors)
+                    .Create();
+            }
+
+            program.Statements.ForEach(statement =>
+            {
                 newState = Factory.CompilerState()
                     .Assign(newState)
                     .Node(statement)

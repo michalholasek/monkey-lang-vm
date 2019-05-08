@@ -185,5 +185,14 @@ namespace Monkey.Tests
             var actual = new Parser().Parse(tokens);
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Hash[source]);
         }
+
+        [TestMethod]
+        [DataRow("...")]
+        public void Errors(string source)
+        {
+            var tokens = new Scanner().Scan(source);
+            var actual = new Parser().Parse(tokens);
+            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Expressions.Errors[source]);
+        }
     }
 }

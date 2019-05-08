@@ -39,6 +39,7 @@ namespace Monkey.Shared
 
             internal class ExpressionBuilderFactory
             {
+                private List<AssertionError> errors { get; set; }
                 private Expression expression { get; set; }
                 private int position { get; set; }
                 private int range { get; set; }
@@ -49,6 +50,7 @@ namespace Monkey.Shared
                 {
                     var initialState = new ExpressionBuilderState
                     {
+                        Errors = errors,
                         Expression = expression,
                         Position = position,
                         Range = range,
@@ -57,6 +59,12 @@ namespace Monkey.Shared
                     };
 
                     return new ExpressionBuilder(initialState);
+                }
+
+                public ExpressionBuilderFactory Errors(List<AssertionError> errors)
+                {
+                    this.errors = errors;
+                    return this;
                 }
 
                 public ExpressionBuilderFactory Expression(Expression expression)
@@ -92,6 +100,7 @@ namespace Monkey.Shared
 
             internal class ExpressionParseResultFactory
             {
+                private List<AssertionError> errors { get; set; }
                 private Expression expression { get; set; }
                 private int position { get; set; }
                 private Precedence precedence { get; set; }
@@ -99,6 +108,7 @@ namespace Monkey.Shared
 
                 public ExpressionParseResultFactory Assign(ExpressionParseResult previousState)
                 {
+                    errors = previousState.Errors;
                     expression = previousState.Expression;
                     position = previousState.Position;
                     precedence = previousState.Precedence;
@@ -111,11 +121,18 @@ namespace Monkey.Shared
                 {
                     return new ExpressionParseResult
                     {
+                        Errors = errors,
                         Expression = expression,
                         Position = position,
                         Precedence = precedence,
                         Tokens = tokens
                     };
+                }
+
+                public ExpressionParseResultFactory Errors(List<AssertionError> errors)
+                {
+                    this.errors = errors;
+                    return this;
                 }
 
                 public ExpressionParseResultFactory Expression(Expression expression)
@@ -293,6 +310,12 @@ namespace Monkey.Shared
                 public StatementBuilder Create()
                 {
                     return new StatementBuilder(previousState);
+                }
+
+                public StatementBuilderFactory Errors(List<AssertionError> errors)
+                {
+                    this.previousState.Errors = errors;
+                    return this;
                 }
             }
             

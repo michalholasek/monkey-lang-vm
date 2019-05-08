@@ -15,6 +15,7 @@ namespace Monkey
             initialState = new CompilerState
             {
                 Constants = new Dictionary<string, Object>(),
+                Errors = new List<AssertionError>(),
                 Instructions = new List<byte>()
             };
         }

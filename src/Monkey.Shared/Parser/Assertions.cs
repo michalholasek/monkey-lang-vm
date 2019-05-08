@@ -7,6 +7,21 @@ namespace Monkey.Shared
     {
         internal static class Assert
         {
+            internal static List<AssertionError> PrefixExpressionOperator(Token op)
+            {
+                var errors = new List<AssertionError>();
+
+                switch (op.Kind)
+                {
+                    case SyntaxKind.Bang:
+                    case SyntaxKind.Minus:
+                        return errors;
+                    default:
+                        errors.Add(Error.CreateParsingError(AssertionErrorKind.UnknownOperator, op, "expected Bang (!) or Minus (-)"));
+                        return errors;
+                }
+            }
+
             internal static List<AssertionError> Syntax(StatementBuilderState currentState)
             {
                 switch (currentState.Kind)

@@ -13,6 +13,7 @@ namespace Monkey
             internal class CompilerStateFactory
             {
                 private Dictionary<string, Object> constants;
+                private List<AssertionError> errors;
                 private Expression expression;
                 private Node node;
                 private List<byte> instructions;
@@ -20,6 +21,7 @@ namespace Monkey
                 public CompilerStateFactory Assign(CompilerState previousState)
                 {
                     constants = previousState.Constants;
+                    errors = previousState.Errors;
                     expression = previousState.Expression;
                     node = previousState.Node;
                     instructions = previousState.Instructions;
@@ -37,6 +39,12 @@ namespace Monkey
 
                     constants.Add(identifier, value);
 
+                    return this;
+                }
+
+                public CompilerStateFactory Errors(List<AssertionError> errors)
+                {
+                    this.errors.AddRange(errors);
                     return this;
                 }
 
@@ -63,6 +71,7 @@ namespace Monkey
                     return new CompilerState
                     {
                         Constants = constants,
+                        Errors = errors,
                         Node = node,
                         Instructions = instructions
                     };

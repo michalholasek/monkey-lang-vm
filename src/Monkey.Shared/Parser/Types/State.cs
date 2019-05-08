@@ -23,6 +23,7 @@ namespace Monkey.Shared
 
     internal class ExpressionBuilderState
     {
+        public List<AssertionError> Errors { get; set; }
         public Expression Expression { get; set; }
         public int Position { get; set; }
         public int Range { get; set; }
@@ -32,6 +33,7 @@ namespace Monkey.Shared
 
     public class ExpressionParseResult
     {
+        public List<AssertionError> Errors { get; set; }
         public Expression Expression { get; set; }
         public int Position { get; set; }
         public Precedence Precedence { get; set; }

@@ -48,12 +48,21 @@ namespace Monkey.Repl
                 var source = string.Join(" ", commands);
                 var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-                vm.Run(compilationResult.Instructions, compilationResult.Constants);
-
                 commands.Clear();
-
                 Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 1);
-                Console.WriteLine(vm.LastStackElement.Value.ToString());
+
+                if (compilationResult.Errors.Count > 0)
+                {
+                    compilationResult.Errors.ForEach(error =>
+                    {
+                        Console.WriteLine(error.Message);
+                    });
+                }
+                else
+                {
+                    vm.Run(compilationResult.Instructions, compilationResult.Constants);
+                    Console.WriteLine(vm.LastStackElement.Value.ToString());
+                }
             }
             else
             {
