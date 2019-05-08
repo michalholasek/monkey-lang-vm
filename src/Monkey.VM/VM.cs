@@ -31,9 +31,6 @@ namespace Monkey
                 Stack = new VirtualMachineStack()
             };
 
-            Object left;
-            Object right;
-
             while (internalState.InstructionPointer < internalState.Instructions.Count)
             {
                 internalState.Opcode = internalState.Instructions[internalState.InstructionPointer];
@@ -42,8 +39,7 @@ namespace Monkey
                 switch (internalState.Opcode)
                 {
                     case 1:  // Opcode.Constant
-                        internalState.Stack.Push(internalState.Constants[DecodeOperand(2)]);
-                        internalState.InstructionPointer += 2;
+                        ExecuteConstantOperation();
                         break;
                     case 3:  // Opcode.Pop
                         internalState.Stack.Pop();
@@ -52,22 +48,16 @@ namespace Monkey
                     case 4:  // Opcode.Subtract
                     case 5:  // Opcode.Multiply
                     case 6:  // Opcode.Divide
-                        right = internalState.Stack.Pop();
-                        left = internalState.Stack.Pop();
-                        ExecuteBinaryOperation(internalState.Opcode, left, right);
+                    case 9:  // Opcode.Equal
+                    case 10: // Opcode.NotEqual
+                    case 11: // Opcode.GreaterThan
+                        ExecuteBinaryOperation(internalState.Opcode);
                         break;
                     case 7:  // Opcode.True
                         ExecuteBooleanOperation(internalState.Opcode);
                         break;
                     case 8:  // Opcode.False
                         ExecuteBooleanOperation(internalState.Opcode);
-                        break;
-                    case 9:  // Opcode.Equal
-                    case 10: // Opcode.NotEqual
-                    case 11: // Opcode.GreaterThan
-                        right = internalState.Stack.Pop();
-                        left = internalState.Stack.Pop();
-                        ExecuteBinaryOperation(internalState.Opcode, left, right);
                         break;
                     case 12: // Opcode.Minus
                         ExecuteMinusOperation();
@@ -127,8 +117,11 @@ namespace Monkey
             }
         }
 
-        private void ExecuteBinaryOperation(byte op, Object left, Object right)
+        private void ExecuteBinaryOperation(byte op)
         {
+            Object right = internalState.Stack.Pop();
+            Object left = internalState.Stack.Pop();
+
             if (left.Kind == ObjectKind.Integer && right.Kind == ObjectKind.Integer)
             {
                 ExecuteBinaryIntegerOperation(op, (int)left.Value, (int)right.Value);
@@ -150,6 +143,12 @@ namespace Monkey
                     internalState.Stack.Push(left != right ? Invariants[true] : Invariants[false]);
                     break;
             }
+        }
+
+        private void ExecuteConstantOperation()
+        {
+            internalState.Stack.Push(internalState.Constants[DecodeOperand(2)]);
+            internalState.InstructionPointer += 2;
         }
 
         private void ExecuteMinusOperation()
