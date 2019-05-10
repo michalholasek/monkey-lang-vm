@@ -30,12 +30,12 @@ namespace Monkey.Repl
         {
             Console.WriteLine("Welcome to monkey-lang REPL!");
 
-            var condition = true;
+            var run = true;
 
-            while (condition)
+            while (run)
             {
                 Promt();
-                condition = HandleCommand(Console.ReadLine());
+                run = HandleCommand(Console.ReadLine());
             }
 
             Console.WriteLine("Exiting monkey-lang REPL...");
