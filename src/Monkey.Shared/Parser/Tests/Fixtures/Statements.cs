@@ -24,7 +24,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError("invalid token(6, 1): got Let, expected Identifier")
+                        new AssertionError("unexpected token: let let<-- = 0;")
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
@@ -47,7 +47,7 @@ namespace Monkey.Tests.Fixtures
                  {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError("unexpected token(9, 1): got Comma")
+                        new AssertionError("unexpected token: return ,<-- ;")
                     },
                     Kind = NodeKind.Program,
                     Position = 0,

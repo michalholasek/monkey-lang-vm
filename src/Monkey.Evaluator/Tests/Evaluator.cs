@@ -76,6 +76,7 @@ namespace Monkey.Tests
         [DataRow("!!true")]
         [DataRow("!!false")]
         [DataRow("!!5")]
+        [DataRow("![]")]
         public void PrefixExpression(string source)
         {
             var env = new Environment();
@@ -204,6 +205,8 @@ namespace Monkey.Tests
         [DataRow("let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i];")]
         [DataRow("[1, 2, 3][3]")]
         [DataRow("[1, 2, 3][-1]")]
+        [DataRow("true[1]")]
+        [DataRow("[1, 2, 3][true]")]
         public void ArrayExpression(string source)
         {
             var env = new Environment();

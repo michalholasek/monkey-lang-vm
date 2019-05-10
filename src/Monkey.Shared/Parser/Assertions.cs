@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Monkey.Shared
 {
@@ -7,9 +8,19 @@ namespace Monkey.Shared
     {
         internal static class Assert
         {
-            internal static List<AssertionError> PrefixExpressionOperator(Token op)
+            internal static List<AssertionError> PrefixExpressionOperator(ExpressionParseResult currentState, Token op)
             {
                 var errors = new List<AssertionError>();
+
+                var info = new ErrorInfo
+                {
+                    Actual = op.Kind,
+                    Expected = new List<SyntaxKind> { SyntaxKind.Bang, SyntaxKind.Minus },
+                    Kind = ErrorKind.UnknownOperator,
+                    Position = currentState.Position,
+                    Source = ErrorSource.Parser,
+                    Tokens = currentState.Tokens
+                };
 
                 switch (op.Kind)
                 {
@@ -17,7 +28,7 @@ namespace Monkey.Shared
                     case SyntaxKind.Minus:
                         return errors;
                     default:
-                        errors.Add(Error.CreateParsingError(AssertionErrorKind.UnknownOperator, op, "expected Bang (!) or Minus (-)"));
+                        errors.Add(Error.Create(info));
                         return errors;
                 }
             }
@@ -41,19 +52,33 @@ namespace Monkey.Shared
                 var assignToken = currentState.Tokens[currentState.Position + Skip.Let + Skip.Identifier];
                 var errors = new List<AssertionError>();
 
+                var info = new ErrorInfo
+                {
+                    Kind = ErrorKind.UnexpectedToken,
+                    Position = currentState.Position + Skip.Let,
+                    Source = ErrorSource.Parser,
+                    Tokens = currentState.Tokens
+                };
+
                 if (identifierToken == null || assignToken == null)
                 {
                     var eofToken = currentState.Tokens[currentState.Tokens.Count - 1];
-                    errors.Add(Error.CreateAssertionError(AssertionErrorKind.UnexpectedToken, eofToken, SyntaxKind.EOF));
+                    info.Actual = eofToken.Kind;
+                    errors.Add(Error.Create(info));
                     return errors;
                 }
 
-                if (identifierToken.Kind != SyntaxKind.Identifier) {
-                    errors.Add(Error.CreateAssertionError(AssertionErrorKind.InvalidToken, identifierToken, SyntaxKind.Identifier));
+                if (identifierToken.Kind != SyntaxKind.Identifier)
+                {
+                    info.Actual = identifierToken.Kind;
+                    errors.Add(Error.Create(info));
                 }
 
-                if (assignToken.Kind != SyntaxKind.Assign) {
-                    errors.Add(Error.CreateAssertionError(AssertionErrorKind.InvalidToken, assignToken, SyntaxKind.Assign));
+                if (assignToken.Kind != SyntaxKind.Assign)
+                {
+                    info.Actual = assignToken.Kind;
+                    info.Position = info.Position + Skip.Identifier;
+                    errors.Add(Error.Create(info));
                 }
 
                 return errors;
@@ -61,13 +86,21 @@ namespace Monkey.Shared
 
             private static List<AssertionError> AssertReturnStatementSyntax(StatementParseResultBuilderState currentState)
             {
-                var nextToken = currentState.Tokens[currentState.Position + Skip.Return];
+                var nextToken = currentState.Tokens.Skip(currentState.Position + Skip.Return).Take(1).FirstOrDefault();
                 var errors = new List<AssertionError>();
+
+                var info = new ErrorInfo
+                {
+                    Kind = ErrorKind.UnexpectedToken,
+                    Position = currentState.Position + Skip.Return,
+                    Source = ErrorSource.Parser,
+                    Tokens = currentState.Tokens
+                };
 
                 if (nextToken == null)
                 {
                     var eofToken = currentState.Tokens[currentState.Tokens.Count - 1];
-                    errors.Add(Error.CreateAssertionError(AssertionErrorKind.UnexpectedToken, eofToken));
+                    errors.Add(Error.Create(info));
                     return errors;
                 }
 
@@ -84,7 +117,8 @@ namespace Monkey.Shared
                     case SyntaxKind.Semicolon:
                         return errors;
                     default:
-                        errors.Add(Error.CreateAssertionError(AssertionErrorKind.UnexpectedToken, nextToken));
+                        info.Actual = nextToken.Kind;
+                        errors.Add(Error.Create(info));
                         return errors;
                 }
             }

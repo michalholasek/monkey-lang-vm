@@ -14,7 +14,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "unknown operator: got Illegal (.), expected Bang (!) or Minus (-)" }
+                        new AssertionError { Message = "unknown operator: .<-- . ., expected Bang, Minus" }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,

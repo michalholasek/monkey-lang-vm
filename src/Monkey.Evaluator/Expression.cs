@@ -97,6 +97,28 @@ namespace Monkey
 
         private static Object EvaluateArrayIndexExpression(Object array, Object index)
         {
+            if (array.Kind != ObjectKind.Array)
+            {
+                return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                {
+                    Code = ErrorCode.ArrayExpressionEvaluation,
+                    Offenders = new List<object> { array, index },
+                    Kind = ErrorKind.InvalidType,
+                    Source = ErrorSource.Evaluator
+                }));
+            }
+            
+            if (index.Kind != ObjectKind.Integer)
+            {
+                return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                {
+                    Code = ErrorCode.ArrayIndexExpressionEvaluation,
+                    Offenders = new List<object> { array, index },
+                    Kind = ErrorKind.InvalidType,
+                    Source = ErrorSource.Evaluator
+                }));
+            }
+            
             var elements = (List<Object>)array.Value;
             var indexValue = (int)index.Value;
 
@@ -119,11 +141,13 @@ namespace Monkey
                 case ObjectKind.Boolean:
                     return CreateObject(ObjectKind.Boolean, !(bool)obj.Value);
                 default:
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidType, obj.Kind)
-                    );
+                    return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                    {
+                        Code = ErrorCode.BangOperatorExpressionEvaluation,
+                        Offenders = new List<object> { obj },
+                        Kind = ErrorKind.InvalidType,
+                        Source = ErrorSource.Evaluator
+                    }));
             }
         }
 
@@ -141,11 +165,13 @@ namespace Monkey
                 case SyntaxKind.NotEqual:
                     return CreateObject(ObjectKind.Boolean, left != right);
                 default:
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.UnknownOperator, op.Kind)
-                    );
+                    return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                    {
+                        Code = ErrorCode.BooleanInfixExpressionEvaluation,
+                        Offenders = new List<object> { left, op, right },
+                        Kind = ErrorKind.UnknownOperator,
+                        Source = ErrorSource.Evaluator
+                    }));
             }
         }
 
@@ -229,11 +255,13 @@ namespace Monkey
         {
             if (key.Kind != ObjectKind.Integer && key.Kind != ObjectKind.Boolean && key.Kind != ObjectKind.String)
             {
-                return CreateObject
-                (
-                    ObjectKind.Error,
-                    Error.CreateEvaluationError(AssertionErrorKind.InvalidIndex, key.Kind)
-                );
+                return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                {
+                    Code = ErrorCode.HashIndexExpressionEvaluation,
+                    Offenders = new List<object> { hash, key },
+                    Kind = ErrorKind.InvalidType,
+                    Source = ErrorSource.Evaluator
+                }));
             }
 
             var hashtable = (Dictionary<string, Object>)hash.Value;
@@ -268,11 +296,13 @@ namespace Monkey
                 return BuiltIn.Functions[value];
             }
 
-            return CreateObject
-            (
-                ObjectKind.Error,
-                Error.CreateEvaluationError(AssertionErrorKind.InvalidIdentifier, $"{value} not found")
-            );
+            return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+            {
+                Code = ErrorCode.IdentifierExpressionEvaluation,
+                Offenders = new List<object> { value },
+                Kind = ErrorKind.InvalidIdentifier,
+                Source = ErrorSource.Evaluator
+            }));
         }
 
         private static Object EvaluateIfElseExpression(Expression expression, IEnvironment env)
@@ -333,11 +363,13 @@ namespace Monkey
 
             if (left.Kind != right.Kind)
             {
-                return CreateObject
-                (
-                    ObjectKind.Error,
-                    Error.CreateEvaluationError(AssertionErrorKind.InvalidToken, actual: right.Kind, expected: left.Kind)
-                );
+                return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                {
+                    Code = ErrorCode.InfixExpressionEvaluation,
+                    Offenders = new List<object> { left, right },
+                    Kind = ErrorKind.InvalidType,
+                    Source = ErrorSource.Evaluator
+                }));
             }
 
             switch (left.Kind)
@@ -349,11 +381,13 @@ namespace Monkey
                 case ObjectKind.String:
                     return EvaluateStringInfixExpression((string)left.Value, infixExpression.Operator, (string)right.Value);
                 default:
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidType, left.Kind)
-                    );
+                    return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                    {
+                        Code = ErrorCode.InfixExpressionOperatorEvaluation,
+                        Offenders = new List<object> { left, infixExpression.Operator, right },
+                        Kind = ErrorKind.UnknownOperator,
+                        Source = ErrorSource.Evaluator
+                    }));
             }
         }
 
@@ -383,11 +417,13 @@ namespace Monkey
                 case SyntaxKind.NotEqual:
                     return CreateObject(ObjectKind.Boolean, left != right);
                 default:
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.UnknownOperator, op.Kind)
-                    );
+                    return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                    {
+                        Code = ErrorCode.InfixExpressionOperatorEvaluation,
+                        Offenders = new List<object> { left, op, right },
+                        Kind = ErrorKind.UnknownOperator,
+                        Source = ErrorSource.Evaluator
+                    }));
             }
         }
 
@@ -402,14 +438,13 @@ namespace Monkey
 
             if (value.Kind != ObjectKind.Integer)
             {
-                return CreateObject
-                (
-                    ObjectKind.Error,
-                    Error.CreateEvaluationError
-                    (
-                        AssertionErrorKind.InvalidToken, actual: value.Kind, expected: ObjectKind.Integer
-                    )
-                );
+                return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                {
+                    Code = ErrorCode.MinusOperatorExpressionEvaluation,
+                    Offenders = new List<object> { value },
+                    Kind = ErrorKind.InvalidType,
+                    Source = ErrorSource.Evaluator
+                }));
             }
 
             return CreateObject(ObjectKind.Integer, -(int)value.Value);
@@ -427,11 +462,13 @@ namespace Monkey
                 case SyntaxKind.Minus:
                     return EvaluateMinusOperatorExpression(prefixExpression.Right, env);
                 default:
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.UnknownOperator, op.Kind)
-                    );
+                    return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                    {
+                        Code = ErrorCode.UnknownOperator,
+                        Offenders = new List<object> { op },
+                        Kind = ErrorKind.UnknownOperator,
+                        Source = ErrorSource.Evaluator
+                    }));
             }
         }
 
@@ -451,11 +488,13 @@ namespace Monkey
                 case SyntaxKind.NotEqual:
                     return CreateObject(ObjectKind.Boolean, left != right);
                 default:
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.UnknownOperator, op.Kind)
-                    );
+                    return CreateObject(ObjectKind.Error, Error.Create(new ErrorInfo
+                    {
+                        Code = ErrorCode.StringExpressionOperatorEvaluation,
+                        Offenders = new List<object> { left, op, right },
+                        Kind = ErrorKind.UnknownOperator,
+                        Source = ErrorSource.Evaluator
+                    }));
             }
         }
     }

@@ -28,24 +28,33 @@ namespace Monkey
 
             private static Func<List<Object>, Object> Len = (List<Object> args) =>
             {
+                ErrorInfo info;
+
                 if (args == null || args.Count != 1)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInLenUnexpectedNoOfArguments,
+                        Kind = ErrorKind.InvalidArgument,
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 var obj = args.First();
 
                 if (obj.Kind != ObjectKind.Array && obj.Kind != ObjectKind.String)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInLenInvalidArgument,
+                        Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { obj },
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 switch (obj.Kind)
@@ -61,24 +70,33 @@ namespace Monkey
 
             private static Func<List<Object>, Object> First = (List<Object> args) =>
             {
+                ErrorInfo info;
+
                 if (args == null || args.Count != 1)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInFirstUnexpectedNoOfArguments,
+                        Kind = ErrorKind.InvalidArgument,
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 var obj = args.First();
 
                 if (obj.Kind != ObjectKind.Array)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInFirstInvalidArgument,
+                        Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { obj },
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 var array = (List<Object>)obj.Value;
@@ -88,24 +106,33 @@ namespace Monkey
 
             private static Func<List<Object>, Object> Last = (List<Object> args) =>
             {
+                ErrorInfo info;
+
                 if (args == null || args.Count != 1)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInLastUnexpectedNoOfArguments,
+                        Kind = ErrorKind.InvalidArgument,
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 var obj = args.First();
 
                 if (obj.Kind != ObjectKind.Array)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInLastInvalidArgument,
+                        Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { obj },
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 var array = (List<Object>)obj.Value;
@@ -115,24 +142,33 @@ namespace Monkey
 
             private static Func<List<Object>, Object> Rest = (List<Object> args) =>
             {
+                ErrorInfo info;
+
                 if (args == null || args.Count != 1)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInRestUnexpectedNoOfArguments,
+                        Kind = ErrorKind.InvalidArgument,
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 var obj = args.First();
 
                 if (obj.Kind != ObjectKind.Array)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInRestInvalidArgument,
+                        Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { obj },
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 var array = (List<Object>)obj.Value;
@@ -145,28 +181,38 @@ namespace Monkey
 
             private static Func<List<Object>, Object> Push = (List<Object> args) =>
             {
+                ErrorInfo info;
+
                 if (args == null || args.Count != 2)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, "unexpected number of arguments")
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInPushUnexpectedNoOfArguments,
+                        Kind = ErrorKind.InvalidArgument,
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 var obj = args.First();
+                var arg = args.Last();
 
                 if (obj.Kind != ObjectKind.Array)
                 {
-                    return CreateObject
-                    (
-                        ObjectKind.Error,
-                        Error.CreateEvaluationError(AssertionErrorKind.InvalidArgument, obj.Kind)
-                    );
+                    info = new ErrorInfo
+                    {
+                        Code = ErrorCode.BuiltInPushInvalidArgument,
+                        Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { obj, arg },
+                        Source = ErrorSource.Evaluator
+                    };
+
+                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
                 }
 
                 var array = (List<Object>)obj.Value;
-                array.Add(args.Last());
+                array.Add(arg);
 
                 return CreateObject(ObjectKind.Array, array);
             };

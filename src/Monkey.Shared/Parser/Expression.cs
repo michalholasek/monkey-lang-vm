@@ -100,7 +100,7 @@ namespace Monkey.Shared
         {
             var op = currentState.Tokens.Skip(currentState.Position).Take(1).First();
 
-            var errors = Assert.PrefixExpressionOperator(op);
+            var errors = Assert.PrefixExpressionOperator(currentState, op);
 
             if (errors.Count > 0)
             {

@@ -333,6 +333,14 @@ namespace Monkey.Tests.Fixtures
                     Kind = ObjectKind.Boolean,
                     Value = true
                 }
+            },
+            {
+                "![]",
+                new Object
+                {
+                    Kind = ObjectKind.Error,
+                    Value = new AssertionError("invalid type: ![]<-- , expected Boolean or Integer")
+                }
             }
         };
 
@@ -483,7 +491,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid token: got Boolean, expected Integer")
+                    Value = new AssertionError("invalid type: types of 5 and true do not match")
                 }
             },
             {
@@ -491,7 +499,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid token: got Boolean, expected Integer")
+                    Value = new AssertionError("invalid type: types of 5 and true do not match")
                 }
             },
             {
@@ -499,7 +507,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid token: got Boolean, expected Integer")
+                    Value = new AssertionError("invalid type: -true<-- , operator Minus is not supported for type Boolean")
                 }
             },
             {
@@ -507,7 +515,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("unknown operator: got Plus")
+                    Value = new AssertionError("unknown operator: true +<-- false")
                 }
             },
             {
@@ -515,7 +523,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("unknown operator: got Plus")
+                    Value = new AssertionError("unknown operator: true +<-- false")
                 }
             },
             {
@@ -523,7 +531,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("unknown operator: got Plus")
+                    Value = new AssertionError("unknown operator: true +<-- false")
                 }
             },
             {
@@ -748,6 +756,22 @@ namespace Monkey.Tests.Fixtures
                     Kind = ObjectKind.Null,
                     Value = null
                 }
+            },
+            {
+                "[1, 2, 3][true]",
+                new Object
+                {
+                    Kind = ObjectKind.Error,
+                    Value = new AssertionError("invalid type: [1, 2, 3][true<-- ], expected Integer")
+                }
+            },
+            {
+                "true[1]",
+                new Object
+                {
+                    Kind = ObjectKind.Error,
+                    Value = new AssertionError("invalid type: true<-- [1], expected Array")
+                }
             }
         };
 
@@ -830,7 +854,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid index: got Function")
+                    Value = new AssertionError("invalid type: { name: monkey }[fn(x) { ... }<-- ], expected Integer, Boolean, or String")
                 }
             }
         };
@@ -842,7 +866,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: unexpected number of arguments")
+                    Value = new AssertionError("invalid argument: len(), unexpected number of arguments")
                 }
             },
             {
@@ -850,7 +874,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: got Integer")
+                    Value = new AssertionError("invalid argument: len(1), expected Array or String")
                 }
             },
             {
@@ -882,7 +906,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: unexpected number of arguments")
+                    Value = new AssertionError("invalid argument: first(), unexpected number of arguments")
                 }
             },
             {
@@ -890,7 +914,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: got Integer")
+                    Value = new AssertionError("invalid argument: first(1), expected Array")
                 }
             },
             {
@@ -914,7 +938,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: unexpected number of arguments")
+                    Value = new AssertionError("invalid argument: last(), unexpected number of arguments")
                 }
             },
             {
@@ -922,7 +946,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: got Integer")
+                    Value = new AssertionError("invalid argument: last(1), expected Array")
                 }
             },
             {
@@ -946,7 +970,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: unexpected number of arguments")
+                    Value = new AssertionError("invalid argument: rest(), unexpected number of arguments")
                 }
             },
             {
@@ -954,7 +978,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: got Integer")
+                    Value = new AssertionError("invalid argument: rest(1), expected Array")
                 }
             },
             {
@@ -990,7 +1014,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: unexpected number of arguments")
+                    Value = new AssertionError("invalid argument: push(), unexpected number of arguments")
                 }
             },
             {
@@ -998,7 +1022,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: got Integer")
+                    Value = new AssertionError("invalid argument: push(1, 2), expected Array as first argument")
                 }
             },
             {
@@ -1006,7 +1030,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: unexpected number of arguments")
+                    Value = new AssertionError("invalid argument: push(), unexpected number of arguments")
                 }
             },
             {
