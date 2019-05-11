@@ -38,7 +38,7 @@ namespace Monkey.Shared
         MinusOperatorExpressionEvaluation,
         StringExpressionOperatorEvaluation,
         UnexpectedNumberOfArguments,
-        UnknownOperator
+        UnknownOperator,
     }
 
     public enum ErrorKind
@@ -236,42 +236,44 @@ namespace Monkey.Shared
 
         private static AssertionError CreateParseError(ErrorInfo info)
         {
-            var sb = new StringBuilder();
+            return new AssertionError($"{ErrorKindString[info.Kind]}: {ComposeExpressionString(info)}");
+        }
 
-            sb.Append($"{ErrorKindString[info.Kind]}: ");
+        private static string ComposeExpressionString(ErrorInfo info)
+        {
+            var sb = new StringBuilder();
+            Token token;
 
             for (var i = 0; i < info.Tokens.Count; i++)
             {
-                var token = info.Tokens[i];
+                token = info.Tokens[i];
+                sb.Append(token.Literal);
 
                 if (i == info.Position)
                 {
-                    sb.Append($"{token.Literal}<-- ");
+                    sb.Append("<-- ");
+                    continue;
                 }
-                else
-                {
-                    sb.Append($"{token.Literal}");
 
-                    var nextToken = i != info.Tokens.Count - 1 ?  info.Tokens[i + 1] : null;
-                    if (nextToken != null && nextToken.Kind != SyntaxKind.Semicolon && nextToken.Kind != SyntaxKind.EOF)
-                    {
+                if (i + 1 == info.Tokens.Count)
+                {
+                    break;
+                }
+
+                token = info.Tokens[i + 1];
+
+                switch (token.Kind)
+                {
+                    case SyntaxKind.Semicolon:
+                    case SyntaxKind.EOF:
+                        break;
+                    default:
                         sb.Append(" ");
-                    }
+                        break;
                 }
             }
 
-            if (info.Expected != null)
-            {
-                sb.Append(", expected ");
-
-                for (var i = 0; i < info.Expected.Count; i++)
-                {
-                    var kind = $"{Stringify.Kind(info.Expected[i])}";
-                    sb.Append(i != info.Expected.Count - 1 ? $"{kind}, " : $"{kind}");
-                }
-            }
-
-            return new AssertionError(sb.ToString());
+            return sb.ToString().Trim();
         }
     }
 }
