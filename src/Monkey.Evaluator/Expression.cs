@@ -41,21 +41,6 @@ namespace Monkey
             return newEnvironment;
         }
 
-        private static bool IsTruthy(Object obj)
-        {
-            switch (obj.Kind)
-            {
-                case ObjectKind.Boolean:
-                    return (bool)obj.Value;
-                case ObjectKind.Integer:
-                    return (int)obj.Value != 0 ? true : false;
-                case ObjectKind.String:
-                    return (string)obj.Value != String.Empty ? true : false;
-                default:
-                    return false;
-            }
-        }
-
         private static Object EvaluateExpression(Expression expression, IEnvironment env)
         {
             switch (expression.Kind)

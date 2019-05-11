@@ -173,6 +173,38 @@ namespace Monkey.Tests.Fixtures
                     CreateObject(ObjectKind.Integer, 50)
                 }
             };
+
+            public static Dictionary<string, Object> IfElse = new Dictionary<string, Object>
+            {
+                {
+                    "if (true) { 10; }",
+                    CreateObject(ObjectKind.Integer, 10)
+                },
+                {
+                    "if (true) { 10; } else { 20; }",
+                    CreateObject(ObjectKind.Integer, 10)
+                },
+                {
+                    "if (false) { 10; } else { 20; }",
+                    CreateObject(ObjectKind.Integer, 20)
+                },
+                {
+                    "if (1) { 10; }",
+                    CreateObject(ObjectKind.Integer, 10)
+                },
+                {
+                    "if (1 < 2) { 10; }",
+                    CreateObject(ObjectKind.Integer, 10)
+                },
+                {
+                    "if (1 < 2) { 10; } else { 20; }",
+                    CreateObject(ObjectKind.Integer, 10)
+                },
+                {
+                    "if (1 > 2) { 10; } else { 20; }",
+                    CreateObject(ObjectKind.Integer, 20)
+                }
+            };
         }
     }
 }

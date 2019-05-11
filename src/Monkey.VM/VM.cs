@@ -65,11 +65,17 @@ namespace Monkey
                     case 13: // Opcode.Bang
                         ExecuteBangOperation();
                         break;
+                    case 14: // Opcode.Jump
+                        ExecuteJumpOperation();
+                        break;
+                    case 15: // Opcode.JumpNotTruthy
+                        ExecuteJumpNotTruthyOperation();
+                        break;
                 }
             }
         }
 
-        private string DecodeOperand(int length)
+        private int DecodeOperand(int length)
         {
             var buffer = new byte[length];
 
@@ -78,7 +84,7 @@ namespace Monkey
                 buffer[i] = internalState.Instructions[internalState.InstructionPointer + i];
             }
 
-            return BitConverter.ToInt16(buffer, startIndex: 0).ToString();
+            return BitConverter.ToInt16(buffer, startIndex: 0);
         }
 
         private void ExecuteBangOperation()
@@ -147,8 +153,26 @@ namespace Monkey
 
         private void ExecuteConstantOperation()
         {
-            internalState.Stack.Push(internalState.Constants[DecodeOperand(2)]);
+            internalState.Stack.Push(internalState.Constants[DecodeOperand(2).ToString()]);
             internalState.InstructionPointer += 2;
+        }
+
+        private void ExecuteJumpOperation()
+        {
+            internalState.InstructionPointer = DecodeOperand(2);
+        }
+
+        private void ExecuteJumpNotTruthyOperation()
+        {
+            var position = DecodeOperand(2);
+
+            internalState.InstructionPointer += 2;
+            var condition = internalState.Stack.Pop();
+
+            if (!IsTruthy(condition))
+            {
+                internalState.InstructionPointer = position;
+            }
         }
 
         private void ExecuteMinusOperation()

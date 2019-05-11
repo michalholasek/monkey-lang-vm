@@ -72,5 +72,22 @@ namespace Monkey.Tests
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Boolean[source]);
         }
+
+        [TestMethod]
+        [DataRow("if (true) { 10; }")]
+        [DataRow("if (true) { 10; } else { 20; }")]
+        [DataRow("if (false) { 10; } else { 20; }")]
+        [DataRow("if (1) { 10; }")]
+        [DataRow("if (1 < 2) { 10; }")]
+        [DataRow("if (1 < 2) { 10; } else { 20; }")]
+        [DataRow("if (1 > 2) { 10; } else { 20; }")]
+        public void IfElseExpressions(string source)
+        {
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+
+            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+
+            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.IfElse[source]);
+        }
     }
 }

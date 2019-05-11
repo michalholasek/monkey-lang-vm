@@ -17,6 +17,21 @@ namespace Monkey
                     Value = value
                 };
             }
+
+            public static bool IsTruthy(Object obj)
+            {
+                switch (obj.Kind)
+                {
+                    case ObjectKind.Boolean:
+                        return (bool)obj.Value;
+                    case ObjectKind.Integer:
+                        return (int)obj.Value != 0 ? true : false;
+                    case ObjectKind.String:
+                        return (string)obj.Value != String.Empty ? true : false;
+                    default:
+                        return false;
+                }
+            }
         }
     }
 }
