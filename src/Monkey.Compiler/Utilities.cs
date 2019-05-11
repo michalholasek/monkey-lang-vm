@@ -8,6 +8,7 @@ namespace Monkey
     {
         private CompilerState RemoveLastPopInstruction(CompilerState previousState)
         {
+            // (3) Opcode.Pop
             var position = previousState.Instructions.LastIndexOf(3);
             previousState.Instructions.RemoveAt(position);
 
@@ -19,7 +20,7 @@ namespace Monkey
 
         private CompilerState ReplaceInstruction(int position, List<byte> instruction, CompilerState previousState)
         {
-            previousState.Instructions.RemoveRange(position, 3);
+            previousState.Instructions.RemoveRange(position, instruction.Count);
             previousState.Instructions.InsertRange(position, instruction);
             return previousState;
         }
