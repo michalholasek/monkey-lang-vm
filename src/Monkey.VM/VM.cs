@@ -14,7 +14,8 @@ namespace Monkey
         private static Dictionary<object, Object> Invariants = new Dictionary<object, Object>
         {
             { true, CreateObject(ObjectKind.Boolean, true) },
-            { false, CreateObject(ObjectKind.Boolean, false) }
+            { false, CreateObject(ObjectKind.Boolean, false) },
+            { "null", CreateObject(ObjectKind.Null, null) }
         };
 
         private VirtualMachineState internalState;
@@ -71,6 +72,9 @@ namespace Monkey
                     case 15: // Opcode.JumpNotTruthy
                         ExecuteJumpNotTruthyOperation();
                         break;
+                    case 16: // Opcode.Null
+                        ExecuteNullOperation();
+                        break;
                 }
             }
         }
@@ -91,21 +95,16 @@ namespace Monkey
         {
             Object operand = internalState.Stack.Pop();
 
-            if (operand.Kind != ObjectKind.Boolean)
+            switch (operand.Kind)
             {
-                internalState.Stack.Push(Invariants[false]);
-                return;
-            }
-
-            bool value = (bool)operand.Value;
-
-            switch (value)
-            {
-                case true:
-                    internalState.Stack.Push(Invariants[false]);
+                case ObjectKind.Boolean:
+                    internalState.Stack.Push(Invariants[!(bool)operand.Value]);
                     break;
-                case false:
+                case ObjectKind.Null:
                     internalState.Stack.Push(Invariants[true]);
+                    break;
+                default:
+                    internalState.Stack.Push(Invariants[false]);
                     break;
             }
         }
@@ -187,6 +186,11 @@ namespace Monkey
             int value = (int)operand.Value;
 
             internalState.Stack.Push(CreateObject(ObjectKind.Integer, -value));
+        }
+
+        private void ExecuteNullOperation()
+        {
+            internalState.Stack.Push(Invariants["null"]);
         }
 
         private void ExecuteBinaryIntegerOperation(byte op, int left, int right)

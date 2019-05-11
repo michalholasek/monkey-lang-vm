@@ -65,43 +65,40 @@ namespace Monkey
                 consequenceState = RemoveLastPopInstruction(consequenceState);
             }
 
+            // Create Opcode.Jump with transient offset, we are going
+            // to change it to correct one later
+            var jumpInstructionState = Emit(14, new List<int> { 9999 }, consequenceState);
+            var jumpInstructionPosition = jumpInstructionState.CurrentInstruction.Position;
+
+            var afterJumpInstructionState = ReplaceInstruction(
+                jumpNotTruthyInstructionPosition,
+                Bytecode.Create(15, new List<int> { jumpInstructionState.Instructions.Count }),
+                jumpInstructionState
+            );
+
+            CompilerState alternativeState;
+
             if (ifElseExpression.Alternative == null)
             {
-                // Set Opcode.JumpNotTruthy operand to correct offset and
-                // return compiled expression
-                return ReplaceInstruction(
-                    jumpNotTruthyInstructionPosition,
-                    Bytecode.Create(15, new List<int> { consequenceState.Instructions.Count }),
-                    consequenceState
-                );
+                // Emit Opcode.Null as alternative branch
+                alternativeState = Emit(16, new List<int>(), afterJumpInstructionState);
             }
             else
             {
-                // Create Opcode.Jump with transient offset, we are going
-                // to change it to correct one later
-                var jumpInstructionState = Emit(14, new List<int> { 9999 }, consequenceState);
-                var jumpInstructionPosition = jumpInstructionState.CurrentInstruction.Position;
-
-                var afterJumpInstructionState = ReplaceInstruction(
-                    jumpNotTruthyInstructionPosition,
-                    Bytecode.Create(15, new List<int> { jumpInstructionState.Instructions.Count }),
-                    jumpInstructionState
-                );
-
-                var alternativeState = CompileStatements(ifElseExpression.Alternative.Statements, afterJumpInstructionState);
+                alternativeState = CompileStatements(ifElseExpression.Alternative.Statements, afterJumpInstructionState);
                 
                 if (alternativeState.CurrentInstruction.Opcode == 3)
                 {
                     alternativeState = RemoveLastPopInstruction(alternativeState);
                 }
-
-                // Set Opcode.Jump operand to correct offset and return compiled expression
-                return ReplaceInstruction(
-                    jumpInstructionPosition,
-                    Bytecode.Create(14, new List<int> { alternativeState.Instructions.Count }),
-                    alternativeState
-                );
             }
+
+            // Set Opcode.Jump operand to correct offset and return compiled expression
+            return ReplaceInstruction(
+                jumpInstructionPosition,
+                Bytecode.Create(14, new List<int> { alternativeState.Instructions.Count }),
+                alternativeState
+            );
         }
 
         private CompilerState CompileInfixExpression(Expression expression, CompilerState previousState)

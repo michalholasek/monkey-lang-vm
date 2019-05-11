@@ -111,6 +111,10 @@ namespace Monkey.Tests.Fixtures
                 {
                     "!!5",
                     CreateObject(ObjectKind.Boolean, true)
+                },
+                {
+                    "!(if (false) { 5; })",
+                    CreateObject(ObjectKind.Boolean, true)
                 }
             };
 
@@ -202,6 +206,18 @@ namespace Monkey.Tests.Fixtures
                 },
                 {
                     "if (1 > 2) { 10; } else { 20; }",
+                    CreateObject(ObjectKind.Integer, 20)
+                },
+                {
+                    "if (1 > 2) { 10; }",
+                    CreateObject(ObjectKind.Null, null)
+                },
+                {
+                    "if (false) { 10; }",
+                    CreateObject(ObjectKind.Null, null)
+                },
+                {
+                    "if ((if (false) { 10; })) { 10; } else { 20; }",
                     CreateObject(ObjectKind.Integer, 20)
                 }
             };

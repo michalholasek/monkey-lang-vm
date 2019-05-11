@@ -240,12 +240,14 @@ namespace Monkey.Tests.Fixtures
                     "if (true) { 10; }; 3333;",
                     new List<byte>
                     {
-                        7,        // true
-                        15, 7, 0, // JumpNotTruthy, 7
-                        1, 10, 0, // 10
-                        3,        // Pop
-                        1, 5, 13, // 3333
-                        3         // Pop
+                        7,         // true
+                        15, 10, 0, // JumpNotTruthy, 10
+                        1, 10, 0,  // 10
+                        14, 11, 0, // Jump, 11
+                        16,        // Null
+                        3,         // Pop
+                        1, 5, 13,  // 3333
+                        3          // Pop
                     }
                 },
                 {

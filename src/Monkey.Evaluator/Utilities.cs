@@ -28,6 +28,8 @@ namespace Monkey
                         return (int)obj.Value != 0 ? true : false;
                     case ObjectKind.String:
                         return (string)obj.Value != String.Empty ? true : false;
+                    case ObjectKind.Null:
+                        return false;
                     default:
                         return false;
                 }

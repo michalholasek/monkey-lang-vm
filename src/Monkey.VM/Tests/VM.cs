@@ -64,6 +64,7 @@ namespace Monkey.Tests
         [DataRow("!!true")]
         [DataRow("!!false")]
         [DataRow("!!5")]
+        [DataRow("!(if (false) { 5; })")]
         public void BooleanExpressions(string source)
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
@@ -81,6 +82,9 @@ namespace Monkey.Tests
         [DataRow("if (1 < 2) { 10; }")]
         [DataRow("if (1 < 2) { 10; } else { 20; }")]
         [DataRow("if (1 > 2) { 10; } else { 20; }")]
+        [DataRow("if (1 > 2) { 10; }")]
+        [DataRow("if (false) { 10; }")]
+        [DataRow("if ((if (false) { 10; })) { 10; } else { 20; }")]
         public void IfElseExpressions(string source)
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));

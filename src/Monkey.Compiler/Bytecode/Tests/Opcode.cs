@@ -25,6 +25,7 @@ namespace Monkey.Tests
         [DataRow((byte)13)]
         [DataRow((byte)14)]
         [DataRow((byte)15)]
+        [DataRow((byte)16)]
         public void FindOpcode(byte code)
         {
             var actual = Opcode.Find(code);

@@ -23,7 +23,8 @@ namespace Monkey.Tests.Fixtures
             { 12, new Opcode.Definition { Name = "Minus", OperandLengths = new List<int> { 0 } }},
             { 13, new Opcode.Definition { Name = "Bang", OperandLengths = new List<int> { 0 } }},
             { 14, new Opcode.Definition { Name = "Jump", OperandLengths = new List<int> { 2 } }},
-            { 15, new Opcode.Definition { Name = "JumpNotTruthy", OperandLengths = new List<int> { 2 } }}
+            { 15, new Opcode.Definition { Name = "JumpNotTruthy", OperandLengths = new List<int> { 2 } }},
+            { 16, new Opcode.Definition { Name = "Null", OperandLengths = new List<int> { 0 } }}
         };
     }
 
