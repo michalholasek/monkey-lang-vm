@@ -8,23 +8,13 @@ namespace Monkey
 {
     public partial class Compiler
     {
-        private CompilerState CompileStatements(CompilerState previousState)
+        private CompilerState CompileStatements(List<Statement> statements, CompilerState previousState)
         {
             var newState = Factory.CompilerState()
                     .Assign(previousState)
                     .Create();
 
-            var program = (Program)newState.Node;
-
-            if (program.Errors.Count > 0)
-            {
-                return Factory.CompilerState()
-                    .Assign(newState)
-                    .Errors(program.Errors)
-                    .Create();
-            }
-
-            program.Statements.ForEach(statement =>
+            statements.ForEach(statement =>
             {
                 newState = Factory.CompilerState()
                     .Assign(newState)

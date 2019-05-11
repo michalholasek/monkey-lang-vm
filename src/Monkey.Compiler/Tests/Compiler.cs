@@ -46,5 +46,14 @@ namespace Monkey.Tests
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.Boolean[source]);
         }
+
+        [TestMethod]
+        [DataRow("if (true) { 10; }; 3333;")]
+        [DataRow("if (true) { 10; } else { 20; }; 3333;")]
+        public void IfElseExpression(string source)
+        {
+            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
+            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.IfElse[source]);
+        }
     }
 }

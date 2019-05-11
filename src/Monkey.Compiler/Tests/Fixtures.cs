@@ -233,6 +233,36 @@ namespace Monkey.Tests.Fixtures
                     }
                 }
             };
+
+            public static Dictionary<string, List<byte>> IfElse = new Dictionary<string, List<byte>>
+            {
+                {
+                    "if (true) { 10; }; 3333;",
+                    new List<byte>
+                    {
+                        7,        // true
+                        15, 7, 0, // JumpNotTruthy, 7
+                        1, 10, 0, // 10
+                        3,        // Pop
+                        1, 5, 13, // 3333
+                        3         // Pop
+                    }
+                },
+                {
+                    "if (true) { 10; } else { 20; }; 3333;",
+                    new List<byte>
+                    {
+                        7,         // true
+                        15, 10, 0, // JumpNotTruthy, 10
+                        1, 10, 0,  // 10
+                        14, 13, 0, // Jump, 13
+                        1, 20, 0,  // 20
+                        3,         // Pop
+                        1, 5, 13,  // 3333
+                        3          // Pop
+                    }
+                }
+            };
         }
     }
 }

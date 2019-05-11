@@ -13,18 +13,22 @@ namespace Monkey
             internal class CompilerStateFactory
             {
                 private Dictionary<string, Object> constants;
+                private Instruction currentInstruction;
                 private List<AssertionError> errors;
                 private Expression expression;
                 private Node node;
                 private List<byte> instructions;
+                private Instruction previousInstruction;
 
                 public CompilerStateFactory Assign(CompilerState previousState)
                 {
                     constants = previousState.Constants;
+                    currentInstruction = previousState.CurrentInstruction;
                     errors = previousState.Errors;
                     expression = previousState.Expression;
                     node = previousState.Node;
                     instructions = previousState.Instructions;
+                    previousInstruction = previousState.PreviousInstruction;
 
                     return this;
                 }
@@ -39,6 +43,12 @@ namespace Monkey
 
                     constants.Add(identifier, value);
 
+                    return this;
+                }
+
+                public CompilerStateFactory CurrentInstruction(Instruction instruction)
+                {
+                    this.currentInstruction = instruction;
                     return this;
                 }
 
@@ -66,14 +76,22 @@ namespace Monkey
                     return this;
                 }
 
+                public CompilerStateFactory PreviousInstruction(Instruction instruction)
+                {
+                    this.previousInstruction = instruction;
+                    return this;
+                }
+
                 public CompilerState Create()
                 {
                     return new CompilerState
                     {
                         Constants = constants,
+                        CurrentInstruction = currentInstruction,
                         Errors = errors,
                         Node = node,
-                        Instructions = instructions
+                        Instructions = instructions,
+                        PreviousInstruction = previousInstruction
                     };
                 }
             }

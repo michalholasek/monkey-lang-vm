@@ -15,10 +15,7 @@ namespace Monkey
             var expressionState = CompileExpressionInner(expression, previousState);
 
             // Add Pop instruction after every expression to clean up the stack
-            return Factory.CompilerState()
-                .Assign(expressionState)
-                .Instructions(Bytecode.Create(3, new List<int>()))
-                .Create();
+            return Emit(3, new List<int>(), expressionState);
         }
 
         private CompilerState CompileExpressionInner(Expression expression, CompilerState previousState)
@@ -33,6 +30,8 @@ namespace Monkey
                     return CompilePrefixExpression(expression, previousState);
                 case ExpressionKind.Infix:
                     return CompileInfixExpression(expression, previousState);
+                case ExpressionKind.IfElse:
+                    return CompileIfElseExpression(expression, previousState);
             }
 
             return previousState;
@@ -41,12 +40,68 @@ namespace Monkey
         private CompilerState CompileBooleanExpression(Expression expression, CompilerState previousState)
         {
             var expressionValue = (bool)((BooleanExpression)expression).Value;
-            var instruction = Bytecode.Create(expressionValue == true ? (byte)7 : (byte)8, new List<int> {});
+            var opcode = expressionValue == true ? (byte)7 : (byte)8;
 
-            return Factory.CompilerState()
-                .Assign(previousState)
-                .Instructions(instruction)
-                .Create();
+            return Emit(opcode, new List<int> {}, previousState);
+        }
+
+        private CompilerState CompileIfElseExpression(Expression expression, CompilerState previousState)
+        {
+            var ifElseExpression = (IfElseExpression)expression;
+            var conditionState = CompileExpressionInner(ifElseExpression.Condition, previousState);
+
+            // Create Opcode.JumpNotTruthy with transient offset, we are going
+            // to change it to correct one later
+            var jumpNotTruthyInstructionState = Emit(15, new List<int> { 9999 }, conditionState);
+            var jumpNotTruthyInstructionPosition = jumpNotTruthyInstructionState.CurrentInstruction.Position;
+
+            var consequenceState = CompileStatements(ifElseExpression.Consequence.Statements, jumpNotTruthyInstructionState);
+
+            // We want to leave last expression value on the stack, hence we
+            // we need to check whether there is a Pop instruction after last
+            // expression. If so, remove it
+            if (consequenceState.CurrentInstruction.Opcode == 3)
+            {
+                consequenceState = RemoveLastPopInstruction(consequenceState);
+            }
+
+            if (ifElseExpression.Alternative == null)
+            {
+                // Set Opcode.JumpNotTruthy operand to correct offset and
+                // return compiled expression
+                return ReplaceInstruction(
+                    jumpNotTruthyInstructionPosition,
+                    Bytecode.Create(15, new List<int> { consequenceState.Instructions.Count }),
+                    consequenceState
+                );
+            }
+            else
+            {
+                // Create Opcode.Jump with transient offset, we are going
+                // to change it to correct one later
+                var jumpInstructionState = Emit(14, new List<int> { 9999 }, consequenceState);
+                var jumpInstructionPosition = jumpInstructionState.CurrentInstruction.Position;
+
+                var afterJumpInstructionState = ReplaceInstruction(
+                    jumpNotTruthyInstructionPosition,
+                    Bytecode.Create(15, new List<int> { jumpInstructionState.Instructions.Count }),
+                    jumpInstructionState
+                );
+
+                var alternativeState = CompileStatements(ifElseExpression.Alternative.Statements, afterJumpInstructionState);
+                
+                if (alternativeState.CurrentInstruction.Opcode == 3)
+                {
+                    alternativeState = RemoveLastPopInstruction(alternativeState);
+                }
+
+                // Set Opcode.Jump operand to correct offset and return compiled expression
+                return ReplaceInstruction(
+                    jumpInstructionPosition,
+                    Bytecode.Create(14, new List<int> { alternativeState.Instructions.Count }),
+                    alternativeState
+                );
+            }
         }
 
         private CompilerState CompileInfixExpression(Expression expression, CompilerState previousState)
@@ -56,7 +111,7 @@ namespace Monkey
             CompilerState leftExpressionState;
             CompilerState rightExpressionState;
             
-            List<byte> op;
+            byte op;
 
             // Handle special cases, such as 1 < 2, where we are switching
             // operands and turning it into 2 > 1 (GreaterThan) expression
@@ -76,47 +131,41 @@ namespace Monkey
             switch (infixExpression.Operator.Kind)
             {
                 case SyntaxKind.Plus:
-                    op = Bytecode.Create(2, new List<int>());
+                    op = 2;
                     break;
                 case SyntaxKind.Minus:
-                    op = Bytecode.Create(4, new List<int>());
+                    op = 4;
                     break;
                 case SyntaxKind.Asterisk:
-                    op = Bytecode.Create(5, new List<int>());
+                    op = 5;
                     break;
                 case SyntaxKind.Slash:
-                    op = Bytecode.Create(6, new List<int>());
+                    op = 6;
                     break;
                 case SyntaxKind.Equal:
-                    op = Bytecode.Create(9, new List<int>());
+                    op = 9;
                     break;
                 case SyntaxKind.NotEqual:
-                    op = Bytecode.Create(10, new List<int>());
+                    op = 10;
                     break;
                 case SyntaxKind.GreaterThan:
                 case SyntaxKind.LessThan:
-                    op = Bytecode.Create(11, new List<int>());
+                    op = 11;
                     break;
                 default:
-                    op = new List<byte>();
-                    break;
+                    return rightExpressionState;
             }
 
-            return Factory.CompilerState()
-                .Assign(rightExpressionState)
-                .Instructions(op)
-                .Create();
+            return Emit(op, new List<int>(), rightExpressionState);
         }
 
         private CompilerState CompileIntegerExpression(Expression expression, CompilerState previousState)
         {
             var integerExpression = (IntegerExpression)expression;
-            var instruction = Bytecode.Create(1, new List<int> { integerExpression.Value });
 
             return Factory.CompilerState()
-                .Assign(previousState)
+                .Assign(Emit(1, new List<int> { integerExpression.Value }, previousState))
                 .Constant(integerExpression.Value.ToString(), CreateObject(ObjectKind.Integer, integerExpression.Value))
-                .Instructions(instruction)
                 .Create();
         }
 
@@ -126,25 +175,21 @@ namespace Monkey
             var rightExpressionState = CompileExpressionInner(prefixExpression.Right, previousState);
             var op = ((InfixExpression)prefixExpression.Left).Operator;
 
-            List<byte> operatorInstruction;
+            byte opcode;
             
             switch (op.Kind)
             {
                 case SyntaxKind.Minus:
-                    operatorInstruction = Bytecode.Create(12, new List<int> {});
+                    opcode = 12;
                     break;
                 case SyntaxKind.Bang:
-                    operatorInstruction = Bytecode.Create(13, new List<int> {});
+                    opcode = 13;
                     break;
                 default:
-                    operatorInstruction = new List<byte>();
-                    break;
+                    return rightExpressionState;
             }
 
-            return Factory.CompilerState()
-                .Assign(rightExpressionState)
-                .Instructions(operatorInstruction)
-                .Create();
+            return Emit(opcode, new List<int>(), rightExpressionState);
         }
     }
 }

@@ -35,10 +35,42 @@ namespace Monkey
             switch (previousState.Node.Kind)
             {
                 case NodeKind.Program:
-                    return CompileStatements(previousState);
+                    return CompileProgramNode(previousState);
                 default:
                     return CompileExpression(previousState);
             }
+        }
+
+        private CompilerState CompileProgramNode(CompilerState previousState)
+        {
+            var newState = Factory.CompilerState()
+                    .Assign(previousState)
+                    .Create();
+
+            var program = (Program)newState.Node;
+
+            if (program.Errors.Count > 0)
+            {
+                return Factory.CompilerState()
+                    .Assign(newState)
+                    .Errors(program.Errors)
+                    .Create();
+            }
+
+            return CompileStatements(program.Statements, previousState);
+        }
+
+        private CompilerState Emit(byte opcode, List<int> operands, CompilerState previousState)
+        {
+            var instruction = Bytecode.Create(opcode, operands);
+            var position = previousState.Instructions.Count;
+
+            return Factory.CompilerState()
+                .Assign(previousState)
+                .CurrentInstruction(new Instruction { Opcode = opcode, Position = position })
+                .PreviousInstruction(previousState.CurrentInstruction)
+                .Instructions(instruction)
+                .Create();
         }
     }
 }
