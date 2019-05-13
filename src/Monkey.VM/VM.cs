@@ -55,8 +55,6 @@ namespace Monkey
                         ExecuteBinaryOperation(internalState.Opcode);
                         break;
                     case 7:  // Opcode.True
-                        ExecuteBooleanOperation(internalState.Opcode);
-                        break;
                     case 8:  // Opcode.False
                         ExecuteBooleanOperation(internalState.Opcode);
                         break;
