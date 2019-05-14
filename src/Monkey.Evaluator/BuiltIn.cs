@@ -36,6 +36,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInLenUnexpectedNoOfArguments,
                         Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { "len" },
                         Source = ErrorSource.Evaluator
                     };
 
@@ -50,7 +51,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInLenInvalidArgument,
                         Kind = ErrorKind.InvalidArgument,
-                        Offenders = new List<object> { obj },
+                        Offenders = new List<object> { "len", obj },
                         Source = ErrorSource.Evaluator
                     };
 
@@ -78,6 +79,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInFirstUnexpectedNoOfArguments,
                         Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { "first" },
                         Source = ErrorSource.Evaluator
                     };
 
@@ -92,7 +94,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInFirstInvalidArgument,
                         Kind = ErrorKind.InvalidArgument,
-                        Offenders = new List<object> { obj },
+                        Offenders = new List<object> { "first", obj },
                         Source = ErrorSource.Evaluator
                     };
 
@@ -114,6 +116,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInLastUnexpectedNoOfArguments,
                         Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { "last" },
                         Source = ErrorSource.Evaluator
                     };
 
@@ -128,7 +131,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInLastInvalidArgument,
                         Kind = ErrorKind.InvalidArgument,
-                        Offenders = new List<object> { obj },
+                        Offenders = new List<object> { "last", obj },
                         Source = ErrorSource.Evaluator
                     };
 
@@ -150,6 +153,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInRestUnexpectedNoOfArguments,
                         Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { "rest" },
                         Source = ErrorSource.Evaluator
                     };
 
@@ -164,7 +168,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInRestInvalidArgument,
                         Kind = ErrorKind.InvalidArgument,
-                        Offenders = new List<object> { obj },
+                        Offenders = new List<object> { "rest", obj },
                         Source = ErrorSource.Evaluator
                     };
 
@@ -189,6 +193,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInPushUnexpectedNoOfArguments,
                         Kind = ErrorKind.InvalidArgument,
+                        Offenders = new List<object> { "push", },
                         Source = ErrorSource.Evaluator
                     };
 
@@ -204,7 +209,7 @@ namespace Monkey
                     {
                         Code = ErrorCode.BuiltInPushInvalidArgument,
                         Kind = ErrorKind.InvalidArgument,
-                        Offenders = new List<object> { obj, arg },
+                        Offenders = new List<object> { "push", obj, arg },
                         Source = ErrorSource.Evaluator
                     };
 

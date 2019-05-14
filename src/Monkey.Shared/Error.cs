@@ -89,6 +89,27 @@ namespace Monkey.Shared
 
         private static Dictionary<ErrorCode, string> ErrorMessages = new Dictionary<ErrorCode, string>
         {
+            { ErrorCode.ArrayExpressionEvaluation, "@0<-- [@1], expected Array" },
+            { ErrorCode.ArrayIndexExpressionEvaluation, "@0[@1<-- ], expected Integer" },
+            { ErrorCode.BangOperatorExpressionEvaluation, "!@0<-- , expected Boolean or Integer" },
+            { ErrorCode.BooleanInfixExpressionEvaluation, "@0 @1<-- @2" },
+            { ErrorCode.BuiltInLenUnexpectedNoOfArguments, "@0(), unexpected number of arguments" },
+            { ErrorCode.BuiltInLenInvalidArgument, "len(@1<-- ), expected Array or String" },
+            { ErrorCode.BuiltInFirstUnexpectedNoOfArguments, "@0(), unexpected number of arguments" },
+            { ErrorCode.BuiltInFirstInvalidArgument, "first(@1<-- ), expected Array" },
+            { ErrorCode.BuiltInLastUnexpectedNoOfArguments, "@0(), unexpected number of arguments" },
+            { ErrorCode.BuiltInLastInvalidArgument, "last(@1<-- ), expected Array" },
+            { ErrorCode.BuiltInRestUnexpectedNoOfArguments, "@0(), unexpected number of arguments" },
+            { ErrorCode.BuiltInRestInvalidArgument, "rest(@1<-- ), expected Array" },
+            { ErrorCode.BuiltInPushUnexpectedNoOfArguments, "@0(), unexpected number of arguments" },
+            { ErrorCode.BuiltInPushInvalidArgument, "push(@1<-- , @2), expected Array as first argument" },
+            { ErrorCode.HashIndexExpressionEvaluation, "@0[@1<-- ], expected Integer, Boolean, or String" },
+            { ErrorCode.IdentifierExpressionEvaluation, "@0 not found" },
+            { ErrorCode.InfixExpressionEvaluation, "types of @0 and @1 do not match" },
+            { ErrorCode.InfixExpressionOperatorEvaluation, "operator @1 is not supported for operands of type @2" },
+            { ErrorCode.StringExpressionOperatorEvaluation, "operator @1 is not supported for operands of type @2" },
+            { ErrorCode.MinusOperatorExpressionEvaluation, "-@0<-- , operator - is not supported for type @1" },
+            { ErrorCode.UnknownOperator, "operator @0 is not supported" },
             { ErrorCode.UnexpectedNumberOfArguments, "unexpected number of arguments" }
         };
 
@@ -124,6 +145,7 @@ namespace Monkey.Shared
 
         private static AssertionError CreateEvaluationError(ErrorInfo info)
         {
+            List<string> offenders = new List<string>();
             var sb = new StringBuilder();
 
             sb.Append(ErrorKindString[info.Kind]);
@@ -132,128 +154,76 @@ namespace Monkey.Shared
             switch (info.Code)
             {
                 case ErrorCode.ArrayExpressionEvaluation:
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append("<-- ");
-                    sb.Append("[");
-                    sb.Append(Stringify.Object((Object)info.Offenders.Last()));
-                    sb.Append("]");
-                    sb.Append(", expected ");
-                    sb.Append(Stringify.Kind(ObjectKind.Array));
-                    break;
                 case ErrorCode.ArrayIndexExpressionEvaluation:
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append("[");
-                    sb.Append(Stringify.Object((Object)info.Offenders.Last()));
-                    sb.Append("<-- ");
-                    sb.Append("]");
-                    sb.Append(", expected ");
-                    sb.Append(Stringify.Kind(ObjectKind.Integer));
+                case ErrorCode.HashIndexExpressionEvaluation:
+                case ErrorCode.InfixExpressionEvaluation:
+                    offenders = new List<String>
+                    {
+                        Stringify.Object((Object)info.Offenders.First()),
+                        Stringify.Object((Object)info.Offenders.Last())
+                    };
                     break;
                 case ErrorCode.BangOperatorExpressionEvaluation:
-                    sb.Append("!");
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append("<-- , expected ");
-                    sb.Append(Stringify.Kind(ObjectKind.Boolean));
-                    sb.Append(" or ");
-                    sb.Append(Stringify.Kind(ObjectKind.Integer));
-                    break;
-                case ErrorCode.BooleanInfixExpressionEvaluation:
-                    sb.Append(Stringify.Object(info.Offenders.First()));
-                    sb.Append(" ");
-                    sb.Append(((Token)info.Offenders[1]).Literal);
-                    sb.Append("<-- ");
-                    sb.Append(Stringify.Object(info.Offenders.Last()));
-                    break;
-                case ErrorCode.BuiltInLenUnexpectedNoOfArguments:
-                    sb.Append("len(), ");
-                    sb.Append(ErrorMessages[ErrorCode.UnexpectedNumberOfArguments]);
-                    break;
-                case ErrorCode.BuiltInLenInvalidArgument:
-                    sb.Append("len(");
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append("), expected Array or String");
-                    break;
-                case ErrorCode.BuiltInFirstUnexpectedNoOfArguments:
-                    sb.Append("first(), ");
-                    sb.Append(ErrorMessages[ErrorCode.UnexpectedNumberOfArguments]);
-                    break;
-                case ErrorCode.BuiltInFirstInvalidArgument:
-                    sb.Append("first(");
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append("), expected Array");
-                    break;
-                case ErrorCode.BuiltInLastUnexpectedNoOfArguments:
-                    sb.Append("last(), ");
-                    sb.Append(ErrorMessages[ErrorCode.UnexpectedNumberOfArguments]);
-                    break;
-                case ErrorCode.BuiltInLastInvalidArgument:
-                    sb.Append("last(");
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append("), expected Array");
-                    break;
-                case ErrorCode.BuiltInRestUnexpectedNoOfArguments:
-                    sb.Append("rest(), ");
-                    sb.Append(ErrorMessages[ErrorCode.UnexpectedNumberOfArguments]);
-                    break;
-                case ErrorCode.BuiltInRestInvalidArgument:
-                    sb.Append("rest(");
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append("), expected Array");
-                    break;
-                case ErrorCode.BuiltInPushUnexpectedNoOfArguments:
-                    sb.Append("push(), ");
-                    sb.Append(ErrorMessages[ErrorCode.UnexpectedNumberOfArguments]);
-                    break;
-                case ErrorCode.BuiltInPushInvalidArgument:
-                    sb.Append("push(");
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append(", ");
-                    sb.Append(Stringify.Object((Object)info.Offenders.Last()));
-                    sb.Append("), expected Array as first argument");
-                    break;
-                case ErrorCode.HashIndexExpressionEvaluation:
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append("[");
-                    sb.Append(Stringify.Object((Object)info.Offenders.Last()));
-                    sb.Append("<-- ");
-                    sb.Append("]");
-                    sb.Append(", expected ");
-                    sb.Append(Stringify.Kind(ObjectKind.Integer));
-                    sb.Append(", ");
-                    sb.Append(Stringify.Kind(ObjectKind.Boolean));
-                    sb.Append(", or ");
-                    sb.Append(Stringify.Kind(ObjectKind.String));
+                    offenders = new List<String> { Stringify.Object((Object)info.Offenders.First()) };
                     break;
                 case ErrorCode.IdentifierExpressionEvaluation:
-                    sb.Append(info.Offenders.First());
-                    sb.Append(" not found");
-                    break;
-                case ErrorCode.InfixExpressionEvaluation:
-                    sb.Append("types of ");
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append(" and ");
-                    sb.Append(Stringify.Object((Object)info.Offenders.Last()));
-                    sb.Append(" do not match");
-                    break;
-                case ErrorCode.InfixExpressionOperatorEvaluation:
-                case ErrorCode.StringExpressionOperatorEvaluation:
-                    sb.Append("operator ");
-                    sb.Append(((Token)info.Offenders[1]).Literal);
-                    sb.Append(" is not supported for operands of type ");
-                    sb.Append(Stringify.Kind(((Object)info.Offenders.Last()).Kind));
+                    offenders = new List<String> { Stringify.Object(info.Offenders.First()) };
                     break;
                 case ErrorCode.MinusOperatorExpressionEvaluation:
-                    sb.Append("-");
-                    sb.Append(Stringify.Object((Object)info.Offenders.First()));
-                    sb.Append("<-- , operator Minus is not supported for type ");
-                    sb.Append(Stringify.Kind(((Object)info.Offenders.First()).Kind));
+                    offenders = new List<String>
+                    {
+                        Stringify.Object((Object)info.Offenders.First()),
+                        Stringify.Kind(((Object)info.Offenders.First()).Kind)
+                    };
+                    break;
+                case ErrorCode.InfixExpressionOperatorEvaluation:
+                    offenders = new List<String>
+                    {
+                        Stringify.Object((Object)info.Offenders.First()),
+                        ((Token)info.Offenders[1]).Literal,
+                        Stringify.Object((Object)info.Offenders.Last())
+                    };
+                    break;
+                case ErrorCode.BooleanInfixExpressionEvaluation:
+                case ErrorCode.StringExpressionOperatorEvaluation:
+                    offenders = new List<String>
+                    {
+                        Stringify.Object(info.Offenders.First()),
+                        ((Token)info.Offenders[1]).Literal,
+                        Stringify.Object(info.Offenders.Last())
+                    };
+                    break;
+                case ErrorCode.BuiltInLenUnexpectedNoOfArguments:
+                case ErrorCode.BuiltInFirstUnexpectedNoOfArguments:
+                case ErrorCode.BuiltInLastUnexpectedNoOfArguments:
+                case ErrorCode.BuiltInRestUnexpectedNoOfArguments:
+                case ErrorCode.BuiltInPushUnexpectedNoOfArguments:
+                    offenders = new List<String> { info.Offenders.First().ToString() };
+                    break;
+                case ErrorCode.BuiltInLenInvalidArgument:
+                case ErrorCode.BuiltInFirstInvalidArgument:
+                case ErrorCode.BuiltInLastInvalidArgument:
+                case ErrorCode.BuiltInRestInvalidArgument:
+                    offenders = new List<String>
+                    {
+                        info.Offenders.First().ToString(),
+                        Stringify.Object((Object)info.Offenders.Last())
+                    };
+                    break;
+                case ErrorCode.BuiltInPushInvalidArgument:
+                    offenders = new List<String>
+                    {
+                        info.Offenders.First().ToString(),
+                        Stringify.Object((Object)info.Offenders[1]),
+                        Stringify.Object((Object)info.Offenders.Last())
+                    };
                     break;
                 case ErrorCode.UnknownOperator:
-                    sb.Append("operator ");
-                    sb.Append(((Token)info.Offenders.First()).Literal);
-                    sb.Append(" is not supported");
+                    offenders = new List<string> { ((Token)info.Offenders.First()).Literal };
                     break;
             }
+
+            sb.Append(ComposeErrorMessage(offenders, ErrorMessages[info.Code]));
 
             return new AssertionError(sb.ToString());
         }
@@ -261,6 +231,18 @@ namespace Monkey.Shared
         private static AssertionError CreateParseError(ErrorInfo info)
         {
             return new AssertionError($"{ErrorKindString[info.Kind]}: {ComposeExpressionString(info)}");
+        }
+
+        private static string ComposeErrorMessage(List<string> offenders, string template)
+        {
+            var message = template;
+
+            for (var i = 0; i < offenders.Count; i++)
+            {
+                message = message.Replace($"@{i}", offenders[i]);
+            }
+
+            return message;
         }
 
         private static string ComposeExpressionString(ErrorInfo info)

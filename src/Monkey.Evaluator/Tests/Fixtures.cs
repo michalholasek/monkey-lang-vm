@@ -507,7 +507,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid type: -true<-- , operator Minus is not supported for type Boolean")
+                    Value = new AssertionError("invalid type: -true<-- , operator - is not supported for type Boolean")
                 }
             },
             {
@@ -874,7 +874,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: len(1), expected Array or String")
+                    Value = new AssertionError("invalid argument: len(1<-- ), expected Array or String")
                 }
             },
             {
@@ -914,7 +914,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: first(1), expected Array")
+                    Value = new AssertionError("invalid argument: first(1<-- ), expected Array")
                 }
             },
             {
@@ -946,7 +946,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: last(1), expected Array")
+                    Value = new AssertionError("invalid argument: last(1<-- ), expected Array")
                 }
             },
             {
@@ -978,7 +978,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: rest(1), expected Array")
+                    Value = new AssertionError("invalid argument: rest(1<-- ), expected Array")
                 }
             },
             {
@@ -1022,7 +1022,7 @@ namespace Monkey.Tests.Fixtures
                 new Object
                 {
                     Kind = ObjectKind.Error,
-                    Value = new AssertionError("invalid argument: push(1, 2), expected Array as first argument")
+                    Value = new AssertionError("invalid argument: push(1<-- , 2), expected Array as first argument")
                 }
             },
             {
