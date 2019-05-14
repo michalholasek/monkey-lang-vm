@@ -58,7 +58,18 @@ namespace Monkey
                 return Emit((byte)Opcode.Name.GetGlobal, new List<int> { symbol.Index }, previousState);
             }
 
-            return previousState;
+            var info = new ErrorInfo
+            {
+                Code = ErrorCode.UndefinedVariable,
+                Kind = ErrorKind.UndefinedVariable,
+                Offenders = new List<object> { identifier },
+                Source = ErrorSource.Compiler
+            };
+
+            return Factory.CompilerState()
+                .Assign(previousState)
+                .Errors(new List<AssertionError> { Error.Create(info) })
+                .Create();
         }
 
         private CompilerState CompileIfElseExpression(Expression expression, CompilerState previousState)

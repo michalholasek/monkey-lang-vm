@@ -304,6 +304,11 @@ namespace Monkey.Tests.Fixtures
                     }
                 }
             };
+
+            public static Dictionary<string, List<AssertionError>> Error = new Dictionary<string, List<AssertionError>>
+            {
+                { "a;", new List<AssertionError> { new AssertionError { Message = "undefined variable: a" } } }
+            };
         }
     }
 }

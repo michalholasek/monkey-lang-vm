@@ -65,5 +65,13 @@ namespace Monkey.Tests
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Statement.GlobalLet[source]);
         }
+
+        [TestMethod]
+        [DataRow("a;")]
+        public void UndefinedVariable(string source)
+        {
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+            Utilities.Assert.AreDeeplyEqual(compilationResult.Errors, Fixtures.Compiler.Statement.Error[source]);
+        }
     }
 }

@@ -37,6 +37,7 @@ namespace Monkey.Shared
         InfixExpressionOperatorEvaluation,
         MinusOperatorExpressionEvaluation,
         StringExpressionOperatorEvaluation,
+        UndefinedVariable,
         UnexpectedNumberOfArguments,
         UnknownOperator,
     }
@@ -48,12 +49,14 @@ namespace Monkey.Shared
         InvalidIndex,
         InvalidToken,
         InvalidType,
+        UndefinedVariable,
         UnexpectedToken,
         UnknownOperator
     }
 
     public enum ErrorSource
     {
+        Compiler,
         Evaluator,
         Parser
     }
@@ -79,6 +82,7 @@ namespace Monkey.Shared
             { ErrorKind.InvalidIndex, "invalid index" },
             { ErrorKind.InvalidToken, "invalid token" },
             { ErrorKind.InvalidType, "invalid type" },
+            { ErrorKind.UndefinedVariable, "undefined variable" },
             { ErrorKind.UnexpectedToken, "unexpected token" },
             { ErrorKind.UnknownOperator, "unknown operator" }
         };
@@ -92,6 +96,8 @@ namespace Monkey.Shared
         {
             switch (info.Source)
             {
+                case ErrorSource.Compiler:
+                    return CreateCompilerError(info);
                 case ErrorSource.Parser:
                     return CreateParseError(info);
                 default:
@@ -99,11 +105,29 @@ namespace Monkey.Shared
             }
         }
 
+        private static AssertionError CreateCompilerError(ErrorInfo info)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(ErrorKindString[info.Kind]);
+            sb.Append(": ");
+
+            switch (info.Code)
+            {
+                case ErrorCode.UndefinedVariable:
+                    sb.Append(info.Offenders.First());
+                    break;
+            }
+
+            return new AssertionError(sb.ToString());
+        }
+
         private static AssertionError CreateEvaluationError(ErrorInfo info)
         {
             var sb = new StringBuilder();
 
-            sb.Append($"{ErrorKindString[info.Kind]}: ");
+            sb.Append(ErrorKindString[info.Kind]);
+            sb.Append(": ");
 
             switch (info.Code)
             {
