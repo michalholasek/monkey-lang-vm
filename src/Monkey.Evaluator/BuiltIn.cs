@@ -39,7 +39,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 var obj = args.First();
@@ -54,7 +54,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 switch (obj.Kind)
@@ -81,7 +81,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 var obj = args.First();
@@ -96,7 +96,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 var array = (List<Object>)obj.Value;
@@ -117,7 +117,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 var obj = args.First();
@@ -132,7 +132,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 var array = (List<Object>)obj.Value;
@@ -153,7 +153,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 var obj = args.First();
@@ -168,7 +168,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 var array = (List<Object>)obj.Value;
@@ -192,7 +192,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 var obj = args.First();
@@ -208,7 +208,7 @@ namespace Monkey
                         Source = ErrorSource.Evaluator
                     };
 
-                    return CreateObject(ObjectKind.Error, Monkey.Shared.Error.Create(info));
+                    return CreateObject(ObjectKind.Error, Error.Create(info));
                 }
 
                 var array = (List<Object>)obj.Value;
