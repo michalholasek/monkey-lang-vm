@@ -9,7 +9,7 @@ namespace Monkey
         public static List<byte> Create(byte opcode, List<int> operands)
         {
             var opcodeDefinition = Opcode.Find(opcode);
-            if (opcodeDefinition.Name == "Illegal")
+            if (opcodeDefinition.Name == Opcode.Name.Illegal)
             {
                 return new List<byte>();
             }

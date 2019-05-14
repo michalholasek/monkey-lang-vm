@@ -7,29 +7,50 @@ namespace Monkey
     {
         public struct Definition
         {
-            public string Name { get; set; }
+            public Name Name { get; set; }
             public List<int> OperandLengths { get; set; }
+        }
+
+        public enum Name
+        {
+            Illegal,
+            Pop,
+            Constant,
+            Add,
+            Subtract,
+            Multiply,
+            Divide,
+            True,
+            False,
+            Equal,
+            NotEqual,
+            GreaterThan,
+            Minus,
+            Bang,
+            Jump,
+            JumpNotTruthy,
+            Null
         }
         
         private static Dictionary<byte, Definition> Opcodes = new Dictionary<byte, Definition>
         {
-            { 0, new Definition { Name = "Invalid", OperandLengths = new List<int> { 0 } }},
-            { 3, new Definition { Name = "Pop", OperandLengths = new List<int> { 0 } }},
-            { 1, new Definition { Name = "Constant", OperandLengths = new List<int> { 2 } }},
-            { 2, new Definition { Name = "Add", OperandLengths = new List<int> { 0 } }},
-            { 4, new Definition { Name = "Subtract", OperandLengths = new List<int> { 0 } }},
-            { 5, new Definition { Name = "Multiply", OperandLengths = new List<int> { 0 } }},
-            { 6, new Definition { Name = "Divide", OperandLengths = new List<int> { 0 } }},
-            { 7, new Definition { Name = "True", OperandLengths = new List<int> { 0 } }},
-            { 8, new Definition { Name = "False", OperandLengths = new List<int> { 0 } }},
-            { 9, new Definition { Name = "Equal", OperandLengths = new List<int> { 0 } }},
-            { 10, new Definition { Name = "NotEqual", OperandLengths = new List<int> { 0 } }},
-            { 11, new Definition { Name = "GreaterThan", OperandLengths = new List<int> { 0 } }},
-            { 12, new Definition { Name = "Minus", OperandLengths = new List<int> { 0 } }},
-            { 13, new Definition { Name = "Bang", OperandLengths = new List<int> { 0 } }},
-            { 14, new Definition { Name = "Jump", OperandLengths = new List<int> { 2 } }},
-            { 15, new Definition { Name = "JumpNotTruthy", OperandLengths = new List<int> { 2 } }},
-            { 16, new Definition { Name = "Null", OperandLengths = new List<int> { 0 } }}
+            { 0, new Definition { Name = Name.Illegal, OperandLengths = new List<int> { 0 } }},
+            { 3, new Definition { Name = Name.Pop, OperandLengths = new List<int> { 0 } }},
+            { 1, new Definition { Name = Name.Constant, OperandLengths = new List<int> { 2 } }},
+            { 2, new Definition { Name = Name.Add, OperandLengths = new List<int> { 0 } }},
+            { 4, new Definition { Name = Name.Subtract, OperandLengths = new List<int> { 0 } }},
+            { 5, new Definition { Name = Name.Multiply, OperandLengths = new List<int> { 0 } }},
+            { 6, new Definition { Name = Name.Divide, OperandLengths = new List<int> { 0 } }},
+            { 7, new Definition { Name = Name.True, OperandLengths = new List<int> { 0 } }},
+            { 8, new Definition { Name = Name.False, OperandLengths = new List<int> { 0 } }},
+            { 9, new Definition { Name = Name.Equal, OperandLengths = new List<int> { 0 } }},
+            { 10, new Definition { Name = Name.NotEqual, OperandLengths = new List<int> { 0 } }},
+            { 11, new Definition { Name = Name.GreaterThan, OperandLengths = new List<int> { 0 } }},
+            { 12, new Definition { Name = Name.Minus, OperandLengths = new List<int> { 0 } }},
+            { 13, new Definition { Name = Name.Bang, OperandLengths = new List<int> { 0 } }},
+            { 14, new Definition { Name = Name.Jump, OperandLengths = new List<int> { 2 } }},
+            { 15, new Definition { Name = Name.JumpNotTruthy, OperandLengths = new List<int> { 2 } }},
+            { 16, new Definition { Name = Name.Null, OperandLengths = new List<int> { 0 } }}
         };
 
         public static Definition Find(byte code)
