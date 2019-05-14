@@ -22,16 +22,14 @@ namespace Monkey
 
         public Object LastStackElement { get { return internalState.Stack.LastElement; } }
 
+        public VirtualMachine()
+        {
+            internalState = new VirtualMachineState { Globals = new List<Object>() };
+        }
+
         public void Run(List<byte> instructions, Dictionary<string, Object> constants)
         {
-            internalState = new VirtualMachineState
-            {
-                Constants = constants,
-                Globals = new List<Object>(),
-                Instructions = instructions,
-                InstructionPointer = 0,
-                Stack = new VirtualMachineStack()
-            };
+            internalState = InitializeState(instructions, constants);
 
             while (internalState.InstructionPointer < internalState.Instructions.Count)
             {
@@ -82,6 +80,18 @@ namespace Monkey
                         break;
                 }
             }
+        }
+
+        private VirtualMachineState InitializeState(List<byte> instructions, Dictionary<string, Object> constants)
+        {
+            return new VirtualMachineState
+            {
+                Constants = constants,
+                Globals = internalState.Globals,
+                Instructions = instructions,
+                InstructionPointer = 0,
+                Stack = new VirtualMachineStack()
+            };
         }
 
         private int DecodeOperand(int length)

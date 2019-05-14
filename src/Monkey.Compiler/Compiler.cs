@@ -8,27 +8,34 @@ namespace Monkey
 {
     public partial class Compiler
     {
-        private readonly CompilerState initialState;
+        private CompilerState internalState;
 
         public Compiler()
         {
-            initialState = new CompilerState
-            {
-                Constants = new Dictionary<string, Object>(),
-                Errors = new List<AssertionError>(),
-                Instructions = new List<byte>(),
-                SymbolTable = new SymbolTable()
-            };
+            internalState = new CompilerState { SymbolTable = new SymbolTable() };
         }
 
         public CompilerState Compile(Node node)
         {
+            internalState = InitializeState();
+
             var newState = Factory.CompilerState()
-                    .Assign(initialState)
+                    .Assign(internalState)
                     .Node(node)
                     .Create();
 
             return CompileNode(newState);
+        }
+
+        private CompilerState InitializeState()
+        {
+            return new CompilerState
+            {
+                Constants = new Dictionary<string, Object>(),
+                Errors = new List<AssertionError>(),
+                Instructions = new List<byte>(),
+                SymbolTable = internalState.SymbolTable
+            };
         }
 
         private CompilerState CompileNode(CompilerState previousState)

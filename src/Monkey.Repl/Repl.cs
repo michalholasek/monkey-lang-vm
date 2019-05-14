@@ -10,7 +10,7 @@ namespace Monkey.Repl
     class Repl
     {
         private static List<string> commands;
-        private static Environment env;
+
         private static Scanner scanner;
         private static Parser parser;
         private static Compiler compiler;
@@ -19,7 +19,7 @@ namespace Monkey.Repl
         static Repl()
         {
             commands = new List<string>();
-            env = new Environment();
+
             scanner = new Scanner();
             parser = new Parser();
             compiler = new Compiler();
@@ -46,6 +46,7 @@ namespace Monkey.Repl
             if (command == String.Empty && commands.Count > 0)
             {
                 var source = string.Join(" ", commands);
+
                 var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
                 commands.Clear();
