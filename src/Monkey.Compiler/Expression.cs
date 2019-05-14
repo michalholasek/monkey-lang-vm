@@ -15,7 +15,7 @@ namespace Monkey
             var expressionState = CompileExpressionInner(expression, previousState);
 
             // Add Pop instruction after every expression to clean up the stack
-            return Emit(3, new List<int>(), expressionState);
+            return Emit((byte)Opcode.Name.Pop, new List<int>(), expressionState);
         }
 
         private CompilerState CompileExpressionInner(Expression expression, CompilerState previousState)
@@ -42,7 +42,7 @@ namespace Monkey
         private CompilerState CompileBooleanExpression(Expression expression, CompilerState previousState)
         {
             var expressionValue = (bool)((BooleanExpression)expression).Value;
-            var opcode = expressionValue == true ? (byte)7 : (byte)8;
+            var opcode = expressionValue == true ? (byte)Opcode.Name.True : (byte)Opcode.Name.False;
 
             return Emit(opcode, new List<int> {}, previousState);
         }
@@ -68,7 +68,7 @@ namespace Monkey
 
             // Create Opcode.JumpNotTruthy with transient offset, we are going
             // to change it to correct one later
-            var jumpNotTruthyInstructionState = Emit(15, new List<int> { 9999 }, conditionState);
+            var jumpNotTruthyInstructionState = Emit((byte)Opcode.Name.JumpNotTruthy, new List<int> { 9999 }, conditionState);
             var jumpNotTruthyInstructionPosition = jumpNotTruthyInstructionState.CurrentInstruction.Position;
 
             var consequenceState = CompileStatements(ifElseExpression.Consequence.Statements, jumpNotTruthyInstructionState);
@@ -76,19 +76,19 @@ namespace Monkey
             // We want to leave last expression value on the stack, hence we
             // we need to check whether there is a Pop instruction after last
             // expression. If so, remove it
-            if (consequenceState.CurrentInstruction.Opcode == 3)
+            if (consequenceState.CurrentInstruction.Opcode == (byte)Opcode.Name.Pop)
             {
                 consequenceState = RemoveLastPopInstruction(consequenceState);
             }
 
             // Create Opcode.Jump with transient offset, we are going
             // to change it to correct one later
-            var jumpInstructionState = Emit(14, new List<int> { 9999 }, consequenceState);
+            var jumpInstructionState = Emit((byte)Opcode.Name.Jump, new List<int> { 9999 }, consequenceState);
             var jumpInstructionPosition = jumpInstructionState.CurrentInstruction.Position;
 
             var afterJumpInstructionState = ReplaceInstruction(
                 jumpNotTruthyInstructionPosition,
-                Bytecode.Create(15, new List<int> { jumpInstructionState.Instructions.Count }),
+                Bytecode.Create((byte)Opcode.Name.JumpNotTruthy, new List<int> { jumpInstructionState.Instructions.Count }),
                 jumpInstructionState
             );
 
@@ -97,7 +97,7 @@ namespace Monkey
             if (ifElseExpression.Alternative == null)
             {
                 // Emit Opcode.Null as alternative branch
-                alternativeState = Emit(16, new List<int>(), afterJumpInstructionState);
+                alternativeState = Emit((byte)Opcode.Name.Null, new List<int>(), afterJumpInstructionState);
             }
             else
             {
@@ -112,7 +112,7 @@ namespace Monkey
             // Set Opcode.Jump operand to correct offset and return compiled expression
             return ReplaceInstruction(
                 jumpInstructionPosition,
-                Bytecode.Create(14, new List<int> { alternativeState.Instructions.Count }),
+                Bytecode.Create((byte)Opcode.Name.Jump, new List<int> { alternativeState.Instructions.Count }),
                 alternativeState
             );
         }
@@ -144,26 +144,26 @@ namespace Monkey
             switch (infixExpression.Operator.Kind)
             {
                 case SyntaxKind.Plus:
-                    op = 2;
+                    op = (byte)Opcode.Name.Add;
                     break;
                 case SyntaxKind.Minus:
-                    op = 4;
+                    op = (byte)Opcode.Name.Subtract;
                     break;
                 case SyntaxKind.Asterisk:
-                    op = 5;
+                    op = (byte)Opcode.Name.Multiply;
                     break;
                 case SyntaxKind.Slash:
-                    op = 6;
+                    op = (byte)Opcode.Name.Divide;
                     break;
                 case SyntaxKind.Equal:
-                    op = 9;
+                    op = (byte)Opcode.Name.Equal;
                     break;
                 case SyntaxKind.NotEqual:
-                    op = 10;
+                    op = (byte)Opcode.Name.NotEqual;
                     break;
                 case SyntaxKind.GreaterThan:
                 case SyntaxKind.LessThan:
-                    op = 11;
+                    op = (byte)Opcode.Name.GreaterThan;
                     break;
                 default:
                     return rightExpressionState;
@@ -177,7 +177,7 @@ namespace Monkey
             var integerExpression = (IntegerExpression)expression;
 
             return Factory.CompilerState()
-                .Assign(Emit(1, new List<int> { integerExpression.Value }, previousState))
+                .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { integerExpression.Value }, previousState))
                 .Constant(integerExpression.Value.ToString(), CreateObject(ObjectKind.Integer, integerExpression.Value))
                 .Create();
         }
@@ -193,10 +193,10 @@ namespace Monkey
             switch (op.Kind)
             {
                 case SyntaxKind.Minus:
-                    opcode = 12;
+                    opcode = (byte)Opcode.Name.Minus;
                     break;
                 case SyntaxKind.Bang:
-                    opcode = 13;
+                    opcode = (byte)Opcode.Name.Bang;
                     break;
                 default:
                     return rightExpressionState;

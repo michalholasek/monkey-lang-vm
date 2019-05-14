@@ -8,8 +8,7 @@ namespace Monkey
     {
         private CompilerState RemoveLastPopInstruction(CompilerState previousState)
         {
-            // (3) Opcode.Pop
-            var position = previousState.Instructions.LastIndexOf(3);
+            var position = previousState.Instructions.LastIndexOf((byte)Opcode.Name.Pop);
             previousState.Instructions.RemoveAt(position);
 
             return Factory.CompilerState()
