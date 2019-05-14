@@ -11,12 +11,12 @@ namespace Monkey
             public List<int> OperandLengths { get; set; }
         }
 
-        public enum Name
+        public enum Name : byte
         {
-            Illegal,
-            Pop,
+            Illegal = 0,
             Constant,
             Add,
+            Pop,
             Subtract,
             Multiply,
             Divide,
@@ -29,7 +29,9 @@ namespace Monkey
             Bang,
             Jump,
             JumpNotTruthy,
-            Null
+            Null,
+            SetGlobal,
+            GetGlobal
         }
         
         private static Dictionary<byte, Definition> Opcodes = new Dictionary<byte, Definition>
@@ -50,7 +52,9 @@ namespace Monkey
             { 13, new Definition { Name = Name.Bang, OperandLengths = new List<int> { 0 } }},
             { 14, new Definition { Name = Name.Jump, OperandLengths = new List<int> { 2 } }},
             { 15, new Definition { Name = Name.JumpNotTruthy, OperandLengths = new List<int> { 2 } }},
-            { 16, new Definition { Name = Name.Null, OperandLengths = new List<int> { 0 } }}
+            { 16, new Definition { Name = Name.Null, OperandLengths = new List<int> { 0 } }},
+            { 17, new Definition { Name = Name.SetGlobal, OperandLengths = new List<int> { 2 } }},
+            { 18, new Definition { Name = Name.GetGlobal, OperandLengths = new List<int> { 2 } }}
         };
 
         public static Definition Find(byte code)

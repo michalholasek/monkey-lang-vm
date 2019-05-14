@@ -55,5 +55,15 @@ namespace Monkey.Tests
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
             Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.IfElse[source]);
         }
+
+        [TestMethod]
+        [DataRow("let one = 1; let two = 2;")]
+        [DataRow("let one = 1; one;")]
+        [DataRow("let one = 1; let two = one; two;")]
+        public void GlobalLetStatement(string source)
+        {
+            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
+            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Statement.GlobalLet[source]);
+        }
     }
 }

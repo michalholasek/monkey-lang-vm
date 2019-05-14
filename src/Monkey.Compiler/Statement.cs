@@ -14,7 +14,7 @@ namespace Monkey
                     .Assign(previousState)
                     .Create();
 
-            statements.ForEach(statement =>
+            foreach (var statement in statements)
             {
                 newState = Factory.CompilerState()
                     .Assign(newState)
@@ -22,9 +22,36 @@ namespace Monkey
                     .Create();
 
                 newState = CompileNode(newState);
-            });
+
+                if (newState.Errors.Count > 0)
+                {
+                    break;
+                }
+            }
 
             return newState;
+        }
+
+        private CompilerState CompileLetStatement(CompilerState previousState)
+        {
+            var expressionState = CompileExpression(previousState);
+
+            if (expressionState.Errors.Count > 0)
+            {
+                return expressionState;
+            }
+
+            if (expressionState.CurrentInstruction.Opcode == (byte)Opcode.Name.Pop)
+            {
+                // We want to keep defined values on the stack
+                expressionState = RemoveLastPopInstruction(expressionState);
+            }
+
+            var statement = (Statement)expressionState.Node;
+            
+            var symbol = expressionState.SymbolTable.Define(statement.Identifier.Literal);
+
+            return Emit((byte)Opcode.Name.SetGlobal, new List<int> { symbol.Index }, expressionState);
         }
     }
 }

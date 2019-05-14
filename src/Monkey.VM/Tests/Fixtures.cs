@@ -222,5 +222,24 @@ namespace Monkey.Tests.Fixtures
                 }
             };
         }
+
+        public static class Statement
+        {
+            public static Dictionary<string, Object> GlobalLet = new Dictionary<string, Object>
+            {
+                {
+                    "let one = 1; one;",
+                    CreateObject(ObjectKind.Integer, 1)
+                },
+                {
+                    "let one = 1; let two = 2; one + two;",
+                    CreateObject(ObjectKind.Integer, 3)
+                },
+                {
+                    "let one = 1; let two = one + one; one + two;",
+                    CreateObject(ObjectKind.Integer, 3)
+                }
+            };
+        }
     }
 }

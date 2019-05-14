@@ -24,7 +24,9 @@ namespace Monkey.Tests.Fixtures
             { 13, new Opcode.Definition { Name = Opcode.Name.Bang, OperandLengths = new List<int> { 0 } }},
             { 14, new Opcode.Definition { Name = Opcode.Name.Jump, OperandLengths = new List<int> { 2 } }},
             { 15, new Opcode.Definition { Name = Opcode.Name.JumpNotTruthy, OperandLengths = new List<int> { 2 } }},
-            { 16, new Opcode.Definition { Name = Opcode.Name.Null, OperandLengths = new List<int> { 0 } }}
+            { 16, new Opcode.Definition { Name = Opcode.Name.Null, OperandLengths = new List<int> { 0 } }},
+            { 17, new Opcode.Definition { Name = Opcode.Name.SetGlobal, OperandLengths = new List<int> { 2 } }},
+            { 18, new Opcode.Definition { Name = Opcode.Name.GetGlobal, OperandLengths = new List<int> { 2 } }}
         };
     }
 

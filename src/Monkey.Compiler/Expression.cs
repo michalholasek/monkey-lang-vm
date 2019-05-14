@@ -26,6 +26,8 @@ namespace Monkey
                     return CompileIntegerExpression(expression, previousState);
                 case ExpressionKind.Boolean:
                     return CompileBooleanExpression(expression, previousState);
+                case ExpressionKind.Identifier:
+                    return CompileIdentifierExpression(expression, previousState);
                 case ExpressionKind.Prefix:
                     return CompilePrefixExpression(expression, previousState);
                 case ExpressionKind.Infix:
@@ -43,6 +45,20 @@ namespace Monkey
             var opcode = expressionValue == true ? (byte)7 : (byte)8;
 
             return Emit(opcode, new List<int> {}, previousState);
+        }
+
+        private CompilerState CompileIdentifierExpression(Expression expression, CompilerState previousState)
+        {
+            var identifier = ((IdentifierExpression)expression).Value;
+            
+            var symbol = previousState.SymbolTable.Resolve(identifier);
+
+            if (symbol != Symbol.Undefined)
+            {
+                return Emit((byte)Opcode.Name.GetGlobal, new List<int> { symbol.Index }, previousState);
+            }
+
+            return previousState;
         }
 
         private CompilerState CompileIfElseExpression(Expression expression, CompilerState previousState)

@@ -266,5 +266,44 @@ namespace Monkey.Tests.Fixtures
                 }
             };
         }
+
+        public static class Statement
+        {
+            public static Dictionary<string, List<byte>> GlobalLet = new Dictionary<string, List<byte>>
+            {
+                {
+                    "let one = 1; let two = 2;",
+                    new List<byte>
+                    {
+                        1, 1, 0,  // 1
+                        17, 0, 0, // SetGlobal 1
+                        1, 2, 0,  // 2
+                        17, 1, 0  // SetGlobal 2
+                    }
+                },
+                {
+                    "let one = 1; one;",
+                    new List<byte>
+                    {
+                        1, 1, 0,  // 1
+                        17, 0, 0, // SetGlobal 1
+                        18, 0, 0, // GetGlobal 1
+                        3         // Pop
+                    }
+                },
+                {
+                    "let one = 1; let two = one; two;",
+                    new List<byte>
+                    {
+                        1, 1, 0,  // 1
+                        17, 0, 0, // SetGlobal 1
+                        18, 0, 0, // GetGlobal 1
+                        17, 1, 0, // SetGlobal 1
+                        18, 1, 0, // GetGlobal 1
+                        3         // Pop
+                    }
+                }
+            };
+        }
     }
 }

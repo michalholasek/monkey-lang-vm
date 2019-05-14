@@ -16,7 +16,8 @@ namespace Monkey
             {
                 Constants = new Dictionary<string, Object>(),
                 Errors = new List<AssertionError>(),
-                Instructions = new List<byte>()
+                Instructions = new List<byte>(),
+                SymbolTable = new SymbolTable()
             };
         }
 
@@ -36,6 +37,8 @@ namespace Monkey
             {
                 case NodeKind.Program:
                     return CompileProgramNode(previousState);
+                case NodeKind.Let:
+                    return CompileLetStatement(previousState);
                 default:
                     return CompileExpression(previousState);
             }

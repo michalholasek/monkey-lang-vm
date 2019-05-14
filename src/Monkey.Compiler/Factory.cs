@@ -19,6 +19,7 @@ namespace Monkey
                 private Node node;
                 private List<byte> instructions;
                 private Instruction previousInstruction;
+                private SymbolTable symbolTable;
 
                 public CompilerStateFactory Assign(CompilerState previousState)
                 {
@@ -29,6 +30,7 @@ namespace Monkey
                     node = previousState.Node;
                     instructions = previousState.Instructions;
                     previousInstruction = previousState.PreviousInstruction;
+                    symbolTable = previousState.SymbolTable;
 
                     return this;
                 }
@@ -91,7 +93,8 @@ namespace Monkey
                         Errors = errors,
                         Node = node,
                         Instructions = instructions,
-                        PreviousInstruction = previousInstruction
+                        PreviousInstruction = previousInstruction,
+                        SymbolTable = symbolTable
                     };
                 }
             }

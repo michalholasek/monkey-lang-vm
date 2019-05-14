@@ -27,6 +27,7 @@ namespace Monkey
             internalState = new VirtualMachineState
             {
                 Constants = constants,
+                Globals = new List<Object>(),
                 Instructions = instructions,
                 InstructionPointer = 0,
                 Stack = new VirtualMachineStack()
@@ -72,6 +73,12 @@ namespace Monkey
                         break;
                     case 16: // Opcode.Null
                         ExecuteNullOperation();
+                        break;
+                    case 17: // Opcode.SetGlobal
+                        ExecuteSetGlobalOperation();
+                        break;
+                    case 18: // Opcode.GetGlobal
+                        ExecuteGetGlobalOperation();
                         break;
                 }
             }
@@ -148,6 +155,34 @@ namespace Monkey
             }
         }
 
+        private void ExecuteBinaryIntegerOperation(byte op, int left, int right)
+        {
+            switch (op)
+            {
+                case 2:  // Opcode.Add
+                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left + right));
+                    break;
+                case 4:  // Opcode.Subtract
+                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left - right));
+                    break;
+                case 5:  // Opcode.Multiply
+                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left * right));
+                    break;
+                case 6:  // Opcode.Divide
+                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left / right));
+                    break;
+                case 9:  // Opcode.Equal
+                    internalState.Stack.Push(left == right ? Invariants[true] : Invariants[false]);
+                    break;
+                case 10: // Opcode.NotEqual
+                    internalState.Stack.Push(left != right ? Invariants[true] : Invariants[false]);
+                    break;
+                case 11: // Opcode.GreaterThan
+                    internalState.Stack.Push(left > right ? Invariants[true] : Invariants[false]);
+                    break;
+            }
+        }
+
         private void ExecuteConstantOperation()
         {
             internalState.Stack.Push(internalState.Constants[DecodeOperand(2).ToString()]);
@@ -191,32 +226,18 @@ namespace Monkey
             internalState.Stack.Push(Invariants["null"]);
         }
 
-        private void ExecuteBinaryIntegerOperation(byte op, int left, int right)
+        private void ExecuteSetGlobalOperation()
         {
-            switch (op)
-            {
-                case 2:  // Opcode.Add
-                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left + right));
-                    break;
-                case 4:  // Opcode.Subtract
-                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left - right));
-                    break;
-                case 5:  // Opcode.Multiply
-                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left * right));
-                    break;
-                case 6:  // Opcode.Divide
-                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left / right));
-                    break;
-                case 9:  // Opcode.Equal
-                    internalState.Stack.Push(left == right ? Invariants[true] : Invariants[false]);
-                    break;
-                case 10: // Opcode.NotEqual
-                    internalState.Stack.Push(left != right ? Invariants[true] : Invariants[false]);
-                    break;
-                case 11: // Opcode.GreaterThan
-                    internalState.Stack.Push(left > right ? Invariants[true] : Invariants[false]);
-                    break;
-            }
+            // Just skip the operand, we are not using it now
+            internalState.InstructionPointer += 2;
+            internalState.Globals.Add(internalState.Stack.Pop());
+        }
+
+        private void ExecuteGetGlobalOperation()
+        {
+            var index = DecodeOperand(2);
+            internalState.InstructionPointer += 2;
+            internalState.Stack.Push(internalState.Globals[index]);
         }
     }
 }

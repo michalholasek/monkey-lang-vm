@@ -9,6 +9,7 @@ namespace Monkey
     internal class VirtualMachineState
     {
         public Dictionary<string, Object> Constants { get; set; }
+        public List<Object> Globals { get; set; }
         public List<byte> Instructions { get; set; }
         public int InstructionPointer { get; set; }
         public byte Opcode { get; set; }
