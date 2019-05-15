@@ -66,6 +66,16 @@ namespace Monkey.Tests
         }
 
         [TestMethod]
+        [DataRow("[]")]
+        [DataRow("[1, 2, 3]")]
+        [DataRow("[1 + 2, 3 - 4, 5 * 6]")]
+        public void ArrayExpression(string source)
+        {
+            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
+            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.Array[source]);
+        }
+
+        [TestMethod]
         [DataRow("let one = 1; let two = 2;")]
         [DataRow("let one = 1; one;")]
         [DataRow("let one = 1; let two = one; two;")]

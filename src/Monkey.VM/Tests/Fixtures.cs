@@ -237,6 +237,56 @@ namespace Monkey.Tests.Fixtures
                     CreateObject(ObjectKind.String, "monkeybanana")
                 }
             };
+
+            public static Dictionary<string, Object> Array = new Dictionary<string, Object>
+            {
+                {
+                    "[]",
+                    CreateObject(ObjectKind.Array, new List<Object>())
+                },
+                {
+                    "[1, 2, 3]",
+                    CreateObject(ObjectKind.Array, new List<Object>
+                    {
+                        new Object
+                        {
+                            Kind = ObjectKind.Integer,
+                            Value = 1
+                        },
+                        new Object
+                        {
+                            Kind = ObjectKind.Integer,
+                            Value = 2
+                        },
+                        new Object
+                        {
+                            Kind = ObjectKind.Integer,
+                            Value = 3
+                        }
+                    })
+                },
+                {
+                    "[1 + 2, 3 * 4, 5 + 6]",
+                    CreateObject(ObjectKind.Array, new List<Object>
+                    {
+                        new Object
+                        {
+                            Kind = ObjectKind.Integer,
+                            Value = 3
+                        },
+                        new Object
+                        {
+                            Kind = ObjectKind.Integer,
+                            Value = 12
+                        },
+                        new Object
+                        {
+                            Kind = ObjectKind.Integer,
+                            Value = 11
+                        }
+                    })
+                }
+            };
         }
 
         public static class Statement

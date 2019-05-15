@@ -78,6 +78,9 @@ namespace Monkey
                     case 18: // Opcode.GetGlobal
                         ExecuteGetGlobalOperation();
                         break;
+                    case 19: // Opcode.Array
+                        ExecuteArrayOperation();
+                        break;
                 }
             }
         }
@@ -104,6 +107,23 @@ namespace Monkey
             }
 
             return BitConverter.ToInt16(buffer, startIndex: 0);
+        }
+
+        private void ExecuteArrayOperation()
+        {
+            var count = DecodeOperand(2);
+            var elements = new List<Object>();
+
+            internalState.InstructionPointer += 2;
+
+            for (var i = 0; i < count; i++)
+            {
+                elements.Add(internalState.Stack.Pop());
+            }
+
+            elements.Reverse();
+
+            internalState.Stack.Push(CreateObject(ObjectKind.Array, elements));
         }
 
         private void ExecuteBangOperation()

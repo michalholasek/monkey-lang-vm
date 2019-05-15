@@ -36,9 +36,29 @@ namespace Monkey
                     return CompileInfixExpression(expression, previousState);
                 case ExpressionKind.IfElse:
                     return CompileIfElseExpression(expression, previousState);
+                case ExpressionKind.Array:
+                    return CompileArrayExpression(expression, previousState);
             }
 
             return previousState;
+        }
+
+        private CompilerState CompileArrayExpression(Expression expression, CompilerState previousState)
+        {
+            var arrayExpression = (ArrayExpression)expression;
+            var arrayExpressionState = previousState;
+
+            foreach (var element in arrayExpression.Elements)
+            {
+                arrayExpressionState = CompileExpressionInner(element, previousState);
+
+                if (arrayExpressionState.Errors.Count > 0)
+                {
+                    return arrayExpressionState;
+                }
+            }
+
+            return Emit((byte)Opcode.Name.Array, new List<int> { arrayExpression.Elements.Count }, arrayExpressionState);
         }
 
         private CompilerState CompileBooleanExpression(Expression expression, CompilerState previousState)

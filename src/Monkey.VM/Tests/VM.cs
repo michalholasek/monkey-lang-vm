@@ -108,6 +108,19 @@ namespace Monkey.Tests
         }
 
         [TestMethod]
+        [DataRow("[]")]
+        [DataRow("[1, 2, 3]")]
+        [DataRow("[1 + 2, 3 * 4, 5 + 6]")]
+        public void ArrayExpressions(string source)
+        {
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+
+            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+
+            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Array[source]);
+        }
+
+        [TestMethod]
         [DataRow("let one = 1; one;")]
         [DataRow("let one = 1; let two = 2; one + two;")]
         [DataRow("let one = 1; let two = one + one; one + two;")]

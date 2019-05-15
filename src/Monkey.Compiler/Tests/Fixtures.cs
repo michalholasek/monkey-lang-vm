@@ -287,6 +287,46 @@ namespace Monkey.Tests.Fixtures
                     }
                 }
             };
+
+            public static Dictionary<string, List<byte>> Array = new Dictionary<string, List<byte>>
+            {
+                {
+                    "[]",
+                    new List<byte>
+                    {
+                        19, 0, 0, // Array with 0 elements
+                        3         // Pop
+                    }
+                },
+                {
+                    "[1, 2, 3]",
+                    new List<byte>
+                    {
+                        1, 0, 0,  // 1
+                        1, 1, 0,  // 2
+                        1, 2, 0,  // 3
+                        19, 3, 0, // Array, 3 elements
+                        3         // Pop
+                    }
+                },
+                {
+                    "[1 + 2, 3 - 4, 5 * 6]",
+                    new List<byte>
+                    {
+                        1, 0, 0,  // 1
+                        1, 1, 0,  // 2
+                        2,        // Add
+                        1, 2, 0,  // 3
+                        1, 3, 0,  // 4
+                        4,        // -
+                        1, 4, 0,  // 5
+                        1, 5, 0,  // 6
+                        5,        // *
+                        19, 3, 0, // Array, 3 elements
+                        3         // Pop
+                    }
+                }
+            };
         }
 
         public static class Statement

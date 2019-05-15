@@ -31,7 +31,8 @@ namespace Monkey
             JumpNotTruthy,
             Null,
             SetGlobal,
-            GetGlobal
+            GetGlobal,
+            Array
         }
         
         private static Dictionary<byte, Definition> Opcodes = new Dictionary<byte, Definition>
@@ -54,7 +55,8 @@ namespace Monkey
             { 15, new Definition { Name = Name.JumpNotTruthy, OperandLengths = new List<int> { 2 } }},
             { 16, new Definition { Name = Name.Null, OperandLengths = new List<int> { 0 } }},
             { 17, new Definition { Name = Name.SetGlobal, OperandLengths = new List<int> { 2 } }},
-            { 18, new Definition { Name = Name.GetGlobal, OperandLengths = new List<int> { 2 } }}
+            { 18, new Definition { Name = Name.GetGlobal, OperandLengths = new List<int> { 2 } }},
+            { 19, new Definition { Name = Name.Array, OperandLengths = new List<int> { 2 } }}
         };
 
         public static Definition Find(byte code)
