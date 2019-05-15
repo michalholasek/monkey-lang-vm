@@ -79,10 +79,10 @@ namespace Monkey.Tests
         [DataRow("let one = 1; let two = 2;")]
         [DataRow("let one = 1; one;")]
         [DataRow("let one = 1; let two = one; two;")]
-        public void GlobalLetStatement(string source)
+        public void LetStatement(string source)
         {
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
-            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Statement.GlobalLet[source]);
+            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Statement.Let[source]);
         }
 
         [TestMethod]

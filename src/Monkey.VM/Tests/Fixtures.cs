@@ -291,7 +291,7 @@ namespace Monkey.Tests.Fixtures
 
         public static class Statement
         {
-            public static Dictionary<string, Object> GlobalLet = new Dictionary<string, Object>
+            public static Dictionary<string, Object> Let = new Dictionary<string, Object>
             {
                 {
                     "let one = 1; one;",

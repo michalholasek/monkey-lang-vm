@@ -124,13 +124,13 @@ namespace Monkey.Tests
         [DataRow("let one = 1; one;")]
         [DataRow("let one = 1; let two = 2; one + two;")]
         [DataRow("let one = 1; let two = one + one; one + two;")]
-        public void GlobalLetStatements(string source)
+        public void LetStatements(string source)
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
             vm.Run(compilationResult.Instructions, compilationResult.Constants);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Statement.GlobalLet[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Statement.Let[source]);
         }
     }
 }
