@@ -285,6 +285,30 @@ namespace Monkey.Tests.Fixtures
                             Value = 11
                         }
                     })
+                },
+                {
+                    "[1, 2, 3][1]",
+                    CreateObject(ObjectKind.Integer, 2)
+                },
+                {
+                    "[1, 2, 3][0 + 2]",
+                    CreateObject(ObjectKind.Integer, 3)
+                },
+                {
+                    "[[1, 1, 1]][0][0]",
+                    CreateObject(ObjectKind.Integer, 1)
+                },
+                {
+                    "[][0]",
+                    CreateObject(ObjectKind.Null, null)
+                },
+                {
+                    "[1, 2, 3][99]",
+                    CreateObject(ObjectKind.Null, null)
+                },
+                {
+                    "[1][-1]",
+                    CreateObject(ObjectKind.Null, null)
                 }
             };
 
@@ -309,6 +333,22 @@ namespace Monkey.Tests.Fixtures
                         { "2", CreateObject(ObjectKind.Integer, 4) },
                         { "6", CreateObject(ObjectKind.Integer, 16) }
                     })
+                },
+                {
+                    "{ 1: 1, 2: 2 }[1]",
+                    CreateObject(ObjectKind.Integer, 1)
+                },
+                {
+                    "{ 1: 1, 2: 2 }[2]",
+                    CreateObject(ObjectKind.Integer, 2)
+                },
+                {
+                    "{ 1: 1 }[0]",
+                    CreateObject(ObjectKind.Null, null)
+                },
+                {
+                    "{}[0]",
+                    CreateObject(ObjectKind.Null, null)
                 }
             };
         }

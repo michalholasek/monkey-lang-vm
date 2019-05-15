@@ -33,7 +33,8 @@ namespace Monkey
             SetGlobal,
             GetGlobal,
             Array,
-            Hash
+            Hash,
+            Index
         }
         
         private static Dictionary<byte, Definition> Opcodes = new Dictionary<byte, Definition>
@@ -58,7 +59,8 @@ namespace Monkey
             { 17, new Definition { Name = Name.SetGlobal, OperandLengths = new List<int> { 2 } }},
             { 18, new Definition { Name = Name.GetGlobal, OperandLengths = new List<int> { 2 } }},
             { 19, new Definition { Name = Name.Array, OperandLengths = new List<int> { 2 } }},
-            { 20, new Definition { Name = Name.Hash, OperandLengths = new List<int> { 2 } }}
+            { 20, new Definition { Name = Name.Hash, OperandLengths = new List<int> { 2 } }},
+            { 21, new Definition { Name = Name.Index, OperandLengths = new List<int> { 0 } }}
         };
 
         public static Definition Find(byte code)

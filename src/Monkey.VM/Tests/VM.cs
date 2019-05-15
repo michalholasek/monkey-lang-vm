@@ -111,6 +111,12 @@ namespace Monkey.Tests
         [DataRow("[]")]
         [DataRow("[1, 2, 3]")]
         [DataRow("[1 + 2, 3 * 4, 5 + 6]")]
+        [DataRow("[1, 2, 3][1]")]
+        [DataRow("[1, 2, 3][0 + 2]")]
+        [DataRow("[[1, 1, 1]][0][0]")]
+        [DataRow("[][0]")]
+        [DataRow("[1, 2, 3][99]")]
+        [DataRow("[1][-1]")]
         public void ArrayExpressions(string source)
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
@@ -124,6 +130,10 @@ namespace Monkey.Tests
         [DataRow("{}")]
         [DataRow("{ 1: 2, 2: 3 }")]
         [DataRow("{ 1 + 1: 2 * 2, 3 + 3: 4 * 4 }")]
+        [DataRow("{ 1: 1, 2: 2 }[1]")]
+        [DataRow("{ 1: 1, 2: 2 }[2]")]
+        [DataRow("{ 1: 1 }[0]")]
+        [DataRow("{}[0]")]
         public void HashExpressions(string source)
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));

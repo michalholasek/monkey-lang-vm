@@ -41,6 +41,8 @@ namespace Monkey
                     return CompileArrayExpression(expression, previousState);
                 case ExpressionKind.Hash:
                     return CompileHashExpression(expression, previousState);
+                case ExpressionKind.Index:
+                    return CompileIndexExpression(expression, previousState);
             }
 
             return previousState;
@@ -170,6 +172,22 @@ namespace Monkey
                 Bytecode.Create((byte)Opcode.Name.Jump, new List<int> { alternativeState.Instructions.Count }),
                 alternativeState
             );
+        }
+
+        private CompilerState CompileIndexExpression(Expression expression, CompilerState previousState)
+        {
+            var indexExpression = (IndexExpression)expression;
+            var indexExpressionState = previousState;
+
+            indexExpressionState = CompileExpressionInner(indexExpression.Left, indexExpressionState);
+            indexExpressionState = CompileExpressionInner(indexExpression.Index, indexExpressionState);
+
+            if (indexExpressionState.Errors.Count > 0)
+            {
+                return indexExpressionState;
+            }
+
+            return Emit((byte)Opcode.Name.Index, new List<int> { }, indexExpressionState);
         }
 
         private CompilerState CompileInfixExpression(Expression expression, CompilerState previousState)

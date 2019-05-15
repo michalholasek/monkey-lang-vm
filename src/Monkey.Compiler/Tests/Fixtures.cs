@@ -325,7 +325,22 @@ namespace Monkey.Tests.Fixtures
                         19, 3, 0, // Array, 3 elements
                         3         // Pop
                     }
-                }
+                },
+                {
+                    "[1, 2, 3][1 + 1]",
+                    new List<byte>
+                    {
+                        1, 0, 0,  // 1
+                        1, 1, 0,  // 2
+                        1, 2, 0,  // 3
+                        19, 3, 0, // Array, 3 elements
+                        1, 0, 0,  // 1
+                        1, 0, 0,  // 1
+                        2,        // Add
+                        21,       // Index
+                        3         // Pop
+                    }
+                },
             };
 
             public static Dictionary<string, List<byte>> Hash = new Dictionary<string, List<byte>>
@@ -365,6 +380,20 @@ namespace Monkey.Tests.Fixtures
                         1, 5, 0,  // 6
                         5,        // Multiply
                         20, 2, 0, // Hash, 2 key/value pairs
+                        3         // Pop
+                    }
+                },
+                {
+                    "{ 1: 2 }[2 - 1]",
+                    new List<byte>
+                    {
+                        1, 0, 0,  // 1
+                        1, 1, 0,  // 2
+                        20, 1, 0, // Hash, 1 key/value pairs
+                        1, 1, 0,  // 2
+                        1, 0, 0,  // 1
+                        4,        // Subtract
+                        21,       // Index
                         3         // Pop
                     }
                 }

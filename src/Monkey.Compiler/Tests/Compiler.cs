@@ -69,6 +69,7 @@ namespace Monkey.Tests
         [DataRow("[]")]
         [DataRow("[1, 2, 3]")]
         [DataRow("[1 + 2, 3 - 4, 5 * 6]")]
+        [DataRow("[1, 2, 3][1 + 1]")]
         public void ArrayExpression(string source)
         {
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
@@ -79,6 +80,7 @@ namespace Monkey.Tests
         [DataRow("{}")]
         [DataRow("{ 1: 2, 3: 4, 5: 6 }")]
         [DataRow("{ 1: 2 + 3, 4: 5 * 6 }")]
+        [DataRow("{ 1: 2 }[2 - 1]")]
         public void HashExpression(string source)
         {
             var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;

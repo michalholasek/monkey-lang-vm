@@ -84,6 +84,9 @@ namespace Monkey
                     case 20: // Opcode.Hash
                         ExecuteHashOperation();
                         break;
+                    case 21: // Opcode.Index
+                        ExecuteIndexOperation();
+                        break;
                 }
             }
         }
@@ -127,6 +130,25 @@ namespace Monkey
             elements.Reverse();
 
             internalState.Stack.Push(CreateObject(ObjectKind.Array, elements));
+        }
+
+        private void ExecuteArrayIndexOperation(Object obj, Object index)
+        {
+            if (obj.Kind != ObjectKind.Array)
+            {
+                internalState.Stack.Push(Invariants["null"]);
+                return;
+            }
+
+            var array = (List<Object>)obj.Value;
+
+            if (index.Kind != ObjectKind.Integer || (int)index.Value < 0 || (int)index.Value >= array.Count)
+            {
+                internalState.Stack.Push(Invariants["null"]);
+                return;
+            }
+
+            internalState.Stack.Push(array[(int)index.Value]);
         }
 
         private void ExecuteBangOperation()
@@ -260,6 +282,43 @@ namespace Monkey
             }
 
             internalState.Stack.Push(CreateObject(ObjectKind.Hash, hash));
+        }
+
+        private void ExecuteHashIndexOperation(Object obj, Object index)
+        {
+            if (obj.Kind != ObjectKind.Hash)
+            {
+                internalState.Stack.Push(Invariants["null"]);
+                return;
+            }
+
+            var hash = (Dictionary<string, Object>)obj.Value;
+
+            if (index.Kind != ObjectKind.Integer && index.Kind != ObjectKind.Boolean && index.Kind != ObjectKind.String)
+            {
+                internalState.Stack.Push(Invariants["null"]);
+                return;
+            }
+
+            var key = hash.Keys.Where(item => item == index.Value.ToString().ToLower()).FirstOrDefault();
+
+            internalState.Stack.Push(key != default(string) ? hash[key] : Invariants["null"]);
+        }
+
+        private void ExecuteIndexOperation()
+        {
+            var index = internalState.Stack.Pop();
+            var left = internalState.Stack.Pop();
+
+            switch (left.Kind)
+            {
+                case ObjectKind.Array:
+                    ExecuteArrayIndexOperation(left, index);
+                    break;
+                case ObjectKind.Hash:
+                    ExecuteHashIndexOperation(left, index);
+                    break;
+            }
         }
 
         private void ExecuteJumpOperation()

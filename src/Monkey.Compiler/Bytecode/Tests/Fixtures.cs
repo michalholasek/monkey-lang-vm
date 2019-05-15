@@ -28,7 +28,8 @@ namespace Monkey.Tests.Fixtures
             { 17, new Opcode.Definition { Name = Opcode.Name.SetGlobal, OperandLengths = new List<int> { 2 } }},
             { 18, new Opcode.Definition { Name = Opcode.Name.GetGlobal, OperandLengths = new List<int> { 2 } }},
             { 19, new Opcode.Definition { Name = Opcode.Name.Array, OperandLengths = new List<int> { 2 } }},
-            { 20, new Opcode.Definition { Name = Opcode.Name.Hash, OperandLengths = new List<int> { 2 } }}
+            { 20, new Opcode.Definition { Name = Opcode.Name.Hash, OperandLengths = new List<int> { 2 } }},
+            { 21, new Opcode.Definition { Name = Opcode.Name.Index, OperandLengths = new List<int> { 0 } }}
         };
     }
 
