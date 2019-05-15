@@ -291,26 +291,5 @@ namespace Monkey
                 .Constant(index, CreateObject(ObjectKind.String, stringExpression.Value))
                 .Create();
         }
-
-        private int DetermineConstantIndex(Expression expression, CompilerState previousState)
-        {
-            var index = previousState.Constants.FindIndex(item =>
-            {
-                switch (expression.Kind)
-                {
-                    case ExpressionKind.String:
-                        return item.Value.ToString() == ((StringExpression)expression).Value;
-                    default:
-                        return (int)item.Value == ((IntegerExpression)expression).Value;
-                }
-            });
-
-            if (index < 0)
-            {
-                index = previousState.Constants.Count;
-            }
-
-            return index;
-        }
     }
 }
