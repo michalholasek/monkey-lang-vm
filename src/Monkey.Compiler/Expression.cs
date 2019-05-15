@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Monkey.Shared;
 using static Monkey.Evaluator.Utilities;
@@ -38,6 +39,8 @@ namespace Monkey
                     return CompileIfElseExpression(expression, previousState);
                 case ExpressionKind.Array:
                     return CompileArrayExpression(expression, previousState);
+                case ExpressionKind.Hash:
+                    return CompileHashExpression(expression, previousState);
             }
 
             return previousState;
@@ -67,6 +70,25 @@ namespace Monkey
             var opcode = expressionValue == true ? (byte)Opcode.Name.True : (byte)Opcode.Name.False;
 
             return Emit(opcode, new List<int> {}, previousState);
+        }
+
+        private CompilerState CompileHashExpression(Expression expression, CompilerState previousState)
+        {
+            var hashExpression = (HashExpression)expression;
+            var hashExpressionState = previousState;
+
+            for (var i = 0; i < hashExpression.Keys.Count; i++)
+            {
+                hashExpressionState = CompileExpressionInner(hashExpression.Keys[i], hashExpressionState);
+                hashExpressionState = CompileExpressionInner(hashExpression.Values[i], hashExpressionState);
+
+                if (hashExpressionState.Errors.Count > 0)
+                {
+                    return hashExpressionState;
+                }
+            }
+
+            return Emit((byte)Opcode.Name.Hash, new List<int> { hashExpression.Keys.Count }, hashExpressionState);
         }
 
         private CompilerState CompileIdentifierExpression(Expression expression, CompilerState previousState)

@@ -76,6 +76,16 @@ namespace Monkey.Tests
         }
 
         [TestMethod]
+        [DataRow("{}")]
+        [DataRow("{ 1: 2, 3: 4, 5: 6 }")]
+        [DataRow("{ 1: 2 + 3, 4: 5 * 6 }")]
+        public void HashExpression(string source)
+        {
+            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
+            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.Hash[source]);
+        }
+
+        [TestMethod]
         [DataRow("let one = 1; let two = 2;")]
         [DataRow("let one = 1; one;")]
         [DataRow("let one = 1; let two = one; two;")]

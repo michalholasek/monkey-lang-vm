@@ -287,6 +287,30 @@ namespace Monkey.Tests.Fixtures
                     })
                 }
             };
+
+            public static Dictionary<string, Object> Hash = new Dictionary<string, Object>
+            {
+                {
+                    "{}",
+                    CreateObject(ObjectKind.Hash, new Dictionary<string, Object>())
+                },
+                {
+                    "{ 1: 2, 2: 3 }",
+                    CreateObject(ObjectKind.Hash, new Dictionary<string, Object>()
+                    {
+                        { "1", CreateObject(ObjectKind.Integer, 2) },
+                        { "2", CreateObject(ObjectKind.Integer, 3) }
+                    })
+                },
+                {
+                    "{ 1 + 1: 2 * 2, 3 + 3: 4 * 4 }",
+                    CreateObject(ObjectKind.Hash, new Dictionary<string, Object>()
+                    {
+                        { "2", CreateObject(ObjectKind.Integer, 4) },
+                        { "6", CreateObject(ObjectKind.Integer, 16) }
+                    })
+                }
+            };
         }
 
         public static class Statement

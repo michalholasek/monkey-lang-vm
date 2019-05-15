@@ -81,6 +81,9 @@ namespace Monkey
                     case 19: // Opcode.Array
                         ExecuteArrayOperation();
                         break;
+                    case 20: // Opcode.Hash
+                        ExecuteHashOperation();
+                        break;
                 }
             }
         }
@@ -231,6 +234,32 @@ namespace Monkey
         {
             internalState.Stack.Push(internalState.Constants[DecodeOperand(2)]);
             internalState.InstructionPointer += 2;
+        }
+
+        private void ExecuteHashOperation()
+        {
+            var count = DecodeOperand(2);
+            var hash = new Dictionary<string, Object>();
+            var keys = new List<string>();
+            var values = new List<Object>();
+
+            internalState.InstructionPointer += 2;
+
+            for (var i = 0; i < count; i++)
+            {
+                values.Add(internalState.Stack.Pop());
+                keys.Add(internalState.Stack.Pop().Value.ToString().ToLower());
+            }
+
+            keys.Reverse();
+            values.Reverse();
+
+            for (var i = 0; i < keys.Count; i++)
+            {
+                hash.Add(keys[i], values[i]);
+            }
+
+            internalState.Stack.Push(CreateObject(ObjectKind.Hash, hash));
         }
 
         private void ExecuteJumpOperation()
