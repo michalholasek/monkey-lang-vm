@@ -12,7 +12,7 @@ namespace Monkey
         {
             internal class CompilerStateFactory
             {
-                private Dictionary<string, Object> constants;
+                private List<Object> constants;
                 private Instruction currentInstruction;
                 private List<AssertionError> errors;
                 private Expression expression;
@@ -35,15 +35,14 @@ namespace Monkey
                     return this;
                 }
 
-                public CompilerStateFactory Constant(string identifier, Object value)
+                public CompilerStateFactory Constant(int index, Object obj)
                 {
-                    var key = constants.Keys.Where(item => item == identifier).FirstOrDefault();
-                    if (key != null)
+                    if (index < constants.Count)
                     {
                         return this;
                     }
 
-                    constants.Add(identifier, value);
+                    constants.Add(obj);
 
                     return this;
                 }

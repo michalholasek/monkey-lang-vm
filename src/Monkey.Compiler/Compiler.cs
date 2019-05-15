@@ -31,7 +31,7 @@ namespace Monkey
         {
             return new CompilerState
             {
-                Constants = new Dictionary<string, Object>(),
+                Constants = new List<Object>(),
                 Errors = new List<AssertionError>(),
                 Instructions = new List<byte>(),
                 SymbolTable = internalState.SymbolTable

@@ -12,7 +12,7 @@ namespace Monkey
         public class CompilerState
         {
             public Instruction CurrentInstruction { get; set; }
-            public Dictionary<string, Object> Constants { get; set; }
+            public List<Object> Constants { get; set; }
             public List<AssertionError> Errors { get; set; }
             public Expression Expression { get; set; }
             public Node Node { get; set; }

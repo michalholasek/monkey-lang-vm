@@ -26,6 +26,8 @@ namespace Monkey
                     return CompileIntegerExpression(expression, previousState);
                 case ExpressionKind.Boolean:
                     return CompileBooleanExpression(expression, previousState);
+                case ExpressionKind.String:
+                    return CompileStringExpression(expression, previousState);
                 case ExpressionKind.Identifier:
                     return CompileIdentifierExpression(expression, previousState);
                 case ExpressionKind.Prefix:
@@ -187,9 +189,11 @@ namespace Monkey
         {
             var integerExpression = (IntegerExpression)expression;
 
+            var index = DetermineConstantIndex(expression, previousState);
+
             return Factory.CompilerState()
-                .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { integerExpression.Value }, previousState))
-                .Constant(integerExpression.Value.ToString(), CreateObject(ObjectKind.Integer, integerExpression.Value))
+                .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, previousState))
+                .Constant(index, CreateObject(ObjectKind.Integer, integerExpression.Value))
                 .Create();
         }
 
@@ -214,6 +218,39 @@ namespace Monkey
             }
 
             return Emit(opcode, new List<int>(), rightExpressionState);
+        }
+
+        private CompilerState CompileStringExpression(Expression expression, CompilerState previousState)
+        {
+            var stringExpression = (StringExpression)expression;
+
+            var index = DetermineConstantIndex(expression, previousState);
+
+            return Factory.CompilerState()
+                .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, previousState))
+                .Constant(index, CreateObject(ObjectKind.String, stringExpression.Value))
+                .Create();
+        }
+
+        private int DetermineConstantIndex(Expression expression, CompilerState previousState)
+        {
+            var index = previousState.Constants.FindIndex(item =>
+            {
+                switch (expression.Kind)
+                {
+                    case ExpressionKind.String:
+                        return item.Value.ToString() == ((StringExpression)expression).Value;
+                    default:
+                        return (int)item.Value == ((IntegerExpression)expression).Value;
+                }
+            });
+
+            if (index < 0)
+            {
+                index = previousState.Constants.Count;
+            }
+
+            return index;
         }
     }
 }

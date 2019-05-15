@@ -30,8 +30,8 @@ namespace Monkey.Tests.Fixtures
                     "1 > 2",
                     new List<byte>
                     {
-                        1, 1, 0, // 1
-                        1, 2, 0, // 2
+                        1, 0, 0, // 1
+                        1, 1, 0, // 2
                         11,      // >
                         3        // Pop
                     }
@@ -40,7 +40,7 @@ namespace Monkey.Tests.Fixtures
                     "1 < 2",
                     new List<byte>
                     {
-                        1, 2, 0, // 2
+                        1, 0, 0, // 2
                         1, 1, 0, // 1
                         11,      // >
                         3        // Pop
@@ -50,8 +50,8 @@ namespace Monkey.Tests.Fixtures
                     "1 == 2",
                     new List<byte>
                     {
-                        1, 1, 0, // 1
-                        1, 2, 0, // 2
+                        1, 0, 0, // 1
+                        1, 1, 0, // 2
                         9,       // ==
                         3        // Pop
                     }
@@ -60,8 +60,8 @@ namespace Monkey.Tests.Fixtures
                     "1 != 2",
                     new List<byte>
                     {
-                        1, 1, 0, // 1
-                        1, 2, 0, // 2
+                        1, 0, 0, // 1
+                        1, 1, 0, // 2
                         10,       // !=
                         3        // Pop
                     }
@@ -103,8 +103,8 @@ namespace Monkey.Tests.Fixtures
                     "1 + 2",
                     new List<byte>
                     {
-                        1, 1, 0, // 1
-                        1, 2, 0, // 2
+                        1, 0, 0, // 1
+                        1, 1, 0, // 2
                         2,       // +
                         3        // Pop
                     }
@@ -113,7 +113,7 @@ namespace Monkey.Tests.Fixtures
                     "2 - 1",
                     new List<byte>
                     {
-                        1, 2, 0, // 2
+                        1, 0, 0, // 2
                         1, 1, 0, // 1
                         4,       // -
                         3        // Pop
@@ -123,8 +123,8 @@ namespace Monkey.Tests.Fixtures
                     "2 * 2",
                     new List<byte>
                     {
-                        1, 2, 0, // 2
-                        1, 2, 0, // 2
+                        1, 0, 0, // 2
+                        1, 0, 0, // 2
                         5,       // *
                         3        // Pop
                     }
@@ -133,8 +133,8 @@ namespace Monkey.Tests.Fixtures
                     "4 / 2",
                     new List<byte>
                     {
-                        1, 4, 0, // 4
-                        1, 2, 0, // 2
+                        1, 0, 0, // 4
+                        1, 1, 0, // 2
                         6,       // /
                         3        // Pop
                     }
@@ -143,46 +143,46 @@ namespace Monkey.Tests.Fixtures
                     "50 / 2 * 2 + 10 - 5",
                     new List<byte>
                     {
-                        1, 50, 0, // 4
-                        1, 2, 0,  // 2
-                        6,        // /
-                        1, 2, 0,  // 2
-                        5,        // *
-                        1, 10, 0, // 10
-                        2,        // +
-                        1, 5, 0,  // 5
-                        4,        // -
-                        3         // Pop
+                        1, 0, 0, // 50
+                        1, 1, 0, // 2
+                        6,       // /
+                        1, 1, 0, // 2
+                        5,       // *
+                        1, 2, 0, // 10
+                        2,       // +
+                        1, 3, 0, // 5
+                        4,       // -
+                        3        // Pop
                     }
                 },
                 {
                     "5 + 5 + 5 + 5 - 10",
                     new List<byte>
                     {
-                        1, 5, 0,  // 5
-                        1, 5, 0,  // 5
-                        2,        // +
-                        1, 5, 0,  // 5
-                        2,        // +
-                        1, 5, 0,  // 5
-                        2,        // +
-                        1, 10, 0, // 10
-                        4,        // -
-                        3         // Pop
+                        1, 0, 0, // 5
+                        1, 0, 0, // 5
+                        2,       // +
+                        1, 0, 0, // 5
+                        2,       // +
+                        1, 0, 0, // 5
+                        2,       // +
+                        1, 1, 0, // 10
+                        4,       // -
+                        3        // Pop
                     }
                 },
                 {
                     "2 * 2 * 2 * 2 * 2",
                     new List<byte>
                     {
-                        1, 2, 0,  // 2
-                        1, 2, 0,  // 2
+                        1, 0, 0,  // 2
+                        1, 0, 0,  // 2
                         5,        // *
-                        1, 2, 0,  // 2
+                        1, 0, 0,  // 2
                         5,        // *
-                        1, 2, 0,  // 2
+                        1, 0, 0,  // 2
                         5,        // *
-                        1, 2, 0,  // 2
+                        1, 0, 0,  // 2
                         5,        // *
                         3         // Pop
                     }
@@ -191,21 +191,21 @@ namespace Monkey.Tests.Fixtures
                     "5 * 2 + 10",
                     new List<byte>
                     {
-                        1, 5, 0,  // 5
-                        1, 2, 0,  // 2
-                        5,        // *
-                        1, 10, 0, // 10
-                        2,        // +
-                        3         // Pop
+                        1, 0, 0, // 5
+                        1, 1, 0, // 2
+                        5,       // *
+                        1, 2, 0, // 10
+                        2,       // +
+                        3        // Pop
                     }
                 },
                 {
                     "5 + 2 * 10",
                     new List<byte>
                     {
-                        1, 5, 0,  // 5
-                        1, 2, 0,  // 2
-                        1, 10, 0, // 10
+                        1, 0, 0,  // 5
+                        1, 1, 0,  // 2
+                        1, 2, 0,  // 10
                         5,        // *
                         2,        // +
                         3         // Pop
@@ -215,19 +215,19 @@ namespace Monkey.Tests.Fixtures
                     "5 * (2 + 10)",
                     new List<byte>
                     {
-                        1, 5, 0,  // 5
-                        1, 2, 0,  // 2
-                        1, 10, 0, // 10
-                        2,        // +
-                        5,        // *
-                        3         // Pop
+                        1, 0, 0, // 5
+                        1, 1, 0, // 2
+                        1, 2, 0, // 10
+                        2,       // +
+                        5,       // *
+                        3        // Pop
                     }
                 },
                 {
                     "-1",
                     new List<byte>
                     {
-                        1, 1, 0, // 1
+                        1, 0, 0, // 1
                         12,      // -
                         3        // Pop
                     }
@@ -242,11 +242,11 @@ namespace Monkey.Tests.Fixtures
                     {
                         7,         // true
                         15, 10, 0, // JumpNotTruthy, 10
-                        1, 10, 0,  // 10
+                        1, 0, 0,   // 10
                         14, 11, 0, // Jump, 11
                         16,        // Null
                         3,         // Pop
-                        1, 5, 13,  // 3333
+                        1, 1, 0,   // 3333
                         3          // Pop
                     }
                 },
@@ -256,12 +256,34 @@ namespace Monkey.Tests.Fixtures
                     {
                         7,         // true
                         15, 10, 0, // JumpNotTruthy, 10
-                        1, 10, 0,  // 10
+                        1, 0, 0,   // 10
                         14, 13, 0, // Jump, 13
-                        1, 20, 0,  // 20
+                        1, 1, 0,   // 20
                         3,         // Pop
-                        1, 5, 13,  // 3333
+                        1, 2, 0,   // 3333
                         3          // Pop
+                    }
+                }
+            };
+
+            public static Dictionary<string, List<byte>> String = new Dictionary<string, List<byte>>
+            {
+                {
+                    "\"monkey\"",
+                    new List<byte>
+                    {
+                        1, 0, 0, // Constant "monkey"
+                        3        // Pop
+                    }
+                },
+                {
+                    "\"mon\" + \"key\"",
+                    new List<byte>
+                    {
+                        1, 0, 0, // Constant "mon"
+                        1, 1, 0, // Constant "key"
+                        2,       // Add
+                        3        // Pop
                     }
                 }
             };
@@ -275,9 +297,9 @@ namespace Monkey.Tests.Fixtures
                     "let one = 1; let two = 2;",
                     new List<byte>
                     {
-                        1, 1, 0,  // 1
+                        1, 0, 0,  // 1
                         17, 0, 0, // SetGlobal 1
-                        1, 2, 0,  // 2
+                        1, 1, 0,  // 2
                         17, 1, 0  // SetGlobal 2
                     }
                 },
@@ -285,7 +307,7 @@ namespace Monkey.Tests.Fixtures
                     "let one = 1; one;",
                     new List<byte>
                     {
-                        1, 1, 0,  // 1
+                        1, 0, 0,  // 1
                         17, 0, 0, // SetGlobal 1
                         18, 0, 0, // GetGlobal 1
                         3         // Pop
@@ -295,7 +317,7 @@ namespace Monkey.Tests.Fixtures
                     "let one = 1; let two = one; two;",
                     new List<byte>
                     {
-                        1, 1, 0,  // 1
+                        1, 0, 0,  // 1
                         17, 0, 0, // SetGlobal 1
                         18, 0, 0, // GetGlobal 1
                         17, 1, 0, // SetGlobal 1

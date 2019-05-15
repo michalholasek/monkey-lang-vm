@@ -27,7 +27,7 @@ namespace Monkey
             internalState = new VirtualMachineState { Globals = new List<Object>() };
         }
 
-        public void Run(List<byte> instructions, Dictionary<string, Object> constants)
+        public void Run(List<byte> instructions, List<Object> constants)
         {
             internalState = InitializeState(instructions, constants);
 
@@ -82,7 +82,7 @@ namespace Monkey
             }
         }
 
-        private VirtualMachineState InitializeState(List<byte> instructions, Dictionary<string, Object> constants)
+        private VirtualMachineState InitializeState(List<byte> instructions, List<Object> constants)
         {
             return new VirtualMachineState
             {
@@ -142,13 +142,17 @@ namespace Monkey
             Object right = internalState.Stack.Pop();
             Object left = internalState.Stack.Pop();
 
-            if (left.Kind == ObjectKind.Integer && right.Kind == ObjectKind.Integer)
+            switch (left.Kind)
             {
-                ExecuteBinaryIntegerOperation(op, (int)left.Value, (int)right.Value);
-            }
-            else if (left.Kind == ObjectKind.Boolean && right.Kind == ObjectKind.Boolean)
-            {
-                ExecuteBinaryBooleanOperation(op, (bool)left.Value, (bool)right.Value);
+                case ObjectKind.Boolean:
+                    ExecuteBinaryBooleanOperation(op, (bool)left.Value, (bool)right.Value);
+                    break;
+                case ObjectKind.String:
+                    ExecuteBinaryStringOperation(op, left.Value.ToString(), right.Value.ToString());
+                    break;
+                default:
+                    ExecuteBinaryIntegerOperation(op, (int)left.Value, (int)right.Value);
+                    break;
             }
         }
 
@@ -193,9 +197,19 @@ namespace Monkey
             }
         }
 
+        private void ExecuteBinaryStringOperation(byte op, string left, string right)
+        {
+            switch (op)
+            {
+                case 2: // Opcode.Add
+                    internalState.Stack.Push(CreateObject(ObjectKind.String, string.Join(String.Empty, left, right)));
+                    break;
+            }
+        }
+
         private void ExecuteConstantOperation()
         {
-            internalState.Stack.Push(internalState.Constants[DecodeOperand(2).ToString()]);
+            internalState.Stack.Push(internalState.Constants[DecodeOperand(2)]);
             internalState.InstructionPointer += 2;
         }
 

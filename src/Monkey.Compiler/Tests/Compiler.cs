@@ -57,6 +57,15 @@ namespace Monkey.Tests
         }
 
         [TestMethod]
+        [DataRow("\"monkey\"")]
+        [DataRow("\"mon\" + \"key\"")]
+        public void StringExpression(string source)
+        {
+            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
+            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.String[source]);
+        }
+
+        [TestMethod]
         [DataRow("let one = 1; let two = 2;")]
         [DataRow("let one = 1; one;")]
         [DataRow("let one = 1; let two = one; two;")]

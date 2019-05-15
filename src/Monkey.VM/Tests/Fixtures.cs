@@ -221,6 +221,22 @@ namespace Monkey.Tests.Fixtures
                     CreateObject(ObjectKind.Integer, 20)
                 }
             };
+
+            public static Dictionary<string, Object> String = new Dictionary<string, Object>
+            {
+                {
+                    "\"monkey\"",
+                    CreateObject(ObjectKind.String, "monkey")
+                },
+                {
+                    "\"mon\" + \"key\"",
+                    CreateObject(ObjectKind.String, "monkey")
+                },
+                {
+                    "\"mon\" + \"key\" + \"banana\"",
+                    CreateObject(ObjectKind.String, "monkeybanana")
+                }
+            };
         }
 
         public static class Statement
