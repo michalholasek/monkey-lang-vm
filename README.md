@@ -35,6 +35,7 @@ Exiting monkey-lang REPL...
 - Let and Return statements
 - If-Else conditionals
 - Basic arithmetic for integer expressions
+- First class and higher-order functions
 
 ### Types
 | Type     | Examples                    |
@@ -79,6 +80,17 @@ Exiting monkey-lang REPL...
     return "Alternative.";
   }
 true
+```
+
+### Functions
+```
+> let returnsOne = fn() { 1; };
+> let returnsOneReturner = fn() { returnsOne; };
+> returnsOneReturner()();
+1
+> let identity = fn(a) { return a; };
+> identity(42);
+42
 ```
 
 ## License

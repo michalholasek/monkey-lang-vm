@@ -10,7 +10,7 @@ namespace Monkey.Shared
             internal class CallExpressionFactory
             {
                 private List<Expression> arguments { get; set; }
-                private FunctionExpression function { get; set; }
+                private Expression function { get; set; }
                 private Token identifier { get; set; }
 
                 public CallExpressionFactory Arguments(List<Expression> arguments)
@@ -19,7 +19,7 @@ namespace Monkey.Shared
                     return this;
                 }
 
-                public CallExpressionFactory Function(FunctionExpression fn)
+                public CallExpressionFactory Function(Expression fn)
                 {
                     this.function = fn;
                     return this;

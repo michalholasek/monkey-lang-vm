@@ -13,24 +13,27 @@ namespace Monkey
             internal class CompilerStateFactory
             {
                 private List<Object> constants;
-                private Instruction currentInstruction;
+                private Scope currentScope;
                 private List<AssertionError> errors;
                 private Expression expression;
                 private Node node;
-                private List<byte> instructions;
-                private Instruction previousInstruction;
-                private SymbolTable symbolTable;
+                private Stack<Scope> scopes;
 
+                public CompilerStateFactory EnterScope(Scope scope)
+                {
+                    this.scopes.Push(scope);
+                    this.currentScope = scope;
+                    return this;
+                }
+                
                 public CompilerStateFactory Assign(CompilerState previousState)
                 {
                     constants = previousState.Constants;
-                    currentInstruction = previousState.CurrentInstruction;
+                    currentScope = previousState.CurrentScope;
                     errors = previousState.Errors;
                     expression = previousState.Expression;
                     node = previousState.Node;
-                    instructions = previousState.Instructions;
-                    previousInstruction = previousState.PreviousInstruction;
-                    symbolTable = previousState.SymbolTable;
+                    scopes = previousState.Scopes;
 
                     return this;
                 }
@@ -49,7 +52,7 @@ namespace Monkey
 
                 public CompilerStateFactory CurrentInstruction(Instruction instruction)
                 {
-                    this.currentInstruction = instruction;
+                    this.currentScope.CurrentInstruction = instruction;
                     return this;
                 }
 
@@ -73,13 +76,20 @@ namespace Monkey
 
                 public CompilerStateFactory Instructions(List<byte> instructions)
                 {
-                    this.instructions.AddRange(instructions);
+                    this.currentScope.Instructions.AddRange(instructions);
                     return this;
                 }
 
                 public CompilerStateFactory PreviousInstruction(Instruction instruction)
                 {
-                    this.previousInstruction = instruction;
+                    this.currentScope.PreviousInstruction = instruction;
+                    return this;
+                }
+
+                public CompilerStateFactory LeaveScope()
+                {
+                    this.scopes.Pop();
+                    this.currentScope = this.scopes.First();
                     return this;
                 }
 
@@ -88,12 +98,10 @@ namespace Monkey
                     return new CompilerState
                     {
                         Constants = constants,
-                        CurrentInstruction = currentInstruction,
+                        CurrentScope = currentScope,
                         Errors = errors,
                         Node = node,
-                        Instructions = instructions,
-                        PreviousInstruction = previousInstruction,
-                        SymbolTable = symbolTable
+                        Scopes = scopes
                     };
                 }
             }

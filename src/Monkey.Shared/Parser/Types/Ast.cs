@@ -63,10 +63,10 @@ namespace Monkey.Shared
     public class CallExpression : Expression
     {
         public List<Expression> Arguments { get; set; }
-        public FunctionExpression Function { get; set; }
+        public Expression Function { get; set; }
         public Token Identifier { get; set; }
 
-        public CallExpression(Token identifier, List<Expression> arguments, FunctionExpression fn)
+        public CallExpression(Token identifier, List<Expression> arguments, Expression fn)
         {
             Arguments = arguments;
             Function = fn;

@@ -12,13 +12,20 @@ namespace Monkey
         {
             var index = previousState.Constants.FindIndex(item =>
             {
-                switch (expression.Kind)
+                if (item.Kind == ObjectKind.Integer && expression.Kind == ExpressionKind.Integer)
                 {
-                    case ExpressionKind.String:
-                        return item.Value.ToString() == ((StringExpression)expression).Value;
-                    default:
-                        return (int)item.Value == ((IntegerExpression)expression).Value;
+                    return (int)item.Value == ((IntegerExpression)expression).Value;
                 }
+                if (item.Kind == ObjectKind.String && expression.Kind == ExpressionKind.String)
+                {
+                    return item.Value.ToString() == ((StringExpression)expression).Value;
+                }
+                if (item.Kind == ObjectKind.Function && expression.Kind == ExpressionKind.Function)
+                {
+                    return item.Value.GetHashCode() == previousState.CurrentScope.Instructions.GetHashCode();
+                }
+
+                return false;
             });
 
             if (index < 0)
@@ -31,20 +38,24 @@ namespace Monkey
 
         private CompilerState RemoveLastPopInstruction(CompilerState previousState)
         {
-            var position = previousState.Instructions.LastIndexOf((byte)Opcode.Name.Pop);
-            previousState.Instructions.RemoveAt(position);
+            var position = previousState.CurrentScope.Instructions.LastIndexOf((byte)Opcode.Name.Pop);
+            previousState.CurrentScope.Instructions.RemoveAt(position);
 
             return Factory.CompilerState()
                 .Assign(previousState)
-                .CurrentInstruction(previousState.PreviousInstruction)
+                .CurrentInstruction(previousState.CurrentScope.PreviousInstruction)
                 .Create();
         }
 
         private CompilerState ReplaceInstruction(int position, List<byte> instruction, CompilerState previousState)
         {
-            previousState.Instructions.RemoveRange(position, instruction.Count);
-            previousState.Instructions.InsertRange(position, instruction);
-            return previousState;
+            previousState.CurrentScope.Instructions.RemoveRange(position, instruction.Count);
+            previousState.CurrentScope.Instructions.InsertRange(position, instruction);
+            
+            return Factory.CompilerState()
+                .Assign(previousState)
+                .CurrentInstruction(new Instruction { Opcode = instruction.First(), Position = position })
+                .Create();
         }
     }
 }

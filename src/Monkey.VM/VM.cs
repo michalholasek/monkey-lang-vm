@@ -31,10 +31,10 @@ namespace Monkey
         {
             internalState = InitializeState(instructions, constants);
 
-            while (internalState.InstructionPointer < internalState.Instructions.Count)
+            while (internalState.CurrentFrame.InstructionPointer < internalState.CurrentFrame.Instructions.Count)
             {
-                internalState.Opcode = internalState.Instructions[internalState.InstructionPointer];
-                internalState.InstructionPointer++;
+                internalState.Opcode = internalState.CurrentFrame.Instructions[internalState.CurrentFrame.InstructionPointer];
+                internalState.CurrentFrame.InstructionPointer++;
 
                 switch (internalState.Opcode)
                 {
@@ -87,29 +87,54 @@ namespace Monkey
                     case 21: // Opcode.Index
                         ExecuteIndexOperation();
                         break;
+                    case 22: // Opcode.Call
+                        ExecuteCallOperation();
+                        break;
+                    case 23: // Opcode.Return
+                        ExecuteReturnOperation();
+                        break;
+                    case 24: // Opcode.ReturnValue
+                        ExecuteReturnValueOperation();
+                        break;
+                    case 25: // Opcode.SetLocal
+                        ExecuteSetLocalOperation();
+                        break;
+                    case 26: // Opcode.GetLocal
+                        ExecuteGetLocalOperation();
+                        break;
                 }
             }
         }
 
         private VirtualMachineState InitializeState(List<byte> instructions, List<Object> constants)
         {
+            var globalFrame = new Frame(instructions, basePointer: 0);
+            var frames = new Stack<Frame>();
+
+            frames.Push(globalFrame);
+
             return new VirtualMachineState
             {
                 Constants = constants,
+                CurrentFrame = globalFrame,
+                Frames = frames,
                 Globals = internalState.Globals,
-                Instructions = instructions,
-                InstructionPointer = 0,
                 Stack = new VirtualMachineStack()
             };
         }
 
         private int DecodeOperand(int length)
         {
+            if (length == 1)
+            {
+                return internalState.CurrentFrame.Instructions[internalState.CurrentFrame.InstructionPointer];
+            }
+            
             var buffer = new byte[length];
 
             for (var i = 0; i < length; i++)
             {
-                buffer[i] = internalState.Instructions[internalState.InstructionPointer + i];
+                buffer[i] = internalState.CurrentFrame.Instructions[internalState.CurrentFrame.InstructionPointer + i];
             }
 
             return BitConverter.ToInt16(buffer, startIndex: 0);
@@ -120,7 +145,7 @@ namespace Monkey
             var count = DecodeOperand(2);
             var elements = new List<Object>();
 
-            internalState.InstructionPointer += 2;
+            internalState.CurrentFrame.InstructionPointer += 2;
 
             for (var i = 0; i < count; i++)
             {
@@ -252,10 +277,36 @@ namespace Monkey
             }
         }
 
+        private void ExecuteCallOperation()
+        {
+            var arity = DecodeOperand(1);
+            var basePointer = internalState.Stack.Count - arity - 1;
+            var fn = internalState.Stack[basePointer];
+
+            internalState.CurrentFrame.InstructionPointer += 1;
+
+            PushFrame(new Frame((List<byte>)fn.Value, basePointer));
+            PushArguments(arity);
+        }
+
         private void ExecuteConstantOperation()
         {
             internalState.Stack.Push(internalState.Constants[DecodeOperand(2)]);
-            internalState.InstructionPointer += 2;
+            internalState.CurrentFrame.InstructionPointer += 2;
+        }
+
+        private void ExecuteGetGlobalOperation()
+        {
+            var index = DecodeOperand(2);
+            internalState.CurrentFrame.InstructionPointer += 2;
+            internalState.Stack.Push(internalState.Globals[index]);
+        }
+
+        private void ExecuteGetLocalOperation()
+        {
+            var index = DecodeOperand(1);
+            internalState.CurrentFrame.InstructionPointer += 1;
+            internalState.Stack.Push(internalState.CurrentFrame.Locals[index]);
         }
 
         private void ExecuteHashOperation()
@@ -265,7 +316,7 @@ namespace Monkey
             var keys = new List<string>();
             var values = new List<Object>();
 
-            internalState.InstructionPointer += 2;
+            internalState.CurrentFrame.InstructionPointer += 2;
 
             for (var i = 0; i < count; i++)
             {
@@ -323,19 +374,19 @@ namespace Monkey
 
         private void ExecuteJumpOperation()
         {
-            internalState.InstructionPointer = DecodeOperand(2);
+            internalState.CurrentFrame.InstructionPointer = DecodeOperand(2);
         }
 
         private void ExecuteJumpNotTruthyOperation()
         {
             var position = DecodeOperand(2);
 
-            internalState.InstructionPointer += 2;
+            internalState.CurrentFrame.InstructionPointer += 2;
             var condition = internalState.Stack.Pop();
 
             if (!IsTruthy(condition))
             {
-                internalState.InstructionPointer = position;
+                internalState.CurrentFrame.InstructionPointer = position;
             }
         }
 
@@ -358,18 +409,60 @@ namespace Monkey
             internalState.Stack.Push(Invariants["null"]);
         }
 
+        private void ExecuteReturnOperation()
+        {
+            internalState.Stack.ResetTo(internalState.CurrentFrame.Base);
+
+            PopFrame();
+
+            internalState.Stack.Push(Invariants["null"]);
+        }
+
+        private void ExecuteReturnValueOperation()
+        {
+            var value = internalState.Stack.Pop();
+
+            internalState.Stack.ResetTo(internalState.CurrentFrame.Base);
+
+            PopFrame();
+
+            internalState.Stack.Push(value);
+        }
+
         private void ExecuteSetGlobalOperation()
         {
             // Just skip the operand, we are not using it now
-            internalState.InstructionPointer += 2;
+            internalState.CurrentFrame.InstructionPointer += 2;
             internalState.Globals.Add(internalState.Stack.Pop());
         }
 
-        private void ExecuteGetGlobalOperation()
+        private void ExecuteSetLocalOperation()
         {
-            var index = DecodeOperand(2);
-            internalState.InstructionPointer += 2;
-            internalState.Stack.Push(internalState.Globals[index]);
+            internalState.CurrentFrame.InstructionPointer += 1;
+            internalState.CurrentFrame.Locals.Add(internalState.Stack.Pop());
+        }
+
+        private void PopFrame()
+        {
+            internalState.Frames.Pop();
+            internalState.CurrentFrame = internalState.Frames.First();
+        }
+
+        private void PushArguments(int count)
+        {
+            // We need to skip function object
+            var start = internalState.CurrentFrame.Base + 1;
+
+            for (var i = 0; i < count; i++)
+            {
+                internalState.CurrentFrame.Locals.Add(internalState.Stack[start + i]);
+            }
+        }
+
+        private void PushFrame(Frame frame)
+        {
+            internalState.Frames.Push(frame);
+            internalState.CurrentFrame = frame;
         }
     }
 }

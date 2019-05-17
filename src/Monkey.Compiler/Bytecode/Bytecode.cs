@@ -22,6 +22,9 @@ namespace Monkey
 
                 switch (length)
                 {
+                    case 1:
+                        instruction.Add((byte)operands[i]);
+                        break;
                     case 2:
                         instruction.AddRange(BitConverter.GetBytes(Convert.ToUInt16(operands[i])));
                         break;

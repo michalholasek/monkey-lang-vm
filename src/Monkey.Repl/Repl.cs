@@ -61,7 +61,7 @@ namespace Monkey.Repl
                 }
                 else
                 {
-                    vm.Run(compilationResult.Instructions, compilationResult.Constants);
+                    vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
                     Console.WriteLine(vm.LastStackElement.Value.ToString());
                 }
             }

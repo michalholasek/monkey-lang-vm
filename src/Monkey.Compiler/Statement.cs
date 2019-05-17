@@ -34,6 +34,23 @@ namespace Monkey
 
         private CompilerState CompileLetStatement(CompilerState previousState)
         {
+            var statement = (Statement)previousState.Node;
+            var expressionState = CompileStatementExpression(previousState);
+            var symbol = expressionState.CurrentScope.SymbolTable.Define(statement.Identifier.Literal);
+
+            var opcode = symbol.Scope == SymbolScope.Global ? (byte)Opcode.Name.SetGlobal : (byte)Opcode.Name.SetLocal;
+
+            return Emit(opcode, new List<int> { symbol.Index }, expressionState);
+        }
+
+        private CompilerState CompileReturnStatement(CompilerState previousState)
+        {
+            var expressionState = CompileStatementExpression(previousState);
+            return Emit((byte)Opcode.Name.ReturnValue, new List<int>(), expressionState);
+        }
+
+        private CompilerState CompileStatementExpression(CompilerState previousState)
+        {
             var expressionState = CompileExpression(previousState);
 
             if (expressionState.Errors.Count > 0)
@@ -41,17 +58,13 @@ namespace Monkey
                 return expressionState;
             }
 
-            if (expressionState.CurrentInstruction.Opcode == (byte)Opcode.Name.Pop)
+            if (expressionState.CurrentScope.CurrentInstruction.Opcode == (byte)Opcode.Name.Pop)
             {
                 // We want to keep defined values on the stack
                 expressionState = RemoveLastPopInstruction(expressionState);
             }
 
-            var statement = (Statement)expressionState.Node;
-            
-            var symbol = expressionState.SymbolTable.Define(statement.Identifier.Literal);
-
-            return Emit((byte)Opcode.Name.SetGlobal, new List<int> { symbol.Index }, expressionState);
+            return expressionState;
         }
     }
 }

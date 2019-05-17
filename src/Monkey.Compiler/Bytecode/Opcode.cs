@@ -34,15 +34,20 @@ namespace Monkey
             GetGlobal,
             Array,
             Hash,
-            Index
+            Index,
+            Call,
+            Return,
+            ReturnValue,
+            SetLocal,
+            GetLocal
         }
         
         private static Dictionary<byte, Definition> Opcodes = new Dictionary<byte, Definition>
         {
             { 0, new Definition { Name = Name.Illegal, OperandLengths = new List<int> { 0 } }},
-            { 3, new Definition { Name = Name.Pop, OperandLengths = new List<int> { 0 } }},
             { 1, new Definition { Name = Name.Constant, OperandLengths = new List<int> { 2 } }},
             { 2, new Definition { Name = Name.Add, OperandLengths = new List<int> { 0 } }},
+            { 3, new Definition { Name = Name.Pop, OperandLengths = new List<int> { 0 } }},
             { 4, new Definition { Name = Name.Subtract, OperandLengths = new List<int> { 0 } }},
             { 5, new Definition { Name = Name.Multiply, OperandLengths = new List<int> { 0 } }},
             { 6, new Definition { Name = Name.Divide, OperandLengths = new List<int> { 0 } }},
@@ -60,7 +65,12 @@ namespace Monkey
             { 18, new Definition { Name = Name.GetGlobal, OperandLengths = new List<int> { 2 } }},
             { 19, new Definition { Name = Name.Array, OperandLengths = new List<int> { 2 } }},
             { 20, new Definition { Name = Name.Hash, OperandLengths = new List<int> { 2 } }},
-            { 21, new Definition { Name = Name.Index, OperandLengths = new List<int> { 0 } }}
+            { 21, new Definition { Name = Name.Index, OperandLengths = new List<int> { 0 } }},
+            { 22, new Definition { Name = Name.Call, OperandLengths = new List<int> { 1 } }},
+            { 23, new Definition { Name = Name.Return, OperandLengths = new List<int> { 0 } }},
+            { 24, new Definition { Name = Name.ReturnValue, OperandLengths = new List<int> { 0 } }},
+            { 25, new Definition { Name = Name.SetLocal, OperandLengths = new List<int> { 1 } }},
+            { 26, new Definition { Name = Name.GetLocal, OperandLengths = new List<int> { 1 } }}
         };
 
         public static Definition Find(byte code)

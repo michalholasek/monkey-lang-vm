@@ -170,6 +170,7 @@ namespace Monkey.Shared
         private static ExpressionParseResult ParseCallExpression(ExpressionParseResult currentState)
         {
             var argumentListParseResult = ParseExpressionList(currentState, SyntaxKind.RightParenthesis);
+            Expression fn = default(Expression);
 
             var identifier = currentState.Tokens
                     .Skip(currentState.Position - Skip.Identifier - Skip.Parenthesis)
@@ -177,9 +178,14 @@ namespace Monkey.Shared
                     .Where(token => token.Kind == SyntaxKind.Identifier)
                     .FirstOrDefault();
 
+            if (currentState.Expression.Kind == ExpressionKind.Function || currentState.Expression.Kind == ExpressionKind.Call)
+            {
+                fn = currentState.Expression;
+            }
+
             var expression = Factory.CallExpression()
                 .Arguments(argumentListParseResult.Expressions)
-                .Function(currentState.Expression as FunctionExpression)
+                .Function(fn)
                 .Identifier(identifier)
                 .Create();
 

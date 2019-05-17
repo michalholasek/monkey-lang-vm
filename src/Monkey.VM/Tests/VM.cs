@@ -33,7 +33,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Integer[source]);
         }
@@ -69,7 +69,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Boolean[source]);
         }
@@ -89,7 +89,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.IfElse[source]);
         }
@@ -102,7 +102,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.String[source]);
         }
@@ -121,7 +121,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Array[source]);
         }
@@ -138,9 +138,39 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Hash[source]);
+        }
+
+        [TestMethod]
+        [DataRow("let fivePlusTen = fn() { 5 + 10; }; fivePlusTen();")]
+        [DataRow("let one = fn() { 1; }; let two = fn() { 2; }; one() + two();")]
+        [DataRow("let a = fn() { 1; }; let b = fn() { a() + 1; }; let c = fn() { b() + 1; }; c();")]
+        [DataRow("let earlyExit = fn() { return 99; 100; }; earlyExit();")]
+        [DataRow("let earlyExit = fn() { return 99; return 100; }; earlyExit();")]
+        [DataRow("let noReturn = fn() { }; noReturn();")]
+        [DataRow("let noReturn = fn() { }; let noReturnTwo = fn() { noReturn(); }; noReturn(); noReturnTwo();")]
+        [DataRow("let returnsOne = fn() { 1; }; let returnsOneReturner = fn() { returnsOne; }; returnsOneReturner()();")]
+        [DataRow("let one = fn() { let one = 1; one }; one();")]
+        [DataRow("let oneAndTwo = fn() { let one = 1; let two = 2; one + two; }; oneAndTwo();")]
+        [DataRow("let oneAndTwo = fn() { let one = 1; let two = 2; one + two; }; let threeAndFour = fn() { let three = 3; let four = 4; three + four; }; oneAndTwo() + threeAndFour();")]
+        [DataRow("let firstFoobar = fn() { let foobar = 50; foobar; }; let secondFoobar = fn() { let foobar = 100; foobar; }; firstFoobar() + secondFoobar();")]
+        [DataRow("let globalSeed = 50; let minusOne = fn() { let num = 1; globalSeed - num; }; let minusTwo = fn() { let num = 2; globalSeed - num; }; minusOne() + minusTwo();")]
+        [DataRow("let returnsOneReturner = fn() { let returnsOne = fn() { 1; }; returnsOne; }; returnsOneReturner()();")]
+        [DataRow("let identity = fn(a) { a; }; identity(4);")]
+        [DataRow("let sum = fn(a, b) { a + b; }; sum(1, 2);")]
+        [DataRow("let sum = fn(a, b) { let c = a + b; c; }; sum(1, 2);")]
+        [DataRow("let sum = fn(a, b) { let c = a + b; c; }; sum(1, 2) + sum(3, 4);")]
+        [DataRow("let sum = fn(a, b) { let c = a + b; c; }; let outer = fn() { sum(1, 2) + sum(3, 4); }; outer();")]
+        [DataRow("let globalNum = 10; let sum = fn(a, b) { let c = a + b; c + globalNum; }; let outer = fn() { sum(1, 2) + sum(3, 4) + globalNum; }; outer() + globalNum;")]
+        public void FunctionExpressions(string source)
+        {
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
+
+            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Function[source]);
         }
 
         [TestMethod]
@@ -151,7 +181,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Statement.Let[source]);
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Monkey;
@@ -27,8 +28,8 @@ namespace Monkey.Tests
         [DataRow("-1")]
         public void IntegerExpression(string source)
         {
-            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
-            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.Integer[source]);
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+            Utilities.Assert.AreDeeplyEqual(compilationResult.CurrentScope.Instructions, Fixtures.Compiler.Expression.Integer[source]);
         }
 
         [TestMethod]
@@ -43,8 +44,8 @@ namespace Monkey.Tests
         [DataRow("!true")]
         public void BooleanExpression(string source)
         {
-            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
-            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.Boolean[source]);
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+            Utilities.Assert.AreDeeplyEqual(compilationResult.CurrentScope.Instructions, Fixtures.Compiler.Expression.Boolean[source]);
         }
 
         [TestMethod]
@@ -52,8 +53,8 @@ namespace Monkey.Tests
         [DataRow("if (true) { 10; } else { 20; }; 3333;")]
         public void IfElseExpression(string source)
         {
-            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
-            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.IfElse[source]);
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+            Utilities.Assert.AreDeeplyEqual(compilationResult.CurrentScope.Instructions, Fixtures.Compiler.Expression.IfElse[source]);
         }
 
         [TestMethod]
@@ -61,8 +62,8 @@ namespace Monkey.Tests
         [DataRow("\"mon\" + \"key\"")]
         public void StringExpression(string source)
         {
-            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
-            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.String[source]);
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+            Utilities.Assert.AreDeeplyEqual(compilationResult.CurrentScope.Instructions, Fixtures.Compiler.Expression.String[source]);
         }
 
         [TestMethod]
@@ -72,8 +73,8 @@ namespace Monkey.Tests
         [DataRow("[1, 2, 3][1 + 1]")]
         public void ArrayExpression(string source)
         {
-            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
-            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.Array[source]);
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+            Utilities.Assert.AreDeeplyEqual(compilationResult.CurrentScope.Instructions, Fixtures.Compiler.Expression.Array[source]);
         }
 
         [TestMethod]
@@ -83,8 +84,28 @@ namespace Monkey.Tests
         [DataRow("{ 1: 2 }[2 - 1]")]
         public void HashExpression(string source)
         {
-            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
-            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Expression.Hash[source]);
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+            Utilities.Assert.AreDeeplyEqual(compilationResult.CurrentScope.Instructions, Fixtures.Compiler.Expression.Hash[source]);
+        }
+
+        [TestMethod]
+        [DataRow("fn() { return 5 + 10; }")]
+        [DataRow("fn() { 5 + 10; }")]
+        [DataRow("fn() { 1; 2; }")]
+        [DataRow("fn() { }")]
+        [DataRow("fn() { 24; }();")]
+        [DataRow("let noArg = fn() { 24; }; noArg();")]
+        [DataRow("let num = 55; fn() { num; };")]
+        [DataRow("fn() { let num = 55; num; };")]
+        [DataRow("fn() { let a = 55; let b = 77; a + b; };")]
+        [DataRow("let oneArg = fn(a) { a; }; oneArg(24);")]
+        [DataRow("let manyArgs = fn(a, b, c) { a; b; c; }; manyArgs(24, 25, 26);")]
+        public void FunctionExpression(string source)
+        {
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+            var functionInstructions = compilationResult.Constants.Where(item => item.Kind == ObjectKind.Function).SelectMany(item => (List<byte>)item.Value);
+            var instructions = compilationResult.Scopes.SelectMany(scope => scope.Instructions).Concat(functionInstructions);
+            Utilities.Assert.AreDeeplyEqual(instructions, Fixtures.Compiler.Expression.Function[source]);
         }
 
         [TestMethod]
@@ -93,8 +114,8 @@ namespace Monkey.Tests
         [DataRow("let one = 1; let two = one; two;")]
         public void LetStatement(string source)
         {
-            var actual = compiler.Compile(parser.Parse(scanner.Scan(source))).Instructions;
-            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Compiler.Statement.Let[source]);
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+            Utilities.Assert.AreDeeplyEqual(compilationResult.CurrentScope.Instructions, Fixtures.Compiler.Statement.Let[source]);
         }
 
         [TestMethod]

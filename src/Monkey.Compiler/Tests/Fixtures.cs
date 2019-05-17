@@ -398,6 +398,175 @@ namespace Monkey.Tests.Fixtures
                     }
                 }
             };
+
+            public static Dictionary<string, List<byte>> Function = new Dictionary<string, List<byte>>
+            {
+                {
+                    "fn() { return 5 + 10; }",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 2, 0,  // fn constant
+                        3,        // Pop
+                                  // Function scope
+                        1, 0, 0,  // 5
+                        1, 1, 0,  // 10
+                        2,        // Add
+                        24        // ReturnValue
+                    }
+                },
+                {
+                    "fn() { 5 + 10; }",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 2, 0,  // fn constant
+                        3,        // Pop
+                                  // Function scope
+                        1, 0, 0,  // 5
+                        1, 1, 0,  // 10
+                        2,        // Add
+                        24        // ReturnValue
+                    }
+                },
+                {
+                    "fn() { 1; 2; }",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 2, 0,  // fn constant
+                        3,        // Pop
+                                  // Function scope
+                        1, 0, 0,  // 1
+                        3,        // Pop
+                        1, 1, 0,  // 2
+                        24        // ReturnValue
+                    }
+                },
+                {
+                    "fn() { }",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 0, 0,  // fn constant
+                        3,        // Pop
+                                  // Function scope
+                        23        // Return
+                    }
+                },
+                {
+                    "fn() { 24; }();",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 1, 0,  // fn constant
+                        22, 0,    // Call
+                        3,        // Pop
+                                  // Function scope
+                        1, 0, 0,  // 24
+                        24        // ReturnValue
+                    }
+                },
+                {
+                    "let noArg = fn() { 24; }; noArg();",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 1, 0,  // fn constant
+                        17, 0, 0, // SetGlobal noArg
+                        18, 0, 0, // GetGlobal noArg
+                        22, 0,    // Call noArg fn
+                        3,        // Pop
+                                  // Function scope
+                        1, 0, 0,  // 24
+                        24        // ReturnValue
+                    }
+                },
+                {
+                    "let num = 55; fn() { num; };",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 0, 0,  // 55
+                        17, 0, 0, // SetGlobal 55
+                        1, 1, 0,  // fn
+                        3,        // Pop
+                                  // Function scope
+                        18, 0, 0, // GetGlobal noArg
+                        24        // ReturnValue
+                    }
+                },
+                {
+                    "fn() { let num = 55; num; };",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 1, 0,  // fn
+                        3,        // Pop
+                                  // Function scope
+                        1, 0, 0,  // 55
+                        25, 0,    // SetLocal 55
+                        26, 0,    // GetLocal 55
+                        24        // ReturnValue
+                    }
+                },
+                {
+                    "fn() { let a = 55; let b = 77; a + b; };",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 2, 0,  // fn
+                        3,        // Pop
+                                  // Function scope
+                        1, 0, 0,  // 55
+                        25, 0,    // SetLocal 55
+                        1, 1, 0,  // 77
+                        25, 1,    // SetLocal 77
+                        26, 0,    // GetLocal 55
+                        26, 1,    // GetLocal 77
+                        2,        // Add
+                        24        // ReturnValue
+                    }
+                },
+                {
+                    "let oneArg = fn(a) { a; }; oneArg(24);",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 0, 0,  // fn oneArg
+                        17, 0, 0, // SetGlobal fn
+                        18, 0, 0, // GetGlobal fn
+                        1, 1, 0,  // 24
+                        22, 1,    // Call with arity 1
+                        3,        // Pop
+                                  // Function scope
+                        26, 0,    // GetLocal 24
+                        24        // ReturnValue
+                    }
+                },
+                {
+                    "let manyArgs = fn(a, b, c) { a; b; c; }; manyArgs(24, 25, 26);",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 0, 0,  // fn manyArgs
+                        17, 0, 0, // SetGlobal fn
+                        18, 0, 0, // GetGlobal fn
+                        1, 1, 0,  // 24
+                        1, 2, 0,  // 25
+                        1, 3, 0,  // 26
+                        22, 3,    // Call with arity 3
+                        3,        // Pop
+                                  // Function scope
+                        26, 0,    // GetLocal 24
+                        3,        // Pop
+                        26, 1,    // GetLocal 25
+                        3,        // Pop
+                        26, 2,    // GetLocal 26
+                        24        // ReturnValue
+                    }
+                }
+            };
         }
 
         public static class Statement

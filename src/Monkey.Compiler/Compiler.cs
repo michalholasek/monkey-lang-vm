@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Monkey.Shared;
 using Object = Monkey.Shared.Object;
@@ -12,7 +13,17 @@ namespace Monkey
 
         public Compiler()
         {
-            internalState = new CompilerState { SymbolTable = new SymbolTable() };
+            var globalScope = new Scope
+            {
+                Instructions = new List<byte>(),
+                SymbolTable = new SymbolTable()
+            };
+
+            var scopes = new Stack<Scope>();
+
+            scopes.Push(globalScope);
+
+            internalState = new CompilerState { Scopes = scopes };
         }
 
         public CompilerState Compile(Node node)
@@ -29,12 +40,22 @@ namespace Monkey
 
         private CompilerState InitializeState()
         {
+            var globalScope = new Scope
+            {
+                Instructions = new List<byte>(),
+                SymbolTable = internalState.Scopes.First().SymbolTable
+            };
+
+            var scopes = new Stack<Scope>();
+
+            scopes.Push(globalScope);
+
             return new CompilerState
             {
                 Constants = new List<Object>(),
+                CurrentScope = globalScope,
                 Errors = new List<AssertionError>(),
-                Instructions = new List<byte>(),
-                SymbolTable = internalState.SymbolTable
+                Scopes = scopes
             };
         }
 
@@ -46,6 +67,8 @@ namespace Monkey
                     return CompileProgramNode(previousState);
                 case NodeKind.Let:
                     return CompileLetStatement(previousState);
+                case NodeKind.Return:
+                    return CompileReturnStatement(previousState);
                 default:
                     return CompileExpression(previousState);
             }
@@ -73,13 +96,32 @@ namespace Monkey
         private CompilerState Emit(byte opcode, List<int> operands, CompilerState previousState)
         {
             var instruction = Bytecode.Create(opcode, operands);
-            var position = previousState.Instructions.Count;
+            var position = previousState.CurrentScope.Instructions.Count;
 
             return Factory.CompilerState()
                 .Assign(previousState)
                 .CurrentInstruction(new Instruction { Opcode = opcode, Position = position })
-                .PreviousInstruction(previousState.CurrentInstruction)
+                .PreviousInstruction(previousState.CurrentScope.CurrentInstruction)
                 .Instructions(instruction)
+                .Create();
+        }
+
+        private CompilerState EnterScope(CompilerState previousState)
+        {
+            var symbolTable = new SymbolTable(previousState.CurrentScope.SymbolTable);
+            var scope = new Scope { Instructions = new List<byte>(), SymbolTable = symbolTable };
+
+            return Factory.CompilerState()
+                .Assign(previousState)
+                .EnterScope(scope)
+                .Create();
+        }
+
+        private CompilerState LeaveScope(CompilerState previousState)
+        {
+            return Factory.CompilerState()
+                .Assign(previousState)
+                .LeaveScope()
                 .Create();
         }
     }

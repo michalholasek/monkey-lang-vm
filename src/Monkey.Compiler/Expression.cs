@@ -43,6 +43,10 @@ namespace Monkey
                     return CompileHashExpression(expression, previousState);
                 case ExpressionKind.Index:
                     return CompileIndexExpression(expression, previousState);
+                case ExpressionKind.Function:
+                    return CompileFunctionExpression(expression, previousState);
+                case ExpressionKind.Call:
+                    return CompileCallExpression(expression, previousState);
             }
 
             return previousState;
@@ -74,6 +78,95 @@ namespace Monkey
             return Emit(opcode, new List<int> {}, previousState);
         }
 
+        private CompilerState CompileCallExpression(Expression expression, CompilerState previousState)
+        {
+            var callExpression = (CallExpression)expression;
+            CompilerState callState;
+
+            if (callExpression.Function != default(FunctionExpression))
+            {
+                callState = CompileExpressionInner(callExpression.Function, previousState);
+            }
+            else
+            {
+                callState = CompileExpressionInner(new IdentifierExpression(callExpression.Identifier.Literal), previousState);
+            }
+
+            if (callState.Errors.Count > 0)
+            {
+                return callState;
+            }
+
+            foreach (var arg in callExpression.Arguments)
+            {
+                callState = CompileExpressionInner(arg, callState);
+
+                if (callState.Errors.Count > 0)
+                {
+                    return callState;
+                }
+            }
+
+            return Emit((byte)Opcode.Name.Call, new List<int> { callExpression.Arguments.Count }, callState);
+        }
+
+        private CompilerState CompileFunctionExpression(Expression expression, CompilerState previousState)
+        {
+            var functionExpression = (FunctionExpression)expression;
+            var functionState = EnterScope(previousState);
+            CompilerState afterFunctionState;
+
+            functionExpression.Parameters.ForEach(param =>
+            {
+                functionState.CurrentScope.SymbolTable.Define(param.Literal);
+            });
+
+            functionState = CompileStatements(functionExpression.Body.Statements, functionState);
+
+            if (functionState.Errors.Count > 0)
+            {
+                return functionState;
+            }
+
+            var instructions = functionState.CurrentScope.Instructions;
+            var index = DetermineConstantIndex(expression, previousState);
+
+            // Eg. fn () { }
+            if (instructions.Count == 0)
+            {
+                afterFunctionState = LeaveScope(Emit((byte)Opcode.Name.Return, new List<int>(), functionState));
+
+                return Factory.CompilerState()
+                    .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, afterFunctionState))
+                    .Constant(index, CreateObject(ObjectKind.Function, instructions))
+                    .Create();
+            }
+
+            // Replace last Opcode.Pop instruction with implicit Opcode.ReturnValue,
+            // since we want to keep last expression value on the stack
+            if (functionState.CurrentScope.CurrentInstruction.Opcode == (byte)Opcode.Name.Pop)
+            {
+                functionState = ReplaceInstruction(
+                    instructions.Count - 1,
+                    Bytecode.Create((byte)Opcode.Name.ReturnValue, new List<int>()),
+                    functionState
+                );
+            }
+
+            // Add implicit Opcode.Return if there is no value to be returned
+            if (functionState.CurrentScope.CurrentInstruction.Opcode != (byte)Opcode.Name.ReturnValue)
+            {
+                functionState = Emit((byte)Opcode.Name.Return, new List<int>(), functionState);
+            }
+
+            afterFunctionState = LeaveScope(functionState);
+
+            return Factory.CompilerState()
+                .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, afterFunctionState))
+                .Constant(index, CreateObject(ObjectKind.Function, instructions))
+                .Create();
+        }
+
         private CompilerState CompileHashExpression(Expression expression, CompilerState previousState)
         {
             var hashExpression = (HashExpression)expression;
@@ -97,11 +190,12 @@ namespace Monkey
         {
             var identifier = ((IdentifierExpression)expression).Value;
             
-            var symbol = previousState.SymbolTable.Resolve(identifier);
+            var symbol = previousState.CurrentScope.SymbolTable.Resolve(identifier);
 
             if (symbol != Symbol.Undefined)
             {
-                return Emit((byte)Opcode.Name.GetGlobal, new List<int> { symbol.Index }, previousState);
+                var opcode = symbol.Scope == SymbolScope.Global ? (byte)Opcode.Name.GetGlobal : (byte)Opcode.Name.GetLocal;
+                return Emit(opcode, new List<int> { symbol.Index }, previousState);
             }
 
             var info = new ErrorInfo
@@ -126,14 +220,14 @@ namespace Monkey
             // Create Opcode.JumpNotTruthy with transient offset, we are going
             // to change it to correct one later
             var jumpNotTruthyInstructionState = Emit((byte)Opcode.Name.JumpNotTruthy, new List<int> { 9999 }, conditionState);
-            var jumpNotTruthyInstructionPosition = jumpNotTruthyInstructionState.CurrentInstruction.Position;
+            var jumpNotTruthyInstructionPosition = previousState.CurrentScope.CurrentInstruction.Position;
 
             var consequenceState = CompileStatements(ifElseExpression.Consequence.Statements, jumpNotTruthyInstructionState);
 
             // We want to leave last expression value on the stack, hence we
             // we need to check whether there is a Pop instruction after last
             // expression. If so, remove it
-            if (consequenceState.CurrentInstruction.Opcode == (byte)Opcode.Name.Pop)
+            if (previousState.CurrentScope.CurrentInstruction.Opcode == (byte)Opcode.Name.Pop)
             {
                 consequenceState = RemoveLastPopInstruction(consequenceState);
             }
@@ -141,11 +235,11 @@ namespace Monkey
             // Create Opcode.Jump with transient offset, we are going
             // to change it to correct one later
             var jumpInstructionState = Emit((byte)Opcode.Name.Jump, new List<int> { 9999 }, consequenceState);
-            var jumpInstructionPosition = jumpInstructionState.CurrentInstruction.Position;
+            var jumpInstructionPosition = previousState.CurrentScope.CurrentInstruction.Position;
 
             var afterJumpInstructionState = ReplaceInstruction(
                 jumpNotTruthyInstructionPosition,
-                Bytecode.Create((byte)Opcode.Name.JumpNotTruthy, new List<int> { jumpInstructionState.Instructions.Count }),
+                Bytecode.Create((byte)Opcode.Name.JumpNotTruthy, new List<int> { previousState.CurrentScope.Instructions.Count }),
                 jumpInstructionState
             );
 
@@ -160,7 +254,7 @@ namespace Monkey
             {
                 alternativeState = CompileStatements(ifElseExpression.Alternative.Statements, afterJumpInstructionState);
                 
-                if (alternativeState.CurrentInstruction.Opcode == 3)
+                if (previousState.CurrentScope.CurrentInstruction.Opcode == 3)
                 {
                     alternativeState = RemoveLastPopInstruction(alternativeState);
                 }
@@ -169,7 +263,7 @@ namespace Monkey
             // Set Opcode.Jump operand to correct offset and return compiled expression
             return ReplaceInstruction(
                 jumpInstructionPosition,
-                Bytecode.Create((byte)Opcode.Name.Jump, new List<int> { alternativeState.Instructions.Count }),
+                Bytecode.Create((byte)Opcode.Name.Jump, new List<int> { previousState.CurrentScope.Instructions.Count }),
                 alternativeState
             );
         }

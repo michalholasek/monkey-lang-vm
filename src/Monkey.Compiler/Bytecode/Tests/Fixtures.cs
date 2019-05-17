@@ -9,9 +9,9 @@ namespace Monkey.Tests.Fixtures
         public static Dictionary<byte, Opcode.Definition> Find = new Dictionary<byte, Opcode.Definition>
         {
             { 0, new Opcode.Definition { Name = Opcode.Name.Illegal, OperandLengths = new List<int> { 0 } }},
-            { 3, new Opcode.Definition { Name = Opcode.Name.Pop, OperandLengths = new List<int> { 0 } }},
             { 1, new Opcode.Definition { Name = Opcode.Name.Constant, OperandLengths = new List<int> { 2 } }},
             { 2, new Opcode.Definition { Name = Opcode.Name.Add, OperandLengths = new List<int> { 0 } }},
+            { 3, new Opcode.Definition { Name = Opcode.Name.Pop, OperandLengths = new List<int> { 0 } }},
             { 4, new Opcode.Definition { Name = Opcode.Name.Subtract, OperandLengths = new List<int> { 0 } }},
             { 5, new Opcode.Definition { Name = Opcode.Name.Multiply, OperandLengths = new List<int> { 0 } }},
             { 6, new Opcode.Definition { Name = Opcode.Name.Divide, OperandLengths = new List<int> { 0 } }},
@@ -29,7 +29,12 @@ namespace Monkey.Tests.Fixtures
             { 18, new Opcode.Definition { Name = Opcode.Name.GetGlobal, OperandLengths = new List<int> { 2 } }},
             { 19, new Opcode.Definition { Name = Opcode.Name.Array, OperandLengths = new List<int> { 2 } }},
             { 20, new Opcode.Definition { Name = Opcode.Name.Hash, OperandLengths = new List<int> { 2 } }},
-            { 21, new Opcode.Definition { Name = Opcode.Name.Index, OperandLengths = new List<int> { 0 } }}
+            { 21, new Opcode.Definition { Name = Opcode.Name.Index, OperandLengths = new List<int> { 0 } }},
+            { 22, new Opcode.Definition { Name = Opcode.Name.Call, OperandLengths = new List<int> { 1 } }},
+            { 23, new Opcode.Definition { Name = Opcode.Name.Return, OperandLengths = new List<int> { 0 } }},
+            { 24, new Opcode.Definition { Name = Opcode.Name.ReturnValue, OperandLengths = new List<int> { 0 } }},
+            { 25, new Opcode.Definition { Name = Opcode.Name.SetLocal, OperandLengths = new List<int> { 1 } }},
+            { 26, new Opcode.Definition { Name = Opcode.Name.GetLocal, OperandLengths = new List<int> { 1 } }}
         };
     }
 
