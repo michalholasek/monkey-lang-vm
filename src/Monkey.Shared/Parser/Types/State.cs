@@ -33,7 +33,6 @@ namespace Monkey.Shared
 
     public class ExpressionParseResult
     {
-        public List<ErrorInfo> _Errors { get; set; }
         public List<AssertionError> Errors { get; set; }
         public Expression Expression { get; set; }
         public int Position { get; set; }
