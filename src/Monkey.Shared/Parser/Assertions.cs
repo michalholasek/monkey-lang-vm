@@ -159,37 +159,27 @@ namespace Monkey.Shared
                 var nextToken = currentState.Tokens.Skip(currentState.Position + Skip.Return).Take(1).FirstOrDefault();
                 var errors = new List<AssertionError>();
 
+                if (nextToken == default(Token) || nextToken.Kind == SyntaxKind.Semicolon || nextToken.Kind == SyntaxKind.EOF)
+                {
+                    return errors;
+                }
+
                 var info = new ErrorInfo
                 {
-                    Kind = ErrorKind.UnexpectedToken,
+                    Kind = ErrorKind.InvalidToken,
                     Position = currentState.Position + Skip.Return,
                     Source = ErrorSource.Parser,
                     Tokens = currentState.Tokens
                 };
 
-                if (nextToken == default(Token))
+                if (!IsExpressionToken(nextToken))
                 {
-                    var eofToken = currentState.Tokens[currentState.Tokens.Count - 1];
+                    info.Code = ErrorCode.InvalidReturnExpression;
+                    info.Kind = ErrorKind.InvalidToken;
                     errors.Add(Error.Create(info));
-                    return errors;
                 }
 
-                switch (nextToken.Kind)
-                {
-                    case SyntaxKind.Int:
-                    case SyntaxKind.True:
-                    case SyntaxKind.False:
-                    case SyntaxKind.String:
-                    case SyntaxKind.Identifier:
-                    case SyntaxKind.Function:
-                    case SyntaxKind.LeftBrace:
-                    case SyntaxKind.LeftParenthesis:
-                    case SyntaxKind.Semicolon:
-                        return errors;
-                    default:
-                        errors.Add(Error.Create(info));
-                        return errors;
-                }
+                return errors;
             }
 
             private static bool IsExpressionToken(Token token)

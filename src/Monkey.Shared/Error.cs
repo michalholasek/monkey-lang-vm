@@ -38,6 +38,7 @@ namespace Monkey.Shared
         InvalidLetExpression,
         InvalidLetIdentifierToken,
         InvalidLetAssignToken,
+        InvalidReturnExpression,
         InvalidToken,
         MissingExpressionToken,
         MissingLetIdentifierToken,
@@ -117,6 +118,7 @@ namespace Monkey.Shared
             { ErrorCode.InvalidLetExpression, "@0" },
             { ErrorCode.InvalidLetIdentifierToken, "@0" },
             { ErrorCode.InvalidLetAssignToken, "@0" },
+            { ErrorCode.InvalidReturnExpression, "@0" },
             { ErrorCode.InvalidToken, "@0<--" },
             { ErrorCode.MissingLetIdentifierToken, "let <identifier><-- = <expression>;" },
             { ErrorCode.MissingLetAssignToken, "@0 <assign><-- <expression>;" },
@@ -259,6 +261,7 @@ namespace Monkey.Shared
                 case ErrorCode.InvalidLetExpression:
                 case ErrorCode.InvalidLetIdentifierToken:
                 case ErrorCode.InvalidLetAssignToken:
+                case ErrorCode.InvalidReturnExpression:
                     offenders = new List<string> { ComposeExpression(info, arrow: true) };
                     break;
                 case ErrorCode.InvalidToken:
@@ -288,8 +291,9 @@ namespace Monkey.Shared
 
         private static string ComposeExpression(ErrorInfo info, bool arrow)
         {
-            var sb = new StringBuilder();
             Token token = info.Tokens.Take(1).FirstOrDefault();
+            var sb = new StringBuilder();
+            var whitespace = false;
 
             for (var i = 0; i < info.Tokens.Count; i++)
             {
@@ -298,14 +302,17 @@ namespace Monkey.Shared
                 if (arrow && i == info.Position)
                 {
                     sb.Append("<--");
+                    whitespace = true;
                 }
 
                 token = info.Tokens.Skip(i + 1).Take(1).FirstOrDefault();
 
-                if (token != default(Token) && token.Kind != SyntaxKind.Semicolon)
+                if (whitespace || (token != default(Token) && token.Kind != SyntaxKind.Semicolon))
                 {
                     sb.Append(" ");
                 }
+
+                whitespace = false;
             }
 
             return sb.ToString().Trim();

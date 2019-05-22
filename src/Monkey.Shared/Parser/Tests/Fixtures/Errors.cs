@@ -115,7 +115,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "invalid token: let one = $<--;" }
+                        new AssertionError { Message = "invalid token: let one = $<-- ;" }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
@@ -175,6 +175,27 @@ namespace Monkey.Tests.Fixtures
                         new Token() { Column = 12, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
                         new Token() { Column = 13, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
                         new Token() { Column = 14, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "return $;",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "invalid token: return $<-- ;" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 3,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.Return, Line = 1, Literal = "return" },
+                        new Token() { Column = 9, Kind = SyntaxKind.Illegal, Line = 1, Literal = "$" },
+                        new Token() { Column = 10, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
+                        new Token() { Column = 11, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
                     }
                 })
             }

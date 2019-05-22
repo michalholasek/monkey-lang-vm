@@ -553,6 +553,13 @@ namespace Monkey.Shared
                 .Take(range)
                 .ToList();
 
+            // Eg. return;
+            var onlyToken = internalState.Tokens.FirstOrDefault();
+            if (onlyToken != default(Token) && onlyToken.Kind == SyntaxKind.Semicolon)
+            {
+                internalState.Tokens = new List<Token>();
+            } 
+
             // Since we sliced tokens to contain only the ones of current expression,
             // reset cursor position back to the beginning
             internalState.Position = 0;
@@ -569,6 +576,11 @@ namespace Monkey.Shared
                     .Tokens(internalState.Tokens)
                     .Create();
 
+            if (initialState.Tokens.Count == 0)
+            {
+                return initialState;
+            }
+            
             return Parser.ParseExpression(initialState);
         }
     }
