@@ -474,7 +474,17 @@ namespace Monkey.Shared
 
         private static ExpressionParseResult ParsePrefixExpression(ExpressionParseResult currentState)
         {
-            var currentToken = currentState.Tokens.Skip(currentState.Position).Take(1).First();
+            var currentToken = currentState.Tokens.Skip(currentState.Position).Take(1).FirstOrDefault();
+
+            var errors = Assert.ExpressionOperand(currentState, currentToken);
+
+            if (errors.Count > 0)
+            {
+                return Factory.ExpressionParseResult()
+                    .Assign(currentState)
+                    .Errors(errors)
+                    .Create();
+            }
 
             switch (currentToken.Kind)
             {

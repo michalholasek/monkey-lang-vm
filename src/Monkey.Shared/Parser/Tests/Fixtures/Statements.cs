@@ -16,54 +16,6 @@ namespace Monkey.Tests.Fixtures
             Tokens = new List<Token>()
         });
 
-        internal static Dictionary<string, Program> Invalid = new Dictionary<string, Program>
-        {
-            {
-                "let let = 0;",
-                new Program(new ProgramOptions
-                {
-                    Errors = new List<AssertionError>
-                    {
-                        new AssertionError("unexpected token: let let<-- = 0;")
-                    },
-                    Kind = NodeKind.Program,
-                    Position = 0,
-                    Range = 5,
-                    Statements = new List<Statement>(),
-                    Tokens = new List<Token>
-                    {
-                        new Token() { Column = 2, Kind = SyntaxKind.Let, Line = 1, Literal = "let" },
-                        new Token() { Column = 6, Kind = SyntaxKind.Let, Line = 1, Literal = "let" },
-                        new Token() { Column = 10, Kind = SyntaxKind.Assign, Line = 1, Literal = "=" },
-                        new Token() { Column = 12, Kind = SyntaxKind.Int, Line = 1, Literal = "0" },
-                        new Token() { Column = 13, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
-                        new Token() { Column = 14, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
-                    }
-                })
-            },
-            {
-                "return ,;",
-                new Program(new ProgramOptions
-                 {
-                    Errors = new List<AssertionError>
-                    {
-                        new AssertionError("unexpected token: return ,<-- ;")
-                    },
-                    Kind = NodeKind.Program,
-                    Position = 0,
-                    Range = 3,
-                    Statements = new List<Statement>(),
-                    Tokens = new List<Token>
-                    {
-                        new Token() { Column = 2, Kind = SyntaxKind.Return, Line = 1, Literal = "return" },
-                        new Token() { Column = 9, Kind = SyntaxKind.Comma, Line = 1, Literal = "," },
-                        new Token() { Column = 10, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
-                        new Token() { Column = 11, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
-                    }
-                })
-            }
-        };
-
         internal static Dictionary<string, Program> Let = new Dictionary<string, Program>
         {
             {

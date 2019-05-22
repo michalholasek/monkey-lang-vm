@@ -35,6 +35,13 @@ namespace Monkey.Shared
         IdentifierExpressionEvaluation,
         InfixExpressionEvaluation,
         InfixExpressionOperatorEvaluation,
+        InvalidLetExpression,
+        InvalidLetIdentifierToken,
+        InvalidLetAssignToken,
+        InvalidToken,
+        MissingExpressionToken,
+        MissingLetIdentifierToken,
+        MissingLetAssignToken,
         MinusOperatorExpressionEvaluation,
         StringExpressionOperatorEvaluation,
         UndefinedVariable,
@@ -49,6 +56,7 @@ namespace Monkey.Shared
         InvalidIndex,
         InvalidToken,
         InvalidType,
+        MissingToken,
         UndefinedVariable,
         UnexpectedToken,
         UnknownOperator
@@ -63,9 +71,7 @@ namespace Monkey.Shared
 
     public class ErrorInfo
     {
-        public SyntaxKind Actual { get; set; }
         public ErrorCode Code { get; set; }
-        public List<SyntaxKind> Expected { get; set; }
         public ErrorKind Kind { get; set; }
         public List<object> Offenders { get; set;}
         public int Position { get; set; }
@@ -82,6 +88,7 @@ namespace Monkey.Shared
             { ErrorKind.InvalidIndex, "invalid index" },
             { ErrorKind.InvalidToken, "invalid token" },
             { ErrorKind.InvalidType, "invalid type" },
+            { ErrorKind.MissingToken, "missing token" },
             { ErrorKind.UndefinedVariable, "undefined variable" },
             { ErrorKind.UnexpectedToken, "unexpected token" },
             { ErrorKind.UnknownOperator, "unknown operator" }
@@ -107,6 +114,13 @@ namespace Monkey.Shared
             { ErrorCode.IdentifierExpressionEvaluation, "@0 not found" },
             { ErrorCode.InfixExpressionEvaluation, "types of @0 and @1 do not match" },
             { ErrorCode.InfixExpressionOperatorEvaluation, "operator @1 is not supported for operands of type @2" },
+            { ErrorCode.InvalidLetExpression, "@0" },
+            { ErrorCode.InvalidLetIdentifierToken, "@0" },
+            { ErrorCode.InvalidLetAssignToken, "@0" },
+            { ErrorCode.InvalidToken, "@0<--" },
+            { ErrorCode.MissingLetIdentifierToken, "let <identifier><-- = <expression>;" },
+            { ErrorCode.MissingLetAssignToken, "@0 <assign><-- <expression>;" },
+            { ErrorCode.MissingExpressionToken, "@0 <expression><--" },
             { ErrorCode.StringExpressionOperatorEvaluation, "operator @1 is not supported for operands of type @2" },
             { ErrorCode.MinusOperatorExpressionEvaluation, "-@0<-- , operator - is not supported for type @1" },
             { ErrorCode.UnknownOperator, "operator @0 is not supported" },
@@ -230,7 +244,34 @@ namespace Monkey.Shared
 
         private static AssertionError CreateParseError(ErrorInfo info)
         {
-            return new AssertionError($"{ErrorKindString[info.Kind]}: {ComposeExpressionString(info)}");
+            var sb = new StringBuilder();
+            List<string> offenders;
+
+            sb.Append(ErrorKindString[info.Kind]);
+            sb.Append(": ");
+
+            switch (info.Code)
+            {
+                case ErrorCode.MissingExpressionToken:
+                case ErrorCode.MissingLetAssignToken:
+                    offenders = new List<string> { ComposeExpression(info, arrow: false) };
+                    break;
+                case ErrorCode.InvalidLetExpression:
+                case ErrorCode.InvalidLetIdentifierToken:
+                case ErrorCode.InvalidLetAssignToken:
+                    offenders = new List<string> { ComposeExpression(info, arrow: true) };
+                    break;
+                case ErrorCode.InvalidToken:
+                    offenders = new List<string> { info.Offenders.First().ToString() };
+                    break;
+                default:
+                    offenders = new List<string>();
+                    break;
+            }
+
+            sb.Append(ComposeErrorMessage(offenders, ErrorMessages[info.Code]));
+
+            return new AssertionError(sb.ToString());
         }
 
         private static string ComposeErrorMessage(List<string> offenders, string template)
@@ -245,37 +286,25 @@ namespace Monkey.Shared
             return message;
         }
 
-        private static string ComposeExpressionString(ErrorInfo info)
+        private static string ComposeExpression(ErrorInfo info, bool arrow)
         {
             var sb = new StringBuilder();
-            Token token;
+            Token token = info.Tokens.Take(1).FirstOrDefault();
 
             for (var i = 0; i < info.Tokens.Count; i++)
             {
-                token = info.Tokens[i];
                 sb.Append(token.Literal);
 
-                if (i == info.Position)
+                if (arrow && i == info.Position)
                 {
-                    sb.Append("<-- ");
-                    continue;
+                    sb.Append("<--");
                 }
 
-                if (i + 1 == info.Tokens.Count)
-                {
-                    break;
-                }
+                token = info.Tokens.Skip(i + 1).Take(1).FirstOrDefault();
 
-                token = info.Tokens[i + 1];
-
-                switch (token.Kind)
+                if (token != default(Token) && token.Kind != SyntaxKind.Semicolon)
                 {
-                    case SyntaxKind.Semicolon:
-                    case SyntaxKind.EOF:
-                        break;
-                    default:
-                        sb.Append(" ");
-                        break;
+                    sb.Append(" ");
                 }
             }
 

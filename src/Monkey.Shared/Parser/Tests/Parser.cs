@@ -16,16 +16,6 @@ namespace Monkey.Tests
         }
 
         [TestMethod]
-        [DataRow("let let = 0;")]
-        [DataRow("return ,;")]
-        public void InvalidStatements(string source)
-        {
-            var tokens = new Scanner().Scan(source);
-            var actual = new Parser().Parse(tokens);
-            Utilities.Assert.AreDeeplyEqual(actual, Fixtures.Statements.Invalid[source]);
-        }
-
-        [TestMethod]
         [DataRow("let int = 5;")]
         [DataRow("let x = 5; let y = 10; let foobar = 838383;")]
         public void LetStatements(string source)
@@ -188,6 +178,13 @@ namespace Monkey.Tests
 
         [TestMethod]
         [DataRow("...")]
+        [DataRow("1 +")]
+        [DataRow("let")]
+        [DataRow("let one")]
+        [DataRow("let one =")]
+        [DataRow("let one = $;")]
+        [DataRow("let 1 = 1;")]
+        [DataRow("let one . 1;")]
         public void Errors(string source)
         {
             var tokens = new Scanner().Scan(source);

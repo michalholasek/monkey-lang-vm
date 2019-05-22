@@ -8,14 +8,43 @@ namespace Monkey.Shared
     {
         internal static class Assert
         {
+            internal static List<AssertionError> ExpressionOperand(ExpressionParseResult currentState, Token token)
+            {
+                var errors = new List<AssertionError>();
+
+                var info = new ErrorInfo
+                {
+                    Code = ErrorCode.InvalidToken,
+                    Kind = ErrorKind.InvalidToken,
+                    Position = currentState.Position,
+                    Source = ErrorSource.Parser,
+                    Tokens = currentState.Tokens
+                };
+
+                if (token == default(Token) || token.Kind == SyntaxKind.EOF)
+                {
+                    info.Code = ErrorCode.MissingExpressionToken;
+                    info.Kind = ErrorKind.MissingToken;
+                    errors.Add(Error.Create(info));
+                    return errors;
+                }
+
+                if (!IsExpressionToken(token))
+                {
+                    info.Offenders = new List<object> { token.Literal };
+                    errors.Add(Error.Create(info));
+                    return errors;
+                }
+
+                return errors;
+            }
+            
             internal static List<AssertionError> PrefixExpressionOperator(ExpressionParseResult currentState, Token op)
             {
                 var errors = new List<AssertionError>();
 
                 var info = new ErrorInfo
                 {
-                    Actual = op.Kind,
-                    Expected = new List<SyntaxKind> { SyntaxKind.Bang, SyntaxKind.Minus },
                     Kind = ErrorKind.UnknownOperator,
                     Position = currentState.Position,
                     Source = ErrorSource.Parser,
@@ -48,8 +77,21 @@ namespace Monkey.Shared
 
             private static List<AssertionError> AssertLetStatementSyntax(StatementParseResultBuilderState currentState)
             {
-                var identifierToken = currentState.Tokens[currentState.Position + Skip.Let];
-                var assignToken = currentState.Tokens[currentState.Position + Skip.Let + Skip.Identifier];
+                var identifierToken = currentState.Tokens
+                        .Skip(currentState.Position + Skip.Let)
+                        .Take(1)
+                        .FirstOrDefault();
+
+                var assignToken = currentState.Tokens
+                        .Skip(currentState.Position + Skip.Let + Skip.Identifier)
+                        .Take(1)
+                        .FirstOrDefault();
+
+                var expressionToken = currentState.Tokens
+                        .Skip(currentState.Position + Skip.Let + Skip.Identifier + Skip.Assign)
+                        .Take(1)
+                        .FirstOrDefault();
+
                 var errors = new List<AssertionError>();
 
                 var info = new ErrorInfo
@@ -60,24 +102,52 @@ namespace Monkey.Shared
                     Tokens = currentState.Tokens
                 };
 
-                if (identifierToken == null || assignToken == null)
+                if (identifierToken == default(Token) || identifierToken.Kind == SyntaxKind.EOF)
                 {
-                    var eofToken = currentState.Tokens[currentState.Tokens.Count - 1];
-                    info.Actual = eofToken.Kind;
+                    info.Code = ErrorCode.MissingLetIdentifierToken;
+                    info.Kind = ErrorKind.MissingToken;
                     errors.Add(Error.Create(info));
                     return errors;
-                }
+                } 
+
+                if (assignToken == default(Token) || assignToken.Kind == SyntaxKind.EOF)
+                {
+                    info.Code = ErrorCode.MissingLetAssignToken;
+                    info.Kind = ErrorKind.MissingToken;
+                    info.Position = currentState.Position + Skip.Let + Skip.Identifier;
+                    errors.Add(Error.Create(info));
+                    return errors;
+                }              
 
                 if (identifierToken.Kind != SyntaxKind.Identifier)
                 {
-                    info.Actual = identifierToken.Kind;
+                    info.Code = ErrorCode.InvalidLetIdentifierToken;
+                    info.Kind = ErrorKind.InvalidToken;
                     errors.Add(Error.Create(info));
                 }
 
                 if (assignToken.Kind != SyntaxKind.Assign)
                 {
-                    info.Actual = assignToken.Kind;
+                    info.Code = ErrorCode.InvalidLetAssignToken;
+                    info.Kind = ErrorKind.InvalidToken;
                     info.Position = info.Position + Skip.Identifier;
+                    errors.Add(Error.Create(info));
+                }
+
+                if (expressionToken == default(Token) || expressionToken.Kind == SyntaxKind.EOF)
+                {
+                    info.Code = ErrorCode.MissingExpressionToken;
+                    info.Kind = ErrorKind.MissingToken;
+                    info.Position = currentState.Position + Skip.Let + Skip.Identifier + Skip.Assign;
+                    errors.Add(Error.Create(info));
+                    return errors;
+                }
+
+                if (!IsExpressionToken(expressionToken))
+                {
+                    info.Code = ErrorCode.InvalidLetExpression;
+                    info.Kind = ErrorKind.InvalidToken;
+                    info.Position = currentState.Position + Skip.Let + Skip.Identifier + Skip.Assign;
                     errors.Add(Error.Create(info));
                 }
 
@@ -97,7 +167,7 @@ namespace Monkey.Shared
                     Tokens = currentState.Tokens
                 };
 
-                if (nextToken == null)
+                if (nextToken == default(Token))
                 {
                     var eofToken = currentState.Tokens[currentState.Tokens.Count - 1];
                     errors.Add(Error.Create(info));
@@ -117,9 +187,30 @@ namespace Monkey.Shared
                     case SyntaxKind.Semicolon:
                         return errors;
                     default:
-                        info.Actual = nextToken.Kind;
                         errors.Add(Error.Create(info));
                         return errors;
+                }
+            }
+
+            private static bool IsExpressionToken(Token token)
+            {
+                switch (token.Kind)
+                {
+                    case SyntaxKind.Int:
+                    case SyntaxKind.True:
+                    case SyntaxKind.False:
+                    case SyntaxKind.String:
+                    case SyntaxKind.Identifier:
+                    case SyntaxKind.LeftParenthesis:
+                    case SyntaxKind.If:
+                    case SyntaxKind.Function:
+                    case SyntaxKind.LeftBracket:
+                    case SyntaxKind.LeftBrace:
+                    case SyntaxKind.Bang:
+                    case SyntaxKind.Minus:
+                        return true;
+                    default:
+                        return false;
                 }
             }
         }
