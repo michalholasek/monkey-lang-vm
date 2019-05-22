@@ -56,10 +56,12 @@ namespace Monkey.Shared
             {
                 case ObjectKind.Array:
                     return StringifyArray(obj);
-                case ObjectKind.Hash:
-                    return StringifyHash(obj);
+                case ObjectKind.Error:
+                    return ((AssertionError)obj.Value).Message;
                 case ObjectKind.Function:
                     return StringifyFunction(obj);
+                case ObjectKind.Hash:
+                    return StringifyHash(obj);
                 default:
                     return obj.Value.ToString().ToLower();
                 
