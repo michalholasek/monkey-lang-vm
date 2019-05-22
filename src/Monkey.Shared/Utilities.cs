@@ -62,6 +62,8 @@ namespace Monkey.Shared
                     return StringifyFunction(obj);
                 case ObjectKind.Hash:
                     return StringifyHash(obj);
+                case ObjectKind.Null:
+                    return "null";
                 default:
                     return obj.Value.ToString().ToLower();
                 

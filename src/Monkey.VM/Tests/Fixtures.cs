@@ -559,6 +559,18 @@ namespace Monkey.Tests.Fixtures
                     Object.Create(ObjectKind.Integer, 3)
                 }
             };
+
+            public static Dictionary<string, Object> Return = new Dictionary<string, Object>
+            {
+                {
+                    "return;",
+                    Object.Create(ObjectKind.Null, null)
+                },
+                {
+                    "return 42;",
+                    Object.Create(ObjectKind.Integer, 42)
+                }
+            };
         }
     }
 }

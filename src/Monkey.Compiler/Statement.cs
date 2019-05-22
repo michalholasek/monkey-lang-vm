@@ -45,6 +45,17 @@ namespace Monkey
 
         private CompilerState CompileReturnStatement(CompilerState previousState)
         {
+            var statement = (Statement)previousState.Node;
+
+            // Top level return statement with no value to return
+            if (statement.Expression == default(Expression))
+            {
+                // Effectively pushes Null object onto and from the stack, so
+                // we won't end up with no value as the vm.Run() result
+                var returnState = Emit((byte)Opcode.Name.Return, new List<int>(), previousState);
+                return Emit((byte)Opcode.Name.Pop, new List<int>(), returnState);
+            }
+
             var expressionState = CompileStatementExpression(previousState);
             return Emit((byte)Opcode.Name.ReturnValue, new List<int>(), expressionState);
         }

@@ -204,5 +204,17 @@ namespace Monkey.Tests
 
             Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Statement.Let[source]);
         }
+
+        [TestMethod]
+        [DataRow("return;")]
+        [DataRow("return 42;")]
+        public void ReturnStatements(string source)
+        {
+            var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
+
+            Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Statement.Return[source]);
+        }
     }
 }

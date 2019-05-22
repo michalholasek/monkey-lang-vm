@@ -484,8 +484,12 @@ namespace Monkey
 
         private void PopFrame()
         {
-            internalState.Frames.Pop();
-            internalState.CurrentFrame = internalState.Frames.First();
+            // Do not pop up global frame
+            if (internalState.Frames.Count > 1)
+            {
+                internalState.Frames.Pop();
+                internalState.CurrentFrame = internalState.Frames.First();
+            }
         }
 
         private void PushArguments(int count)
