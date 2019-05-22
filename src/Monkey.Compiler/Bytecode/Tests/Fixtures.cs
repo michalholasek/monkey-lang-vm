@@ -34,7 +34,8 @@ namespace Monkey.Tests.Fixtures
             { 23, new Opcode.Definition { Name = Opcode.Name.Return, OperandLengths = new List<int> { 0 } }},
             { 24, new Opcode.Definition { Name = Opcode.Name.ReturnValue, OperandLengths = new List<int> { 0 } }},
             { 25, new Opcode.Definition { Name = Opcode.Name.SetLocal, OperandLengths = new List<int> { 1 } }},
-            { 26, new Opcode.Definition { Name = Opcode.Name.GetLocal, OperandLengths = new List<int> { 1 } }}
+            { 26, new Opcode.Definition { Name = Opcode.Name.GetLocal, OperandLengths = new List<int> { 1 } }},
+            { 27, new Opcode.Definition { Name = Opcode.Name.GetBuiltIn, OperandLengths = new List<int> { 1 } }}
         };
     }
 

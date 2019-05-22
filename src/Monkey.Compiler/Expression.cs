@@ -138,7 +138,7 @@ namespace Monkey
 
                 return Factory.CompilerState()
                     .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, afterFunctionState))
-                    .Constant(index, CreateObject(ObjectKind.Function, instructions))
+                    .Constant(index, Object.Create(ObjectKind.Function, instructions))
                     .Create();
             }
 
@@ -163,7 +163,7 @@ namespace Monkey
 
             return Factory.CompilerState()
                 .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, afterFunctionState))
-                .Constant(index, CreateObject(ObjectKind.Function, instructions))
+                .Constant(index, Object.Create(ObjectKind.Function, instructions))
                 .Create();
         }
 
@@ -196,6 +196,13 @@ namespace Monkey
             {
                 var opcode = symbol.Scope == SymbolScope.Global ? (byte)Opcode.Name.GetGlobal : (byte)Opcode.Name.GetLocal;
                 return Emit(opcode, new List<int> { symbol.Index }, previousState);
+            }
+
+            var index = previousState.BuiltIns.FindIndex(fn => fn.Name == identifier);
+
+            if (index >= 0)
+            {
+                return Emit((byte)Opcode.Name.GetBuiltIn, new List<int> { index }, previousState);
             }
 
             var info = new ErrorInfo
@@ -347,7 +354,7 @@ namespace Monkey
 
             return Factory.CompilerState()
                 .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, previousState))
-                .Constant(index, CreateObject(ObjectKind.Integer, integerExpression.Value))
+                .Constant(index, Object.Create(ObjectKind.Integer, integerExpression.Value))
                 .Create();
         }
 
@@ -382,7 +389,7 @@ namespace Monkey
 
             return Factory.CompilerState()
                 .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, previousState))
-                .Constant(index, CreateObject(ObjectKind.String, stringExpression.Value))
+                .Constant(index, Object.Create(ObjectKind.String, stringExpression.Value))
                 .Create();
         }
     }

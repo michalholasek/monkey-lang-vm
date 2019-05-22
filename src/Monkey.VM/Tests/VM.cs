@@ -33,7 +33,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Integer[source]);
         }
@@ -69,7 +69,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Boolean[source]);
         }
@@ -89,7 +89,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.IfElse[source]);
         }
@@ -102,7 +102,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.String[source]);
         }
@@ -121,7 +121,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Array[source]);
         }
@@ -138,7 +138,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Hash[source]);
         }
@@ -164,11 +164,30 @@ namespace Monkey.Tests
         [DataRow("let sum = fn(a, b) { let c = a + b; c; }; sum(1, 2) + sum(3, 4);")]
         [DataRow("let sum = fn(a, b) { let c = a + b; c; }; let outer = fn() { sum(1, 2) + sum(3, 4); }; outer();")]
         [DataRow("let globalNum = 10; let sum = fn(a, b) { let c = a + b; c + globalNum; }; let outer = fn() { sum(1, 2) + sum(3, 4) + globalNum; }; outer() + globalNum;")]
+        [DataRow("len(\"\");")]
+        [DataRow("len(\"four\");")]
+        [DataRow("len(\"hello world\");")]
+        [DataRow("len(1);")]
+        [DataRow("len(\"one\", \"two\");")]
+        [DataRow("len([1, 2, 3]);")]
+        [DataRow("len([]);")]
+        [DataRow("first([1, 2, 3]);")]
+        [DataRow("first([]);")]
+        [DataRow("first(1);")]
+        [DataRow("last([1, 2, 3]);")]
+        [DataRow("last([]);")]
+        [DataRow("last(1);")]
+        [DataRow("rest([1, 2, 3]);")]
+        [DataRow("rest([]);")]
+        [DataRow("rest(1);")]
+        [DataRow("push([1, 2], 3);")]
+        [DataRow("push([]);")]
+        [DataRow("push(1, 2);")]
         public void FunctionExpressions(string source)
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Function[source]);
         }
@@ -181,7 +200,7 @@ namespace Monkey.Tests
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
 
-            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants);
+            vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
             Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Statement.Let[source]);
         }

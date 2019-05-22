@@ -12,6 +12,7 @@ namespace Monkey
         {
             internal class CompilerStateFactory
             {
+                private List<BuiltIn> builtIns;
                 private List<Object> constants;
                 private Scope currentScope;
                 private List<AssertionError> errors;
@@ -28,6 +29,7 @@ namespace Monkey
                 
                 public CompilerStateFactory Assign(CompilerState previousState)
                 {
+                    builtIns = previousState.BuiltIns;
                     constants = previousState.Constants;
                     currentScope = previousState.CurrentScope;
                     errors = previousState.Errors;
@@ -97,6 +99,7 @@ namespace Monkey
                 {
                     return new CompilerState
                     {
+                        BuiltIns = builtIns,
                         Constants = constants,
                         CurrentScope = currentScope,
                         Errors = errors,

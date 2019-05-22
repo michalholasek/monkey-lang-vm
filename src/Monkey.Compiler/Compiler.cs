@@ -52,6 +52,7 @@ namespace Monkey
 
             return new CompilerState
             {
+                BuiltIns = Functions.List,
                 Constants = new List<Object>(),
                 CurrentScope = globalScope,
                 Errors = new List<AssertionError>(),

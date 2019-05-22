@@ -13,9 +13,9 @@ namespace Monkey
     {
         private static Dictionary<object, Object> Invariants = new Dictionary<object, Object>
         {
-            { true, CreateObject(ObjectKind.Boolean, true) },
-            { false, CreateObject(ObjectKind.Boolean, false) },
-            { "null", CreateObject(ObjectKind.Null, null) }
+            { true, Object.Create(ObjectKind.Boolean, true) },
+            { false, Object.Create(ObjectKind.Boolean, false) },
+            { "null", Object.Create(ObjectKind.Null, null) }
         };
 
         private VirtualMachineState internalState;
@@ -27,9 +27,9 @@ namespace Monkey
             internalState = new VirtualMachineState { Globals = new List<Object>() };
         }
 
-        public void Run(List<byte> instructions, List<Object> constants)
+        public void Run(List<byte> instructions, List<Object> constants, List<BuiltIn> builtIns)
         {
-            internalState = InitializeState(instructions, constants);
+            internalState = InitializeState(instructions, constants, builtIns);
 
             while (internalState.CurrentFrame.InstructionPointer < internalState.CurrentFrame.Instructions.Count)
             {
@@ -102,11 +102,14 @@ namespace Monkey
                     case 26: // Opcode.GetLocal
                         ExecuteGetLocalOperation();
                         break;
+                    case 27: // Opcode.GetBuiltIn
+                        ExecuteGetBuiltInOperation();
+                        break;
                 }
             }
         }
 
-        private VirtualMachineState InitializeState(List<byte> instructions, List<Object> constants)
+        private VirtualMachineState InitializeState(List<byte> instructions, List<Object> constants, List<BuiltIn> builtIns)
         {
             var globalFrame = new Frame(instructions, basePointer: 0);
             var frames = new Stack<Frame>();
@@ -115,6 +118,7 @@ namespace Monkey
 
             return new VirtualMachineState
             {
+                BuiltIns = builtIns,
                 Constants = constants,
                 CurrentFrame = globalFrame,
                 Frames = frames,
@@ -154,7 +158,7 @@ namespace Monkey
 
             elements.Reverse();
 
-            internalState.Stack.Push(CreateObject(ObjectKind.Array, elements));
+            internalState.Stack.Push(Object.Create(ObjectKind.Array, elements));
         }
 
         private void ExecuteArrayIndexOperation(Object obj, Object index)
@@ -244,16 +248,16 @@ namespace Monkey
             switch (op)
             {
                 case 2:  // Opcode.Add
-                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left + right));
+                    internalState.Stack.Push(Object.Create(ObjectKind.Integer, left + right));
                     break;
                 case 4:  // Opcode.Subtract
-                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left - right));
+                    internalState.Stack.Push(Object.Create(ObjectKind.Integer, left - right));
                     break;
                 case 5:  // Opcode.Multiply
-                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left * right));
+                    internalState.Stack.Push(Object.Create(ObjectKind.Integer, left * right));
                     break;
                 case 6:  // Opcode.Divide
-                    internalState.Stack.Push(CreateObject(ObjectKind.Integer, left / right));
+                    internalState.Stack.Push(Object.Create(ObjectKind.Integer, left / right));
                     break;
                 case 9:  // Opcode.Equal
                     internalState.Stack.Push(left == right ? Invariants[true] : Invariants[false]);
@@ -272,9 +276,25 @@ namespace Monkey
             switch (op)
             {
                 case 2: // Opcode.Add
-                    internalState.Stack.Push(CreateObject(ObjectKind.String, string.Join(String.Empty, left, right)));
+                    internalState.Stack.Push(Object.Create(ObjectKind.String, string.Join(String.Empty, left, right)));
                     break;
             }
+        }
+
+        private void ExecuteBuiltInCallOperation(Object obj, int arity, int basePointer)
+        {
+            List<Object> args = new List<Object>();
+            var end = basePointer + arity + 1;
+
+            for (var i = basePointer + 1; i < end; i++)
+            {
+                args.Add(internalState.Stack[i]);
+            }
+
+            var fn = (Func<List<Object>, Object>)obj.Value;
+            var result = fn(args);
+
+            internalState.Stack.Push(result);
         }
 
         private void ExecuteCallOperation()
@@ -285,14 +305,34 @@ namespace Monkey
 
             internalState.CurrentFrame.InstructionPointer += 1;
 
-            PushFrame(new Frame((List<byte>)fn.Value, basePointer));
-            PushArguments(arity);
+            switch (fn.Kind)
+            {
+                case ObjectKind.BuiltIn:
+                    ExecuteBuiltInCallOperation(fn, arity, basePointer);
+                    break;
+                default:
+                    ExecuteFunctionCallOperation(fn, arity, basePointer);
+                    break;
+            }
         }
 
         private void ExecuteConstantOperation()
         {
             internalState.Stack.Push(internalState.Constants[DecodeOperand(2)]);
             internalState.CurrentFrame.InstructionPointer += 2;
+        }
+
+        private void ExecuteFunctionCallOperation(Object fn, int arity, int basePointer)
+        {
+            PushFrame(new Frame((List<byte>)fn.Value, basePointer));
+            PushArguments(arity);
+        }
+
+        private void ExecuteGetBuiltInOperation()
+        {
+            var index = DecodeOperand(1);
+            internalState.CurrentFrame.InstructionPointer += 1;
+            internalState.Stack.Push(internalState.BuiltIns[index].Function);
         }
 
         private void ExecuteGetGlobalOperation()
@@ -332,7 +372,7 @@ namespace Monkey
                 hash.Add(keys[i], values[i]);
             }
 
-            internalState.Stack.Push(CreateObject(ObjectKind.Hash, hash));
+            internalState.Stack.Push(Object.Create(ObjectKind.Hash, hash));
         }
 
         private void ExecuteHashIndexOperation(Object obj, Object index)
@@ -401,7 +441,7 @@ namespace Monkey
 
             int value = (int)operand.Value;
 
-            internalState.Stack.Push(CreateObject(ObjectKind.Integer, -value));
+            internalState.Stack.Push(Object.Create(ObjectKind.Integer, -value));
         }
 
         private void ExecuteNullOperation()

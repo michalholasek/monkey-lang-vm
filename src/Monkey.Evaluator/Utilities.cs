@@ -9,15 +9,6 @@ namespace Monkey
     {
         public static class Utilities
         {        
-            public static Object CreateObject(ObjectKind kind, object value)
-            {
-                return new Object
-                {
-                    Kind = kind,
-                    Value = value
-                };
-            }
-
             public static bool IsTruthy(Object obj)
             {
                 switch (obj.Kind)

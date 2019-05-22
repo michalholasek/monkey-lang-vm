@@ -11,6 +11,7 @@ namespace Monkey
     {
         public class CompilerState
         {
+            public List<BuiltIn> BuiltIns { get; set; }
             public List<Object> Constants { get; set; }
             public Scope CurrentScope { get; set; }
             public List<AssertionError> Errors { get; set; }

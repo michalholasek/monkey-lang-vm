@@ -25,6 +25,7 @@ namespace Monkey
 
     internal class VirtualMachineState
     {
+        public List<BuiltIn> BuiltIns { get; set; }
         public List<Object> Constants { get; set; }
         public Frame CurrentFrame { get; set; }
         public Stack<Frame> Frames { get; set; }

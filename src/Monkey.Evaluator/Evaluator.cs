@@ -34,7 +34,7 @@ namespace Monkey
                 case NodeKind.Expression:
                     return EvaluateExpression(((Statement)node).Expression, env);
                 default:
-                    return CreateObject(ObjectKind.Null, null);
+                    return Object.Create(ObjectKind.Null, null);
             }
         }
     }

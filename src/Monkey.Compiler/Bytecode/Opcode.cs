@@ -39,7 +39,8 @@ namespace Monkey
             Return,
             ReturnValue,
             SetLocal,
-            GetLocal
+            GetLocal,
+            GetBuiltIn
         }
         
         private static Dictionary<byte, Definition> Opcodes = new Dictionary<byte, Definition>
@@ -70,7 +71,8 @@ namespace Monkey
             { 23, new Definition { Name = Name.Return, OperandLengths = new List<int> { 0 } }},
             { 24, new Definition { Name = Name.ReturnValue, OperandLengths = new List<int> { 0 } }},
             { 25, new Definition { Name = Name.SetLocal, OperandLengths = new List<int> { 1 } }},
-            { 26, new Definition { Name = Name.GetLocal, OperandLengths = new List<int> { 1 } }}
+            { 26, new Definition { Name = Name.GetLocal, OperandLengths = new List<int> { 1 } }},
+            { 27, new Definition { Name = Name.GetBuiltIn, OperandLengths = new List<int> { 1 } }}
         };
 
         public static Definition Find(byte code)

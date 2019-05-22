@@ -12,7 +12,7 @@ namespace Monkey
     {
         private static Object EvaluateStatements(List<Statement> statements, IEnvironment env)
         {
-            var obj = CreateObject(ObjectKind.Null, null);
+            var obj = Object.Create(ObjectKind.Null, null);
 
             foreach (var statement in statements)
             {
@@ -29,7 +29,7 @@ namespace Monkey
 
         private static Object EvaluateLetStatement(Statement statement, IEnvironment env)
         {
-            var obj = CreateObject(ObjectKind.Null, null);
+            var obj = Object.Create(ObjectKind.Null, null);
 
             if (statement.Identifier == null || statement.Expression == null)
             {
@@ -50,7 +50,7 @@ namespace Monkey
 
         private static Object EvaluateReturnStatement(Statement statement, IEnvironment env)
         {
-            return CreateObject(ObjectKind.Return, EvaluateExpression(statement.Expression, env));
+            return Object.Create(ObjectKind.Return, EvaluateExpression(statement.Expression, env));
         }
     }
 }

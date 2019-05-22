@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace Monkey.Shared
 {
@@ -74,5 +73,14 @@ namespace Monkey.Shared
         public IEnvironment Environment { get; set; }
         public ObjectKind Kind { get; set; }
         public object Value { get; set; }
+
+        public static Object Create(ObjectKind kind, object value)
+        {
+            return new Object
+            {
+                Kind = kind,
+                Value = value
+            };
+        }
     }
 }

@@ -565,6 +565,35 @@ namespace Monkey.Tests.Fixtures
                         26, 2,    // GetLocal 26
                         24        // ReturnValue
                     }
+                },
+                {
+                    "len([]); push([], 1);",
+                    new List<byte>
+                    {
+                        27, 0,    // GetBuiltIn len
+                        19, 0, 0, // Array
+                        22, 1,    // Call len
+                        3,        // Pop
+                        27, 4,    // GetBuiltIn push
+                        19, 0, 0, // Array
+                        1, 0, 0,  // 1
+                        22, 2,    // Call push
+                        3         // Pop
+                    }
+                },
+                {
+                    "fn() { len([]); };",
+                    new List<byte>
+                    {
+                                  // Global scope
+                        1, 0, 0,  // fn
+                        3,        // Pop
+                                  // Function scope
+                        27, 0,    // GetBuiltIn len
+                        19, 0, 0, // Array
+                        22, 1,    // Call len
+                        24        // ReturnValue
+                    }
                 }
             };
         }
