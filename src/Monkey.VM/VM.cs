@@ -20,7 +20,7 @@ namespace Monkey
 
         private VirtualMachineState internalState;
 
-        public Object LastStackElement { get { return internalState.Stack.LastElement; } }
+        public Object StackTop { get { return internalState.Stack.Top; } }
 
         public VirtualMachine()
         {

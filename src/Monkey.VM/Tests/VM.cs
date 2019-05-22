@@ -35,7 +35,7 @@ namespace Monkey.Tests
 
             vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Integer[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Expression.Integer[source]);
         }
 
         [TestMethod]
@@ -71,7 +71,7 @@ namespace Monkey.Tests
 
             vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Boolean[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Expression.Boolean[source]);
         }
 
         [TestMethod]
@@ -91,7 +91,7 @@ namespace Monkey.Tests
 
             vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.IfElse[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Expression.IfElse[source]);
         }
 
         [TestMethod]
@@ -104,7 +104,7 @@ namespace Monkey.Tests
 
             vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.String[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Expression.String[source]);
         }
 
         [TestMethod]
@@ -123,7 +123,7 @@ namespace Monkey.Tests
 
             vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Array[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Expression.Array[source]);
         }
 
         [TestMethod]
@@ -140,7 +140,7 @@ namespace Monkey.Tests
 
             vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Hash[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Expression.Hash[source]);
         }
 
         [TestMethod]
@@ -189,7 +189,7 @@ namespace Monkey.Tests
 
             vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Expression.Function[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Expression.Function[source]);
         }
 
         [TestMethod]
@@ -202,7 +202,7 @@ namespace Monkey.Tests
 
             vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
 
-            Utilities.Assert.AreDeeplyEqual(vm.LastStackElement, Fixtures.VM.Statement.Let[source]);
+            Utilities.Assert.AreDeeplyEqual(vm.StackTop, Fixtures.VM.Statement.Let[source]);
         }
     }
 }

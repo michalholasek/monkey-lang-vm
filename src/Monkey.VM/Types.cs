@@ -36,7 +36,6 @@ namespace Monkey
 
     internal class VirtualMachineStack
     {
-        public Object LastElement { get; private set; }
         private List<Object> Stack { get; set; }
 
         public VirtualMachineStack()
@@ -45,6 +44,7 @@ namespace Monkey
         }
 
         public int Count { get { return Stack.Count; } }
+        public Object Top { get; private set; }
 
         public Object this[int index]
         {
@@ -58,9 +58,9 @@ namespace Monkey
 
         public Object Pop()
         {
-            LastElement = Stack.Last();
+            Top = Stack.Last();
             Stack.RemoveAt(Stack.Count - 1);
-            return LastElement;
+            return Top;
         }
 
         public void ResetTo(int position)

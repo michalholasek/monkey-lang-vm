@@ -63,7 +63,7 @@ namespace Monkey.Repl
                 else
                 {
                     vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
-                    Console.WriteLine(Stringify.Object((Object)vm.LastStackElement));
+                    Console.WriteLine(Stringify.Object((Object)vm.StackTop));
                 }
             }
             else
