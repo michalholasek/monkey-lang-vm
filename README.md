@@ -36,6 +36,7 @@ Exiting monkey-lang REPL...
 - If-Else conditionals
 - Basic arithmetic for integer expressions
 - First class and higher-order functions
+- Built-in utility functions
 
 ### Types
 | Type     | Examples                    |
@@ -91,6 +92,26 @@ true
 > let identity = fn(a) { return a; };
 > identity(42);
 42
+```
+
+### Built-in Functions
+```
+> len("abc")
+3
+> len([1])
+1
+
+> push([1], 2, 3)
+[1, 2, 3]
+
+> first([1, 2, 3])
+1
+
+> last([1, 2, 3])
+3
+
+> rest([1, 2, 3])
+[2, 3]
 ```
 
 ## License
