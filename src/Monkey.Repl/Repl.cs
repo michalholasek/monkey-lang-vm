@@ -30,6 +30,7 @@ namespace Monkey.Repl
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to monkey-lang REPL!");
+            Console.WriteLine("Hit RETURN once to enter multiline editing, twice to enter your command.");
 
             var run = true;
 
