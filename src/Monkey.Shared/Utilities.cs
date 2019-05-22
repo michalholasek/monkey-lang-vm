@@ -90,22 +90,29 @@ namespace Monkey.Shared
 
         private static string StringifyFunction(Object obj)
         {
-            var fn = (FunctionExpression)obj.Value;
+            var fn = obj.Value as FunctionExpression;
             var sb = new StringBuilder();
 
-            sb.Append("fn(");
-            
-            fn.Parameters.ForEach(param =>
+            if (fn != default(FunctionExpression))
             {
-                sb.Append(param.Literal);
+                sb.Append("fn(");
 
-                if (param != fn.Parameters.Last())
+                fn.Parameters.ForEach(param =>
                 {
-                    sb.Append(", ");
-                }
-            });
+                    sb.Append(param.Literal);
 
-            sb.Append(") { ... }");
+                    if (param != fn.Parameters.Last())
+                    {
+                        sb.Append(", ");
+                    }
+                });
+
+                sb.Append(") { ... }");
+            }
+            else
+            {
+                sb.Append("null");
+            }
 
             return sb.ToString();
         }

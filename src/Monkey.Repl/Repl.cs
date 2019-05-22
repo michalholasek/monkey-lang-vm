@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Monkey;
 using Monkey.Shared;
 using Environment = Monkey.Shared.Environment;
+using Object = Monkey.Shared.Object;
 
 namespace Monkey.Repl
 {
@@ -62,7 +63,7 @@ namespace Monkey.Repl
                 else
                 {
                     vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
-                    Console.WriteLine(vm.LastStackElement.Value.ToString());
+                    Console.WriteLine(Stringify.Object((Object)vm.LastStackElement));
                 }
             }
             else
