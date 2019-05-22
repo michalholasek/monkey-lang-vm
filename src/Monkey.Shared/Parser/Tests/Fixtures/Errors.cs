@@ -14,7 +14,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "invalid token: .<--" }
+                        new AssertionError { Message = "invalid token: .<-- . ." }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
@@ -46,6 +46,27 @@ namespace Monkey.Tests.Fixtures
                         new Token() { Column = 2, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
                         new Token() { Column = 4, Kind = SyntaxKind.Plus, Line = 1, Literal = "+" },
                         new Token() { Column = 5, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "1 + $",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "invalid token: 1 + $<--" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 3,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 4, Kind = SyntaxKind.Plus, Line = 1, Literal = "+" },
+                        new Token() { Column = 6, Kind = SyntaxKind.Illegal, Line = 1, Literal = "$" },
+                        new Token() { Column = 7, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
                     }
                 })
             },

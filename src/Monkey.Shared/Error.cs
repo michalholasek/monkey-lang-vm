@@ -119,7 +119,7 @@ namespace Monkey.Shared
             { ErrorCode.InvalidLetIdentifierToken, "@0" },
             { ErrorCode.InvalidLetAssignToken, "@0" },
             { ErrorCode.InvalidReturnExpression, "@0" },
-            { ErrorCode.InvalidToken, "@0<--" },
+            { ErrorCode.InvalidToken, "@0" },
             { ErrorCode.MissingLetIdentifierToken, "let <identifier><-- = <expression>;" },
             { ErrorCode.MissingLetAssignToken, "@0 <assign><-- <expression>;" },
             { ErrorCode.MissingExpressionToken, "@0 <expression><--" },
@@ -262,10 +262,8 @@ namespace Monkey.Shared
                 case ErrorCode.InvalidLetIdentifierToken:
                 case ErrorCode.InvalidLetAssignToken:
                 case ErrorCode.InvalidReturnExpression:
-                    offenders = new List<string> { ComposeExpression(info, arrow: true) };
-                    break;
                 case ErrorCode.InvalidToken:
-                    offenders = new List<string> { info.Offenders.First().ToString() };
+                    offenders = new List<string> { ComposeExpression(info, arrow: true) };
                     break;
                 default:
                     offenders = new List<string>();

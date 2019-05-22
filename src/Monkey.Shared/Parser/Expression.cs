@@ -463,13 +463,19 @@ namespace Monkey.Shared
                     return ParseCallExpression(newState);
                 case SyntaxKind.LeftBracket:
                     return ParseIndexExpression(newState);
-                default:
-                    newState = ParseExpression(newState);
-                    return Factory.ExpressionParseResult()
-                        .Assign(newState)
-                        .Expression(new InfixExpression(left: left, op: op, right: newState.Expression))
-                        .Create();
             }
+
+            newState = ParseExpression(newState);
+
+            if (newState.Errors.Count > 0)
+            {
+                return newState;
+            }
+
+            return Factory.ExpressionParseResult()
+                .Assign(newState)
+                .Expression(new InfixExpression(left: left, op: op, right: newState.Expression))
+                .Create();
         }
 
         private static ExpressionParseResult ParsePrefixExpression(ExpressionParseResult currentState)

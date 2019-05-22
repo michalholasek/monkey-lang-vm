@@ -179,6 +179,7 @@ namespace Monkey.Tests
         [TestMethod]
         [DataRow("...")]
         [DataRow("1 +")]
+        [DataRow("1 + $")]
         [DataRow("let")]
         [DataRow("let one")]
         [DataRow("let one =")]
