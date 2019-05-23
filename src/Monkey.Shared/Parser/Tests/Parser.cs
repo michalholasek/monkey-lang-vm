@@ -190,6 +190,7 @@ namespace Monkey.Tests
         [DataRow("[1 2];")]
         [DataRow("[ , 2];")]
         [DataRow("[1, 2")]
+        [DataRow("{ 1")]
         [DataRow("{ 1$ 2 };")]
         [DataRow("{ 1: 2 $ 2: 3 };")]
         [DataRow("{ 1: 2")]

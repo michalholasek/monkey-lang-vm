@@ -43,6 +43,7 @@ namespace Monkey.Shared
         InvalidReturnExpression,
         InvalidToken,
         MissingClosingToken,
+        MissingColon,
         MissingComma,
         MissingExpressionToken,
         MissingLetIdentifierToken,
@@ -127,7 +128,8 @@ namespace Monkey.Shared
             { ErrorCode.InvalidReturnExpression, "@0" },
             { ErrorCode.InvalidToken, "@0" },
             { ErrorCode.MissingClosingToken, "@0, expected @1" },
-            { ErrorCode.MissingComma, "@0, missing comma" },
+            { ErrorCode.MissingColon, "@0, expected colon" },
+            { ErrorCode.MissingComma, "@0, expected comma" },
             { ErrorCode.MissingLetIdentifierToken, "let <identifier><-- = <expression>;" },
             { ErrorCode.MissingLetAssignToken, "@0 <assign><-- <expression>;" },
             { ErrorCode.MissingExpressionToken, "@0, expected expression" },
@@ -273,6 +275,9 @@ namespace Monkey.Shared
                 case ErrorCode.MissingLetAssignToken:
                     expression = ComposeExpression(info, arrow: false, placeholder: default(string));
                     break;
+                case ErrorCode.MissingColon:
+                    expression = ComposeExpression(info, arrow: false, placeholder: DeterminePlaceholder(SyntaxKind.Colon));
+                    break;
                 case ErrorCode.MissingComma:
                     expression = ComposeExpression(info, arrow: false, placeholder: DeterminePlaceholder(SyntaxKind.Comma));
                     break;
@@ -363,6 +368,8 @@ namespace Monkey.Shared
             {
                 case SyntaxKind.Int:
                     return "<expression><-- ";
+                case SyntaxKind.Colon:
+                    return "<colon><-- ";
                 case SyntaxKind.Comma:
                     return "<comma><-- ";
                 case SyntaxKind.RightBracket:

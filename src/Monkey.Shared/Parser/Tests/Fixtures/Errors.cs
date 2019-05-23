@@ -226,7 +226,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "invalid token: [ 1 <comma><-- 2 ];, missing comma" }
+                        new AssertionError { Message = "invalid token: [ 1 <comma><-- 2 ];, expected comma" }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
@@ -285,6 +285,26 @@ namespace Monkey.Tests.Fixtures
                         new Token() { Column = 4, Kind = SyntaxKind.Comma, Line = 1, Literal = "," },
                         new Token() { Column = 6, Kind = SyntaxKind.Int, Line = 1, Literal = "2" },
                         new Token() { Column = 7, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "{ 1",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "missing token: { 1 <colon><--, expected colon" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 2,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.LeftBrace, Line = 1, Literal = "{" },
+                        new Token() { Column = 4, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 5, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
                     }
                 })
             },

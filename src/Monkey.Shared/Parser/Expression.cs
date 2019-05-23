@@ -429,6 +429,23 @@ namespace Monkey.Shared
 
                 nextToken = GetToken(keyParseResult, keyParseResult.Position);
 
+                if (nextToken == default(Token))
+                {
+                    var info = new ErrorInfo
+                    {
+                        Code = ErrorCode.MissingColon,
+                        Kind = ErrorKind.MissingToken,
+                        Position = keyParseResult.Position,
+                        Source = ErrorSource.Parser,
+                        Tokens = keyParseResult.Tokens
+                    };
+
+                    return Factory.ExpressionParseResult()
+                        .Assign(keyParseResult)
+                        .Errors(new List<AssertionError> { Error.Create(info) })
+                        .Create();
+                }
+
                 if (nextToken.Kind != SyntaxKind.Colon)
                 {
                     var info = new ErrorInfo
