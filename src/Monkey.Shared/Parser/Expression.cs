@@ -226,7 +226,7 @@ namespace Monkey.Shared
                 var info = new ErrorInfo
                 {
                     Code = ErrorCode.MissingClosingToken,
-                    Kind = ErrorKind.InvalidToken,
+                    Kind = ErrorKind.MissingToken,
                     Offenders = new List<object> { end },
                     Position = currentState.Tokens.Count,
                     Source = ErrorSource.Parser,
@@ -398,8 +398,9 @@ namespace Monkey.Shared
             var values = new List<Expression>();
 
             var nextToken = GetToken(currentState, currentState.Position + Skip.Brace);
+            var position = 0;
 
-            if (nextToken != null && nextToken.Kind == SyntaxKind.RightBrace)
+            if (nextToken != default(Token) && nextToken.Kind == SyntaxKind.RightBrace)
             {
                 nextToken = GetToken(currentState, currentState.Position + Skip.Brace + 1);
 
@@ -411,42 +412,125 @@ namespace Monkey.Shared
                     .Create();
             }
 
-            var newState = Factory.ExpressionParseResult()
+            var hashParseResultState = Factory.ExpressionParseResult()
                     .Assign(currentState)
                     .Position(currentState.Position + Skip.Brace)
                     .Precedence(Precedence.Lowest)
                     .Create();
 
-            while (newState.Position < newState.Tokens.Count && nextToken.Kind != SyntaxKind.RightBrace)
+            while (hashParseResultState.Position < hashParseResultState.Tokens.Count && nextToken.Kind != SyntaxKind.RightBrace)
             {
-                var keyParseResult = ParseExpression(newState);
+                var keyParseResult = ParseExpression(hashParseResultState);
 
-                newState = Factory.ExpressionParseResult()
-                    .Assign(newState)
+                if (keyParseResult.Errors.Count > 0)
+                {
+                    return keyParseResult;
+                }
+
+                nextToken = GetToken(keyParseResult, keyParseResult.Position);
+
+                if (nextToken.Kind != SyntaxKind.Colon)
+                {
+                    var info = new ErrorInfo
+                    {
+                        Code = ErrorCode.ExpectedColonToken,
+                        Kind = ErrorKind.InvalidToken,
+                        Position = keyParseResult.Position,
+                        Source = ErrorSource.Parser,
+                        Tokens = keyParseResult.Tokens
+                    };
+
+                    return Factory.ExpressionParseResult()
+                        .Assign(keyParseResult)
+                        .Errors(new List<AssertionError> { Error.Create(info) })
+                        .Create();
+                }
+
+                hashParseResultState = Factory.ExpressionParseResult()
+                    .Assign(hashParseResultState)
                     .Position(keyParseResult.Position + Skip.Colon)
                     .Precedence(Precedence.Lowest)
                     .Create();
 
-                var valueParseResult = ParseExpression(newState);
+                var valueParseResult = ParseExpression(hashParseResultState);
 
-                nextToken = GetToken(newState, valueParseResult.Position);
-
-                newState = Factory.ExpressionParseResult()
-                    .Assign(newState)
-                    .Position(valueParseResult.Position + (nextToken.Kind == SyntaxKind.Comma ? Skip.Comma : 0))
-                    .Precedence(Precedence.Lowest)
-                    .Create();
+                if (valueParseResult.Errors.Count > 0)
+                {
+                    return valueParseResult;
+                }
 
                 keys.Add(keyParseResult.Expression);
                 values.Add(valueParseResult.Expression);
+
+                nextToken = GetToken(valueParseResult, valueParseResult.Position);
+
+                if (nextToken == default(Token))
+                {
+                    var info = new ErrorInfo
+                    {
+                        Code = ErrorCode.MissingClosingToken,
+                        Kind = ErrorKind.MissingToken,
+                        Offenders = new List<object> { SyntaxKind.RightBrace },
+                        Position = valueParseResult.Position,
+                        Source = ErrorSource.Parser,
+                        Tokens = valueParseResult.Tokens
+                    };
+
+                    return Factory.ExpressionParseResult()
+                        .Assign(valueParseResult)
+                        .Errors(new List<AssertionError> { Error.Create(info) })
+                        .Create();
+                }
+
+                if (nextToken.Kind != SyntaxKind.Comma && nextToken.Kind != SyntaxKind.RightBrace)
+                {
+                    var info = new ErrorInfo
+                    {
+                        Code = ErrorCode.ExpectedCommaToken,
+                        Kind = ErrorKind.InvalidToken,
+                        Position = valueParseResult.Position,
+                        Source = ErrorSource.Parser,
+                        Tokens = valueParseResult.Tokens
+                    };
+
+                    return Factory.ExpressionParseResult()
+                        .Assign(valueParseResult)
+                        .Errors(new List<AssertionError> { Error.Create(info) })
+                        .Create();
+                }
+                else
+                {
+                    var rightBraceToken = GetToken(valueParseResult, valueParseResult.Position + Skip.Comma);
+
+                    // Trailing comma
+                    if (rightBraceToken != default(Token) && rightBraceToken.Kind == SyntaxKind.RightBrace)
+                    {
+                        nextToken = rightBraceToken;
+                        position = valueParseResult.Position + Skip.Comma + Skip.Brace;
+                    }
+                    else if (nextToken.Kind == SyntaxKind.Comma) // Next round
+                    {
+                        position = valueParseResult.Position + Skip.Comma;
+                    }
+                    else // Closing brace
+                    {
+                        position = valueParseResult.Position;
+                    }
+                }
+
+                hashParseResultState = Factory.ExpressionParseResult()
+                    .Assign(valueParseResult)
+                    .Position(position)
+                    .Precedence(Precedence.Lowest)
+                    .Create();
             }
 
-            nextToken = GetToken(newState, newState.Position + Skip.Brace);
+            nextToken = GetToken(hashParseResultState, hashParseResultState.Position + Skip.Brace);
 
             return Factory.ExpressionParseResult()
-                .Assign(newState)
+                .Assign(hashParseResultState)
                 .Expression(new HashExpression(keys, values))
-                .Position(newState.Position + Skip.Brace)
+                .Position(hashParseResultState.Position + Skip.Brace)
                 .Precedence(DetermineOperatorPrecedence(nextToken))
                 .Create();
         }

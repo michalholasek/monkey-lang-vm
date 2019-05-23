@@ -31,6 +31,8 @@ namespace Monkey.Shared
         BuiltInRestUnexpectedNoOfArguments,
         BuiltInPushInvalidArgument,
         BuiltInPushUnexpectedNoOfArguments,
+        ExpectedColonToken,
+        ExpectedCommaToken,
         HashIndexExpressionEvaluation,
         IdentifierExpressionEvaluation,
         InfixExpressionEvaluation,
@@ -113,6 +115,8 @@ namespace Monkey.Shared
             { ErrorCode.BuiltInRestInvalidArgument, "rest(@1<-- ), expected Array" },
             { ErrorCode.BuiltInPushUnexpectedNoOfArguments, "@0(), unexpected number of arguments" },
             { ErrorCode.BuiltInPushInvalidArgument, "push(@1<-- , @2), expected Array as first argument" },
+            { ErrorCode.ExpectedColonToken, "@0, expected colon" },
+            { ErrorCode.ExpectedCommaToken, "@0, expected comma" },
             { ErrorCode.HashIndexExpressionEvaluation, "@0[@1<-- ], expected Integer, Boolean, or String" },
             { ErrorCode.IdentifierExpressionEvaluation, "@0 not found" },
             { ErrorCode.InfixExpressionEvaluation, "types of @0 and @1 do not match" },
@@ -122,7 +126,7 @@ namespace Monkey.Shared
             { ErrorCode.InvalidLetAssignToken, "@0" },
             { ErrorCode.InvalidReturnExpression, "@0" },
             { ErrorCode.InvalidToken, "@0" },
-            { ErrorCode.MissingClosingToken, "@0, missing ]" },
+            { ErrorCode.MissingClosingToken, "@0, expected @1" },
             { ErrorCode.MissingComma, "@0, missing comma" },
             { ErrorCode.MissingLetIdentifierToken, "let <identifier><-- = <expression>;" },
             { ErrorCode.MissingLetAssignToken, "@0 <assign><-- <expression>;" },
@@ -251,6 +255,7 @@ namespace Monkey.Shared
         private static AssertionError CreateParseError(ErrorInfo info)
         {
             var sb = new StringBuilder();
+            string kind = String.Empty;
             string expression;
 
             sb.Append(ErrorKindString[info.Kind]);
@@ -258,6 +263,10 @@ namespace Monkey.Shared
 
             switch (info.Code)
             {
+                case ErrorCode.ExpectedCommaToken:
+                case ErrorCode.ExpectedColonToken:
+                    expression = ComposeExpression(info, arrow: true, placeholder: default(string));
+                    break;
                 case ErrorCode.MissingExpressionToken:
                     expression = ComposeExpression(info, arrow: false, placeholder: DeterminePlaceholder(SyntaxKind.Int));
                     break;
@@ -269,6 +278,7 @@ namespace Monkey.Shared
                     break;
                 case ErrorCode.MissingClosingToken:
                     expression = ComposeExpression(info, arrow: false, placeholder: DeterminePlaceholder((SyntaxKind)info.Offenders.First()));
+                    kind = Stringify.Kind((SyntaxKind)info.Offenders.First());
                     break;
                 case ErrorCode.InvalidLetExpression:
                 case ErrorCode.InvalidLetIdentifierToken:
@@ -283,6 +293,11 @@ namespace Monkey.Shared
             }
 
             List<string> offenders = new List<string> { expression };
+
+            if (kind != String.Empty)
+            {
+                offenders.Add(kind);
+            }
 
             sb.Append(ComposeErrorMessage(offenders, ErrorMessages[info.Code]));
 
@@ -352,6 +367,8 @@ namespace Monkey.Shared
                     return "<comma><-- ";
                 case SyntaxKind.RightBracket:
                     return "<bracket><-- ";
+                case SyntaxKind.RightBrace:
+                    return "<brace><-- ";
                 default:
                     return String.Empty;
             }

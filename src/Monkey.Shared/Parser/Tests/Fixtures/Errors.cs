@@ -272,7 +272,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "invalid token: [ 1 , 2 <bracket><--, missing ]" }
+                        new AssertionError { Message = "missing token: [ 1 , 2 <bracket><--, expected RightBracket" }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
@@ -285,6 +285,80 @@ namespace Monkey.Tests.Fixtures
                         new Token() { Column = 4, Kind = SyntaxKind.Comma, Line = 1, Literal = "," },
                         new Token() { Column = 6, Kind = SyntaxKind.Int, Line = 1, Literal = "2" },
                         new Token() { Column = 7, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "{ 1$ 2 };",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "invalid token: { 1 $<-- 2 };, expected colon" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 6,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.LeftBrace, Line = 1, Literal = "{" },
+                        new Token() { Column = 4, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 5, Kind = SyntaxKind.Illegal, Line = 1, Literal = "$" },
+                        new Token() { Column = 7, Kind = SyntaxKind.Int, Line = 1, Literal = "2" },
+                        new Token() { Column = 9, Kind = SyntaxKind.RightBrace, Line = 1, Literal = "}" },
+                        new Token() { Column = 10, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
+                        new Token() { Column = 11, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "{ 1: 2 $ 2: 3 };",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "invalid token: { 1 : 2 $<-- 2 : 3 };, expected comma" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 10,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.LeftBrace, Line = 1, Literal = "{" },
+                        new Token() { Column = 4, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 5, Kind = SyntaxKind.Colon, Line = 1, Literal = ":" },
+                        new Token() { Column = 7, Kind = SyntaxKind.Int, Line = 1, Literal = "2" },
+                        new Token() { Column = 9, Kind = SyntaxKind.Illegal, Line = 1, Literal = "$" },
+                        new Token() { Column = 11, Kind = SyntaxKind.Int, Line = 1, Literal = "2" },
+                        new Token() { Column = 12, Kind = SyntaxKind.Colon, Line = 1, Literal = ":" },
+                        new Token() { Column = 14, Kind = SyntaxKind.Int, Line = 1, Literal = "3" },
+                        new Token() { Column = 16, Kind = SyntaxKind.RightBrace, Line = 1, Literal = "}" },
+                        new Token() { Column = 17, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
+                        new Token() { Column = 18, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "{ 1: 2",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "missing token: { 1 : 2 <brace><--, expected RightBrace" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 4,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.LeftBrace, Line = 1, Literal = "{" },
+                        new Token() { Column = 4, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 5, Kind = SyntaxKind.Colon, Line = 1, Literal = ":" },
+                        new Token() { Column = 7, Kind = SyntaxKind.Int, Line = 1, Literal = "2" },
+                        new Token() { Column = 8, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
                     }
                 })
             }
