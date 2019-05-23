@@ -130,7 +130,7 @@ namespace Monkey.Shared
             { ErrorCode.MissingComma, "@0, missing comma" },
             { ErrorCode.MissingLetIdentifierToken, "let <identifier><-- = <expression>;" },
             { ErrorCode.MissingLetAssignToken, "@0 <assign><-- <expression>;" },
-            { ErrorCode.MissingExpressionToken, "@0, missing expression" },
+            { ErrorCode.MissingExpressionToken, "@0, expected expression" },
             { ErrorCode.StringExpressionOperatorEvaluation, "operator @1 is not supported for operands of type @2" },
             { ErrorCode.MinusOperatorExpressionEvaluation, "-@0<-- , operator - is not supported for type @1" },
             { ErrorCode.UnknownOperator, "operator @0 is not supported" },

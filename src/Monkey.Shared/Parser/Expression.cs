@@ -253,7 +253,7 @@ namespace Monkey.Shared
                     var info = new ErrorInfo
                     {
                         Code = ErrorCode.MissingExpressionToken,
-                        Kind = ErrorKind.InvalidToken,
+                        Kind = ErrorKind.MissingToken,
                         Position = newState.Position,
                         Source = ErrorSource.Parser,
                         Tokens = newState.Tokens

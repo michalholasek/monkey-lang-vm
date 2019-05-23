@@ -21,7 +21,7 @@ namespace Monkey.Shared
                     Tokens = currentState.Tokens
                 };
 
-                if (token == default(Token) || token.Kind == SyntaxKind.EOF)
+                if (IsMissingExpressionToken(token))
                 {
                     info.Code = ErrorCode.MissingExpressionToken;
                     info.Kind = ErrorKind.MissingToken;
@@ -202,6 +202,23 @@ namespace Monkey.Shared
                     default:
                         return false;
                 }
+            }
+        }
+
+        private static bool IsMissingExpressionToken(Token token)
+        {
+            if (token == default(Token)) return true;
+
+            switch (token.Kind)
+            {
+                case SyntaxKind.EOF:
+                case SyntaxKind.RightBracket:
+                case SyntaxKind.RightBrace:
+                case SyntaxKind.Colon:
+                case SyntaxKind.Comma:
+                    return true;
+                default:
+                    return false;
             }
         }
     }

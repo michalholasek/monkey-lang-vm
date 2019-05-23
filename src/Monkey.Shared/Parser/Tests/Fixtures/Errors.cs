@@ -35,7 +35,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "missing token: 1 + <expression><--, missing expression" }
+                        new AssertionError { Message = "missing token: 1 + <expression><--, expected expression" }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
@@ -115,7 +115,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "missing token: let one = <expression><--, missing expression" }
+                        new AssertionError { Message = "missing token: let one = <expression><--, expected expression" }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
@@ -249,7 +249,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "invalid token: [ <expression><-- , 2 ];, missing expression" }
+                        new AssertionError { Message = "missing token: [ <expression><-- , 2 ];, expected expression" }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
