@@ -138,7 +138,7 @@ namespace Monkey.Shared
         {
             var nextToken = GetToken(currentState, currentState.Position + Skip.Bracket);
 
-            if (nextToken != null && nextToken.Kind == SyntaxKind.RightBracket)
+            if (nextToken != default(Token) && nextToken.Kind == SyntaxKind.RightBracket)
             {
                 nextToken = GetToken(currentState, currentState.Position + Skip.Bracket + 1);
 
@@ -157,6 +157,14 @@ namespace Monkey.Shared
 
             var elementsParseResult = ParseExpressionList(newState, SyntaxKind.RightBracket);
 
+            if (elementsParseResult.Errors.Count > 0)
+            {
+                return Factory.ExpressionParseResult()
+                    .Assign(newState)
+                    .Errors(elementsParseResult.Errors)
+                    .Create();
+            }
+
             nextToken = GetToken(newState, elementsParseResult.Position + Skip.Bracket);
 
             return Factory.ExpressionParseResult()
@@ -170,6 +178,15 @@ namespace Monkey.Shared
         private static ExpressionParseResult ParseCallExpression(ExpressionParseResult currentState)
         {
             var argumentListParseResult = ParseExpressionList(currentState, SyntaxKind.RightParenthesis);
+
+            if (argumentListParseResult.Errors.Count > 0)
+            {
+                return Factory.ExpressionParseResult()
+                    .Assign(currentState)
+                    .Errors(argumentListParseResult.Errors)
+                    .Create();
+            }
+
             Expression fn = default(Expression);
 
             var identifier = currentState.Tokens
@@ -203,6 +220,25 @@ namespace Monkey.Shared
         {   
             List<Expression> expressions = new List<Expression>();
 
+            var closingToken = currentState.Tokens.Where(token => token.Kind == end).FirstOrDefault();
+            if (closingToken == default(Token))
+            {
+                var info = new ErrorInfo
+                {
+                    Code = ErrorCode.MissingClosingToken,
+                    Kind = ErrorKind.InvalidToken,
+                    Offenders = new List<object> { end },
+                    Position = currentState.Tokens.Count,
+                    Source = ErrorSource.Parser,
+                    Tokens = currentState.Tokens
+                };
+
+                return new ExpressionListParseResult
+                {
+                    Errors = new List<AssertionError> { Error.Create(info) }
+                };
+            }
+
             var newState = Factory.ExpressionParseResult()
                     .Assign(currentState)
                     .Precedence(Precedence.Lowest)
@@ -210,27 +246,61 @@ namespace Monkey.Shared
 
             var currentToken = GetToken(newState, newState.Position);
 
-            while (currentToken != null && currentToken.Kind != end)
+            while (currentToken != default(Token) && currentToken.Kind != end)
             {
+                if (currentToken.Kind == SyntaxKind.Comma)
+                {
+                    var info = new ErrorInfo
+                    {
+                        Code = ErrorCode.MissingExpressionToken,
+                        Kind = ErrorKind.InvalidToken,
+                        Position = newState.Position,
+                        Source = ErrorSource.Parser,
+                        Tokens = newState.Tokens
+                    };
+
+                    return new ExpressionListParseResult
+                    {
+                        Errors = new List<AssertionError> { Error.Create(info) }
+                    };
+                }
+
+                newState = ParseExpression(newState);
+                expressions.Add(newState.Expression);
+
+                currentToken = GetToken(newState, newState.Position);
+
+                if (currentToken == default(Token) || currentToken.Kind == end) break;
+
                 if (currentToken.Kind != SyntaxKind.Comma)
                 {
-                    newState = ParseExpression(newState);
-                    expressions.Add(newState.Expression);
+                    var info = new ErrorInfo
+                    {
+                        Code = ErrorCode.MissingComma,
+                        Kind = ErrorKind.InvalidToken,
+                        Position = newState.Position,
+                        Source = ErrorSource.Parser,
+                        Tokens = newState.Tokens
+                    };
+
+                    return new ExpressionListParseResult
+                    {
+                        Errors = new List<AssertionError> { Error.Create(info) }
+                    };
                 }
-                else
-                {
-                    newState = Factory.ExpressionParseResult()
-                        .Assign(newState)
-                        .Position(newState.Position + Skip.Comma)
-                        .Precedence(Precedence.Lowest)
-                        .Create();
-                }
+
+                newState = Factory.ExpressionParseResult()
+                    .Assign(newState)
+                    .Position(newState.Position + Skip.Comma)
+                    .Precedence(Precedence.Lowest)
+                    .Create();
 
                 currentToken = GetToken(newState, newState.Position);
             }
 
             return new ExpressionListParseResult
             {
+                Errors = new List<AssertionError> { },
                 Expressions = expressions,
                 Position = newState.Position
             };

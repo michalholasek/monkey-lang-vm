@@ -35,7 +35,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "missing token: 1 + <expression><--" }
+                        new AssertionError { Message = "missing token: 1 + <expression><--, missing expression" }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
@@ -115,7 +115,7 @@ namespace Monkey.Tests.Fixtures
                 {
                     Errors = new List<AssertionError>
                     {
-                        new AssertionError { Message = "missing token: let one = <expression><--" }
+                        new AssertionError { Message = "missing token: let one = <expression><--, missing expression" }
                     },
                     Kind = NodeKind.Program,
                     Position = 0,
@@ -217,6 +217,74 @@ namespace Monkey.Tests.Fixtures
                         new Token() { Column = 9, Kind = SyntaxKind.Illegal, Line = 1, Literal = "$" },
                         new Token() { Column = 10, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
                         new Token() { Column = 11, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "[1 2];",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "invalid token: [ 1 <comma><-- 2 ];, missing comma" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 5,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.LeftBracket, Line = 1, Literal = "[" },
+                        new Token() { Column = 3, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 5, Kind = SyntaxKind.Int, Line = 1, Literal = "2" },
+                        new Token() { Column = 6, Kind = SyntaxKind.RightBracket, Line = 1, Literal = "]" },
+                        new Token() { Column = 7, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
+                        new Token() { Column = 8, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "[ , 2];",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "invalid token: [ <expression><-- , 2 ];, missing expression" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 5,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.LeftBracket, Line = 1, Literal = "[" },
+                        new Token() { Column = 4, Kind = SyntaxKind.Comma, Line = 1, Literal = "," },
+                        new Token() { Column = 6, Kind = SyntaxKind.Int, Line = 1, Literal = "2" },
+                        new Token() { Column = 7, Kind = SyntaxKind.RightBracket, Line = 1, Literal = "]" },
+                        new Token() { Column = 8, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
+                        new Token() { Column = 9, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "[1, 2",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "invalid token: [ 1 , 2 <bracket><--, missing ]" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 4,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.LeftBracket, Line = 1, Literal = "[" },
+                        new Token() { Column = 3, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 4, Kind = SyntaxKind.Comma, Line = 1, Literal = "," },
+                        new Token() { Column = 6, Kind = SyntaxKind.Int, Line = 1, Literal = "2" },
+                        new Token() { Column = 7, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
                     }
                 })
             }

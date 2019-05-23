@@ -40,6 +40,8 @@ namespace Monkey.Shared
         InvalidLetAssignToken,
         InvalidReturnExpression,
         InvalidToken,
+        MissingClosingToken,
+        MissingComma,
         MissingExpressionToken,
         MissingLetIdentifierToken,
         MissingLetAssignToken,
@@ -120,9 +122,11 @@ namespace Monkey.Shared
             { ErrorCode.InvalidLetAssignToken, "@0" },
             { ErrorCode.InvalidReturnExpression, "@0" },
             { ErrorCode.InvalidToken, "@0" },
+            { ErrorCode.MissingClosingToken, "@0, missing ]" },
+            { ErrorCode.MissingComma, "@0, missing comma" },
             { ErrorCode.MissingLetIdentifierToken, "let <identifier><-- = <expression>;" },
             { ErrorCode.MissingLetAssignToken, "@0 <assign><-- <expression>;" },
-            { ErrorCode.MissingExpressionToken, "@0 <expression><--" },
+            { ErrorCode.MissingExpressionToken, "@0, missing expression" },
             { ErrorCode.StringExpressionOperatorEvaluation, "operator @1 is not supported for operands of type @2" },
             { ErrorCode.MinusOperatorExpressionEvaluation, "-@0<-- , operator - is not supported for type @1" },
             { ErrorCode.UnknownOperator, "operator @0 is not supported" },
@@ -247,7 +251,7 @@ namespace Monkey.Shared
         private static AssertionError CreateParseError(ErrorInfo info)
         {
             var sb = new StringBuilder();
-            List<string> offenders;
+            string expression;
 
             sb.Append(ErrorKindString[info.Kind]);
             sb.Append(": ");
@@ -255,20 +259,30 @@ namespace Monkey.Shared
             switch (info.Code)
             {
                 case ErrorCode.MissingExpressionToken:
+                    expression = ComposeExpression(info, arrow: false, placeholder: DeterminePlaceholder(SyntaxKind.Int));
+                    break;
                 case ErrorCode.MissingLetAssignToken:
-                    offenders = new List<string> { ComposeExpression(info, arrow: false) };
+                    expression = ComposeExpression(info, arrow: false, placeholder: default(string));
+                    break;
+                case ErrorCode.MissingComma:
+                    expression = ComposeExpression(info, arrow: false, placeholder: DeterminePlaceholder(SyntaxKind.Comma));
+                    break;
+                case ErrorCode.MissingClosingToken:
+                    expression = ComposeExpression(info, arrow: false, placeholder: DeterminePlaceholder((SyntaxKind)info.Offenders.First()));
                     break;
                 case ErrorCode.InvalidLetExpression:
                 case ErrorCode.InvalidLetIdentifierToken:
                 case ErrorCode.InvalidLetAssignToken:
                 case ErrorCode.InvalidReturnExpression:
                 case ErrorCode.InvalidToken:
-                    offenders = new List<string> { ComposeExpression(info, arrow: true) };
+                    expression = ComposeExpression(info, arrow: true, placeholder: default(string));
                     break;
                 default:
-                    offenders = new List<string>();
+                    expression = String.Empty;
                     break;
             }
+
+            List<string> offenders = new List<string> { expression };
 
             sb.Append(ComposeErrorMessage(offenders, ErrorMessages[info.Code]));
 
@@ -287,7 +301,7 @@ namespace Monkey.Shared
             return message;
         }
 
-        private static string ComposeExpression(ErrorInfo info, bool arrow)
+        private static string ComposeExpression(ErrorInfo info, bool arrow, string placeholder)
         {
             Token token = info.Tokens.Take(1).FirstOrDefault();
             var sb = new StringBuilder();
@@ -295,10 +309,16 @@ namespace Monkey.Shared
 
             for (var i = 0; i < info.Tokens.Count; i++)
             {
+                if (placeholder != default(string) && i == info.Position)
+                {
+                    sb.Append(placeholder);
+                }
+
                 sb.Append(token.Literal);
 
                 if (arrow && i == info.Position)
                 {
+                    sb.Append(placeholder ?? String.Empty);
                     sb.Append("<--");
                     whitespace = true;
                 }
@@ -313,7 +333,28 @@ namespace Monkey.Shared
                 whitespace = false;
             }
 
+            if (placeholder != default(string) && info.Tokens.Count <= info.Position)
+            {
+                sb.Append(" ");
+                sb.Append(placeholder);
+            }
+
             return sb.ToString().Trim();
+        }
+
+        private static string DeterminePlaceholder(SyntaxKind kind)
+        {
+            switch (kind)
+            {
+                case SyntaxKind.Int:
+                    return "<expression><-- ";
+                case SyntaxKind.Comma:
+                    return "<comma><-- ";
+                case SyntaxKind.RightBracket:
+                    return "<bracket><-- ";
+                default:
+                    return String.Empty;
+            }
         }
     }
 }

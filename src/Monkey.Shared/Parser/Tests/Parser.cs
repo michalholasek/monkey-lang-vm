@@ -187,6 +187,9 @@ namespace Monkey.Tests
         [DataRow("let 1 = 1;")]
         [DataRow("let one . 1;")]
         [DataRow("return $;")]
+        [DataRow("[1 2];")]
+        [DataRow("[ , 2];")]
+        [DataRow("[1, 2")]
         public void Errors(string source)
         {
             var tokens = new Scanner().Scan(source);

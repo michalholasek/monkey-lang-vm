@@ -11,6 +11,7 @@ namespace Monkey.Shared
 
     internal class ExpressionListParseResult
     {
+        public List<AssertionError> Errors { get; set; }
         public List<Expression> Expressions { get; set; }
         public int Position { get; set; }
     }
