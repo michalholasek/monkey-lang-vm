@@ -102,6 +102,9 @@ namespace Monkey.Tests
         [DataRow("let manyArgs = fn(a, b, c) { a; b; c; }; manyArgs(24, 25, 26);")]
         [DataRow("len([]); push([], 1);")]
         [DataRow("fn() { len([]); };")]
+        [DataRow("fn(a) { fn(b) { a + b; } };")]
+        [DataRow("fn(a) { fn(b) { fn(c) { a + b + c; }; }; };")]
+        [DataRow("let global = 55; fn() { let a = 66; fn() { let b = 77; fn() { let c = 88; global + a + b + c; }; }; };")]
         public void FunctionExpression(string source)
         {
             var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));

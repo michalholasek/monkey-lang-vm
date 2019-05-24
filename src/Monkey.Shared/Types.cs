@@ -65,7 +65,8 @@ namespace Monkey.Shared
         Return,
         String,
         Hash,
-        Puts
+        Puts,
+        Closure
     }
     
     public class Object

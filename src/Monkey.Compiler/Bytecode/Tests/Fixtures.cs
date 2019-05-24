@@ -35,7 +35,9 @@ namespace Monkey.Tests.Fixtures
             { 24, new Opcode.Definition { Name = Opcode.Name.ReturnValue, OperandLengths = new List<int> { 0 } }},
             { 25, new Opcode.Definition { Name = Opcode.Name.SetLocal, OperandLengths = new List<int> { 1 } }},
             { 26, new Opcode.Definition { Name = Opcode.Name.GetLocal, OperandLengths = new List<int> { 1 } }},
-            { 27, new Opcode.Definition { Name = Opcode.Name.GetBuiltIn, OperandLengths = new List<int> { 1 } }}
+            { 27, new Opcode.Definition { Name = Opcode.Name.GetBuiltIn, OperandLengths = new List<int> { 1 } }},
+            { 28, new Opcode.Definition { Name = Opcode.Name.Closure, OperandLengths = new List<int> { 2, 1 } }},
+            { 29, new Opcode.Definition { Name = Opcode.Name.GetFree, OperandLengths = new List<int> { 1 } }}
         };
     }
 
@@ -43,7 +45,8 @@ namespace Monkey.Tests.Fixtures
     {
         public static Dictionary<byte, List<byte>> Opcodes = new Dictionary<byte, List<byte>>
         {
-            { 1, new List<byte> { 1, 254, 255 } }
+            { 1, new List<byte> { 1, 254, 255 } },
+            { 28, new List<byte> { 28, 254, 255, 255 } }
         };
     }
 }

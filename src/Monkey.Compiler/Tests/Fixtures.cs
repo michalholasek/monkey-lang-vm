@@ -405,165 +405,165 @@ namespace Monkey.Tests.Fixtures
                     "fn() { return 5 + 10; }",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 2, 0,  // fn constant
-                        3,        // Pop
-                                  // Function scope
-                        1, 0, 0,  // 5
-                        1, 1, 0,  // 10
-                        2,        // Add
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 2, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        1, 0, 0,     // 5
+                        1, 1, 0,     // 10
+                        2,           // Add
+                        24           // ReturnValue
                     }
                 },
                 {
                     "fn() { 5 + 10; }",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 2, 0,  // fn constant
-                        3,        // Pop
-                                  // Function scope
-                        1, 0, 0,  // 5
-                        1, 1, 0,  // 10
-                        2,        // Add
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 2, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        1, 0, 0,     // 5
+                        1, 1, 0,     // 10
+                        2,           // Add
+                        24           // ReturnValue
                     }
                 },
                 {
                     "fn() { 1; 2; }",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 2, 0,  // fn constant
-                        3,        // Pop
-                                  // Function scope
-                        1, 0, 0,  // 1
-                        3,        // Pop
-                        1, 1, 0,  // 2
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 2, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        1, 0, 0,     // 1
+                        3,           // Pop
+                        1, 1, 0,     // 2
+                        24           // ReturnValue
                     }
                 },
                 {
                     "fn() { }",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 0, 0,  // fn constant
-                        3,        // Pop
-                                  // Function scope
-                        23        // Return
+                                     // Global scope
+                        28, 0, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        23           // Return
                     }
                 },
                 {
                     "fn() { 24; }();",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 1, 0,  // fn constant
-                        22, 0,    // Call
-                        3,        // Pop
-                                  // Function scope
-                        1, 0, 0,  // 24
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 1, 0, 0, // fn Closure
+                        22, 0,       // Call
+                        3,           // Pop
+                                     // Function scope
+                        1, 0, 0,     // 24
+                        24           // ReturnValue
                     }
                 },
                 {
                     "let noArg = fn() { 24; }; noArg();",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 1, 0,  // fn constant
-                        17, 0, 0, // SetGlobal noArg
-                        18, 0, 0, // GetGlobal noArg
-                        22, 0,    // Call noArg fn
-                        3,        // Pop
-                                  // Function scope
-                        1, 0, 0,  // 24
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 1, 0, 0, // fn Closure
+                        17, 0, 0,    // SetGlobal noArg
+                        18, 0, 0,    // GetGlobal noArg
+                        22, 0,       // Call noArg fn
+                        3,           // Pop
+                                     // Function scope
+                        1, 0, 0,     // 24
+                        24           // ReturnValue
                     }
                 },
                 {
                     "let num = 55; fn() { num; };",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 0, 0,  // 55
-                        17, 0, 0, // SetGlobal 55
-                        1, 1, 0,  // fn
-                        3,        // Pop
-                                  // Function scope
-                        18, 0, 0, // GetGlobal noArg
-                        24        // ReturnValue
+                                     // Global scope
+                        1, 0, 0,     // 55
+                        17, 0, 0,    // SetGlobal 55
+                        28, 1, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        18, 0, 0,    // GetGlobal noArg
+                        24           // ReturnValue
                     }
                 },
                 {
                     "fn() { let num = 55; num; };",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 1, 0,  // fn
-                        3,        // Pop
-                                  // Function scope
-                        1, 0, 0,  // 55
-                        25, 0,    // SetLocal 55
-                        26, 0,    // GetLocal 55
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 1, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        1, 0, 0,     // 55
+                        25, 0,       // SetLocal 55
+                        26, 0,       // GetLocal 55
+                        24           // ReturnValue
                     }
                 },
                 {
                     "fn() { let a = 55; let b = 77; a + b; };",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 2, 0,  // fn
-                        3,        // Pop
-                                  // Function scope
-                        1, 0, 0,  // 55
-                        25, 0,    // SetLocal 55
-                        1, 1, 0,  // 77
-                        25, 1,    // SetLocal 77
-                        26, 0,    // GetLocal 55
-                        26, 1,    // GetLocal 77
-                        2,        // Add
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 2, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        1, 0, 0,     // 55
+                        25, 0,       // SetLocal 55
+                        1, 1, 0,     // 77
+                        25, 1,       // SetLocal 77
+                        26, 0,       // GetLocal 55
+                        26, 1,       // GetLocal 77
+                        2,           // Add
+                        24           // ReturnValue
                     }
                 },
                 {
                     "let oneArg = fn(a) { a; }; oneArg(24);",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 0, 0,  // fn oneArg
-                        17, 0, 0, // SetGlobal fn
-                        18, 0, 0, // GetGlobal fn
-                        1, 1, 0,  // 24
-                        22, 1,    // Call with arity 1
-                        3,        // Pop
-                                  // Function scope
-                        26, 0,    // GetLocal 24
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 0, 0, 0, // fn oneArg Closure
+                        17, 0, 0,    // SetGlobal fn
+                        18, 0, 0,    // GetGlobal fn
+                        1, 1, 0,     // 24
+                        22, 1,       // Call with arity 1
+                        3,           // Pop
+                                     // Function scope
+                        26, 0,       // GetLocal 24
+                        24           // ReturnValue
                     }
                 },
                 {
                     "let manyArgs = fn(a, b, c) { a; b; c; }; manyArgs(24, 25, 26);",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 0, 0,  // fn manyArgs
-                        17, 0, 0, // SetGlobal fn
-                        18, 0, 0, // GetGlobal fn
-                        1, 1, 0,  // 24
-                        1, 2, 0,  // 25
-                        1, 3, 0,  // 26
-                        22, 3,    // Call with arity 3
-                        3,        // Pop
-                                  // Function scope
-                        26, 0,    // GetLocal 24
-                        3,        // Pop
-                        26, 1,    // GetLocal 25
-                        3,        // Pop
-                        26, 2,    // GetLocal 26
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 0, 0, 0, // fn manyArgs Closure
+                        17, 0, 0,    // SetGlobal fn
+                        18, 0, 0,    // GetGlobal fn
+                        1, 1, 0,     // 24
+                        1, 2, 0,     // 25
+                        1, 3, 0,     // 26
+                        22, 3,       // Call with arity 3
+                        3,           // Pop
+                                     // Function scope
+                        26, 0,       // GetLocal 24
+                        3,           // Pop
+                        26, 1,       // GetLocal 25
+                        3,           // Pop
+                        26, 2,       // GetLocal 26
+                        24           // ReturnValue
                     }
                 },
                 {
@@ -585,14 +585,92 @@ namespace Monkey.Tests.Fixtures
                     "fn() { len([]); };",
                     new List<byte>
                     {
-                                  // Global scope
-                        1, 0, 0,  // fn
-                        3,        // Pop
-                                  // Function scope
-                        27, 0,    // GetBuiltIn len
-                        19, 0, 0, // Array
-                        22, 1,    // Call len
-                        24        // ReturnValue
+                                     // Global scope
+                        28, 0, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        27, 0,       // GetBuiltIn len
+                        19, 0, 0,    // Array
+                        22, 1,       // Call len
+                        24           // ReturnValue
+                    }
+                },
+                {
+                    "fn(a) { fn(b) { a + b; } };",
+                    new List<byte>
+                    {
+                                     // Global scope
+                        28, 1, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        29, 0,       // GetFree a
+                        26, 0,       // GetLocal b
+                        2,           // Add
+                        24,          // ReturnValue
+                                     // Function scope
+                        26, 0,       // GetLocal a
+                        28, 0, 0, 1, // fn Closure with 1 free variable
+                        24           // ReturnValue
+                    }
+                },
+                {
+                    "fn(a) { fn(b) { fn(c) { a + b + c; }; }; };",
+                    new List<byte>
+                    {
+                                     // Global scope
+                        28, 2, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        29, 0,       // GetFree a
+                        29, 1,       // GetFree b
+                        2,           // Add
+                        26, 0,       // GetLocal c
+                        2,           // Add
+                        24,          // ReturnValue
+                                     // Function scope
+                        29, 0,       // GetFree a
+                        26, 0,       // GetLocal b
+                        28, 0, 0, 2, // fn Closure with 2 free variables
+                        24,          // ReturnValue
+                                     // Function scope
+                        26, 0,       // GetLocal a
+                        28, 1, 0, 1, // fn Closure with 1 free variable
+                        24           // ReturnValue
+                    }
+                },
+                {
+                    "let global = 55; fn() { let a = 66; fn() { let b = 77; fn() { let c = 88; global + a + b + c; }; }; };",
+                    new List<byte>
+                    {
+                                     // Global scope
+                        1, 0, 0,     // 55
+                        17, 0, 0,    // SetGlobal global
+                        28, 6, 0, 0, // fn Closure
+                        3,           // Pop
+                                     // Function scope
+                        1, 3, 0,     // 88
+                        25, 0,       // SetLocal c
+                        18, 0, 0,    // GetGlobal global
+                        29, 0,       // GetFree a
+                        2,           // Add
+                        29, 1,       // GetFree b
+                        2,           // Add
+                        26, 0,       // GetLocal c
+                        2,           // Add
+                        24,          // ReturnValue
+                                     // Function scope
+                        1, 2, 0,     // 77
+                        25, 0,       // SetLocal b
+                        29, 0,       // GetFree a
+                        26, 0,       // GetLocal b
+                        28, 4, 0, 2, // fn Closure with 2 free variables
+                        24,          // ReturnValue
+                                     // Function scope
+                        1, 1, 0,     // Constant 66
+                        25, 0,       // SetLocal a
+                        26, 0,       // GetLocal a
+                        28, 5, 0, 1, // fn Closure with 1 free variable
+                        24           // ReturnValue
                     }
                 }
             };

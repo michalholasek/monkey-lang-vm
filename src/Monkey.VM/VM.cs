@@ -31,9 +31,9 @@ namespace Monkey
         {
             internalState = InitializeState(instructions, constants, builtIns);
 
-            while (internalState.CurrentFrame.InstructionPointer < internalState.CurrentFrame.Instructions.Count)
+            while (internalState.CurrentFrame.InstructionPointer < internalState.CurrentFrame.Closure.Instructions.Count)
             {
-                internalState.Opcode = internalState.CurrentFrame.Instructions[internalState.CurrentFrame.InstructionPointer];
+                internalState.Opcode = internalState.CurrentFrame.Closure.Instructions[internalState.CurrentFrame.InstructionPointer];
                 internalState.CurrentFrame.InstructionPointer++;
 
                 switch (internalState.Opcode)
@@ -105,13 +105,20 @@ namespace Monkey
                     case 27: // Opcode.GetBuiltIn
                         ExecuteGetBuiltInOperation();
                         break;
+                    case 28: // Opcode.Closure
+                        ExecuteClosureOperation();
+                        break;
+                    case 29: // Opcode.GetFree
+                        ExecuteGetFreeOperation();
+                        break;
                 }
             }
         }
 
         private VirtualMachineState InitializeState(List<byte> instructions, List<Object> constants, List<BuiltIn> builtIns)
         {
-            var globalFrame = new Frame(instructions, basePointer: 0);
+            var globalClosure = new Closure(instructions, new List<Object>());
+            var globalFrame = new Frame(globalClosure, basePointer: 0);
             var frames = new Stack<Frame>();
 
             frames.Push(globalFrame);
@@ -131,14 +138,14 @@ namespace Monkey
         {
             if (length == 1)
             {
-                return internalState.CurrentFrame.Instructions[internalState.CurrentFrame.InstructionPointer];
+                return internalState.CurrentFrame.Closure.Instructions[internalState.CurrentFrame.InstructionPointer];
             }
             
             var buffer = new byte[length];
 
             for (var i = 0; i < length; i++)
             {
-                buffer[i] = internalState.CurrentFrame.Instructions[internalState.CurrentFrame.InstructionPointer + i];
+                buffer[i] = internalState.CurrentFrame.Closure.Instructions[internalState.CurrentFrame.InstructionPointer + i];
             }
 
             return BitConverter.ToInt16(buffer, startIndex: 0);
@@ -316,6 +323,27 @@ namespace Monkey
             }
         }
 
+        private void ExecuteClosureOperation()
+        {
+            var index = DecodeOperand(2);
+            internalState.CurrentFrame.InstructionPointer += 2;
+
+            var freeCount = DecodeOperand(1);
+            internalState.CurrentFrame.InstructionPointer += 1;
+
+            var frees = new List<Object>();
+
+            for (var i = 0; i < freeCount; i++)
+            {
+                frees.Add(internalState.Stack[internalState.Stack.Count - freeCount + i]);
+            }
+
+            var fn = internalState.Constants[index];
+            var closure = Object.Create(ObjectKind.Closure, new Closure((List<byte>)fn.Value, frees));
+
+            internalState.Stack.Push(closure);
+        }
+
         private void ExecuteConstantOperation()
         {
             internalState.Stack.Push(internalState.Constants[DecodeOperand(2)]);
@@ -324,7 +352,7 @@ namespace Monkey
 
         private void ExecuteFunctionCallOperation(Object fn, int arity, int basePointer)
         {
-            PushFrame(new Frame((List<byte>)fn.Value, basePointer));
+            PushFrame(new Frame((Closure)fn.Value, basePointer));
             PushArguments(arity);
         }
 
@@ -333,6 +361,13 @@ namespace Monkey
             var index = DecodeOperand(1);
             internalState.CurrentFrame.InstructionPointer += 1;
             internalState.Stack.Push(internalState.BuiltIns[index].Function);
+        }
+
+        private void ExecuteGetFreeOperation()
+        {
+            var index = DecodeOperand(1);
+            internalState.CurrentFrame.InstructionPointer += 1;
+            internalState.Stack.Push(internalState.CurrentFrame.Closure.Frees[index]);
         }
 
         private void ExecuteGetGlobalOperation()

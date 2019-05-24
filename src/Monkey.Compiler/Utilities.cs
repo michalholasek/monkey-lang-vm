@@ -36,6 +36,21 @@ namespace Monkey
             return index;
         }
 
+        private byte DetermineSymbolOpcode(Symbol symbol)
+        {
+            switch (symbol.Scope)
+            {
+                case SymbolScope.Global:
+                    return (byte)Opcode.Name.GetGlobal;
+                case SymbolScope.Local:
+                    return (byte)Opcode.Name.GetLocal;
+                case SymbolScope.Free:
+                    return (byte)Opcode.Name.GetFree;
+                default:
+                    return (byte)Opcode.Name.Illegal;
+            }
+        }
+
         private CompilerState RemoveLastPopInstruction(CompilerState previousState)
         {
             var position = previousState.CurrentScope.Instructions.LastIndexOf((byte)Opcode.Name.Pop);

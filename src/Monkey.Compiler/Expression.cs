@@ -137,7 +137,7 @@ namespace Monkey
                 afterFunctionState = LeaveScope(Emit((byte)Opcode.Name.Return, new List<int>(), functionState));
 
                 return Factory.CompilerState()
-                    .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, afterFunctionState))
+                    .Assign(Emit((byte)Opcode.Name.Closure, new List<int> { index, 0 }, afterFunctionState))
                     .Constant(index, Object.Create(ObjectKind.Function, instructions))
                     .Create();
             }
@@ -159,10 +159,17 @@ namespace Monkey
                 functionState = Emit((byte)Opcode.Name.Return, new List<int>(), functionState);
             }
 
+            var frees = functionState.CurrentScope.SymbolTable.Frees;
+
             afterFunctionState = LeaveScope(functionState);
 
+            foreach (var key in frees.Keys)
+            {
+                afterFunctionState = Emit(DetermineSymbolOpcode(frees[key]), new List<int> { frees[key].Index }, afterFunctionState);
+            }
+
             return Factory.CompilerState()
-                .Assign(Emit((byte)Opcode.Name.Constant, new List<int> { index }, afterFunctionState))
+                .Assign(Emit((byte)Opcode.Name.Closure, new List<int> { index, frees.Count }, afterFunctionState))
                 .Constant(index, Object.Create(ObjectKind.Function, instructions))
                 .Create();
         }
@@ -194,8 +201,7 @@ namespace Monkey
 
             if (symbol != Symbol.Undefined)
             {
-                var opcode = symbol.Scope == SymbolScope.Global ? (byte)Opcode.Name.GetGlobal : (byte)Opcode.Name.GetLocal;
-                return Emit(opcode, new List<int> { symbol.Index }, previousState);
+                return Emit(DetermineSymbolOpcode(symbol), new List<int> { symbol.Index }, previousState);
             }
 
             var index = previousState.BuiltIns.FindIndex(fn => fn.Name == identifier);

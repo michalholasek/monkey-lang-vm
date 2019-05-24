@@ -7,18 +7,30 @@ using Object = Monkey.Shared.Object;
 
 namespace Monkey
 {
+    public class Closure
+    {
+        public List<Object> Frees { get; set; }
+        public List<byte> Instructions { get; set; }
+
+        public Closure(List<byte> instructions, List<Object> frees)
+        {
+            Frees = frees;
+            Instructions = instructions;
+        }
+    }
+
     internal class Frame
     {
         public int Base { get; set; }
+        public Closure Closure { get; set; }
         public List<Object> Locals { get; set; }
-        public List<byte> Instructions { get; set; }
         public int InstructionPointer { get; set; }
 
-        public Frame(List<byte> instructions, int basePointer)
+        public Frame(Closure closure, int basePointer)
         {
             Base = basePointer;
+            Closure = closure;
             Locals = new List<Object>();
-            Instructions = instructions;
             InstructionPointer = 0;
         }
     }

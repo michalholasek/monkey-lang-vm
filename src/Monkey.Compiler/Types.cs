@@ -52,7 +52,8 @@ namespace Monkey
         {
             None,
             Global,
-            Local
+            Local,
+            Free
         }
 
         public class SymbolTable
@@ -60,13 +61,17 @@ namespace Monkey
             private SymbolTable Outer { get; set; }
             private Dictionary<string, Symbol> Store { get; set; }
 
+            public Dictionary<string, Symbol> Frees { get; set; }
+
             public SymbolTable()
             {
+                Frees = new Dictionary<string, Symbol>();
                 Store = new Dictionary<string, Symbol>();
             }
 
             public SymbolTable(SymbolTable outer)
             {
+                Frees = new Dictionary<string, Symbol>();
                 Outer = outer;
                 Store = new Dictionary<string, Symbol>();
             }
@@ -98,7 +103,21 @@ namespace Monkey
 
                 if (Outer != default(SymbolTable))
                 {
-                    return Outer.Resolve(identifier);
+                    var outerSymbol = Outer.Resolve(identifier);
+
+                    if (outerSymbol == Symbol.Undefined || outerSymbol.Scope == SymbolScope.Global)
+                    {
+                        return outerSymbol;
+                    }
+                    else
+                    {
+                        var free = new Symbol { Name = outerSymbol.Name, Index = Frees.Count, Scope = SymbolScope.Free };
+
+                        Store[outerSymbol.Name] = free;
+                        Frees.Add(free.Name, outerSymbol);
+
+                        return free;
+                    }
                 }
 
                 return Symbol.Undefined;
