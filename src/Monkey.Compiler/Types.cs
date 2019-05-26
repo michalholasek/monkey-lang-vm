@@ -53,7 +53,8 @@ namespace Monkey
             None,
             Global,
             Local,
-            Free
+            Free,
+            Function
         }
 
         public class SymbolTable
@@ -76,18 +77,32 @@ namespace Monkey
                 Store = new Dictionary<string, Symbol>();
             }
 
-            public int Count { get { return Store.Count; } }
+            public int Count { get { return Store.Where(symbol => symbol.Value.Scope != SymbolScope.Function).Count(); } }
 
             public Symbol Define(string identifier)
             {
                 var symbol = new Symbol
                 {
-                    Index = Store.Count,
+                    Index = Store.Where(item => item.Value.Scope != SymbolScope.Function).Count(),
                     Name = identifier,
                     Scope = Outer == default(SymbolTable) ? SymbolScope.Global : SymbolScope.Local
                 };
 
-                Store.Add(symbol.Name, symbol);
+                Store[symbol.Name] = symbol;
+
+                return symbol;
+            }
+
+            public Symbol Define(string identifier, SymbolScope scope)
+            {
+                var symbol = new Symbol
+                {
+                    Index = Store.Where(item => item.Value.Scope != SymbolScope.Function).Count(),
+                    Name = identifier,
+                    Scope = scope
+                };
+
+                Store[symbol.Name] = symbol;
 
                 return symbol;
             }
@@ -114,7 +129,7 @@ namespace Monkey
                         var free = new Symbol { Name = outerSymbol.Name, Index = Frees.Count, Scope = SymbolScope.Free };
 
                         Store[outerSymbol.Name] = free;
-                        Frees.Add(free.Name, outerSymbol);
+                        Frees[free.Name] = outerSymbol;
 
                         return free;
                     }

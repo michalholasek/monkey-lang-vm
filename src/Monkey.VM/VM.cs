@@ -111,6 +111,9 @@ namespace Monkey
                     case 29: // Opcode.GetFree
                         ExecuteGetFreeOperation();
                         break;
+                    case 30: // Opcode.GetCurrentClosure
+                        ExecuteGetCurrentClosureOperation();
+                        break;
                 }
             }
         }
@@ -365,6 +368,11 @@ namespace Monkey
             var index = DecodeOperand(1);
             internalState.CurrentFrame.InstructionPointer += 1;
             internalState.Stack.Push(internalState.BuiltIns[index].Function);
+        }
+
+        private void ExecuteGetCurrentClosureOperation()
+        {
+            internalState.Stack.Push(Object.Create(ObjectKind.Closure, internalState.CurrentFrame.Closure));
         }
 
         private void ExecuteGetFreeOperation()

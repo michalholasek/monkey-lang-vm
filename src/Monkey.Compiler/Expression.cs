@@ -112,9 +112,15 @@ namespace Monkey
 
         private CompilerState CompileFunctionExpression(Expression expression, CompilerState previousState)
         {
+            var identifier = ((Statement)previousState.Node).Identifier;
             var functionExpression = (FunctionExpression)expression;
             var functionState = EnterScope(previousState);
             CompilerState afterFunctionState;
+
+            if (identifier != default(Token))
+            {
+                functionState.CurrentScope.SymbolTable.Define(identifier.Literal, SymbolScope.Function);
+            }
 
             functionExpression.Parameters.ForEach(param =>
             {

@@ -457,6 +457,22 @@ namespace Monkey.Tests.Fixtures
                 {
                     "let newClosure = fn(a, b) { let one = fn() { a; }; let two = fn() { b; }; fn() { one() + two(); }; }; let closure = newClosure(9, 90); closure();",
                     Object.Create(ObjectKind.Integer, 99)
+                },
+                {
+                    "let countDown = fn(x) { if (x == 0) { return 0; } else { countDown(x - 1); } }; countDown(1);",
+                    Object.Create(ObjectKind.Integer, 0)
+                },
+                {
+                    "let countDown = fn(x) { if (x == 0) { return 0; } else { countDown(x - 1); } }; let wrapper = fn() { countDown(1); }; wrapper();",
+                    Object.Create(ObjectKind.Integer, 0)
+                },
+                {
+                    "let wrapper = fn() { let countDown = fn(x) { if (x == 0) { return 0; } else { countDown(x - 1); } }; countDown(1); }; wrapper();",
+                    Object.Create(ObjectKind.Integer, 0)
+                },
+                {
+                    "let fibonacci = fn(x) { if (x == 0) { return 0; } else { if (x == 1) { return 1; } else { fibonacci(x - 1) + fibonacci(x - 2); } } }; fibonacci(15);",
+                    Object.Create(ObjectKind.Integer, 610)
                 }
             };
 

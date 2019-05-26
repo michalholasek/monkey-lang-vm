@@ -46,6 +46,8 @@ namespace Monkey
                     return (byte)Opcode.Name.GetLocal;
                 case SymbolScope.Free:
                     return (byte)Opcode.Name.GetFree;
+                case SymbolScope.Function:
+                    return (byte)Opcode.Name.GetCurrentClosure;
                 default:
                     return (byte)Opcode.Name.Illegal;
             }

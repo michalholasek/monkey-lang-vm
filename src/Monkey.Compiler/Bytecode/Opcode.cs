@@ -42,7 +42,8 @@ namespace Monkey
             GetLocal,
             GetBuiltIn,
             Closure,
-            GetFree
+            GetFree,
+            GetCurrentClosure
         }
         
         private static Dictionary<byte, Definition> Opcodes = new Dictionary<byte, Definition>
@@ -76,7 +77,8 @@ namespace Monkey
             { 26, new Definition { Name = Name.GetLocal, OperandLengths = new List<int> { 1 } }},
             { 27, new Definition { Name = Name.GetBuiltIn, OperandLengths = new List<int> { 1 } }},
             { 28, new Definition { Name = Name.Closure, OperandLengths = new List<int> { 2, 1 } }},
-            { 29, new Definition { Name = Name.GetFree, OperandLengths = new List<int> { 1 } }}
+            { 29, new Definition { Name = Name.GetFree, OperandLengths = new List<int> { 1 } }},
+            { 30, new Definition { Name = Name.GetCurrentClosure, OperandLengths = new List<int> { 0 } }}
         };
 
         public static Definition Find(byte code)

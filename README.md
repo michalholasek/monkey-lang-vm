@@ -35,7 +35,7 @@ Exiting monkey-lang REPL...
 - Let and Return statements
 - If-Else conditionals
 - Basic arithmetic for integer expressions
-- First class and higher-order functions
+- First class and higher-order functions, closures
 - Built-in utility functions
 
 ### Types
@@ -85,21 +85,27 @@ true
 
 ### Functions
 ```
-> let returnsOne = fn() { 1; };
-> let returnsOneReturner = fn() { returnsOne; };
-> returnsOneReturner()();
-1
-> let identity = fn(a) { return a; };
-> identity(42);
-42
+> let fibonacci = fn(x) {
+  if (x == 0) {
+    return 0;
+  } else {
+    if (x == 1) {
+      return 1;
+    } else {
+      fibonacci(x - 1) + fibonacci(x - 2);
+    }
+  }
+};
+> fibonacci(15);
+610
 ```
 
 ### Built-in Functions
 ```
 > len("abc")
 3
-> len([1])
-1
+> len([1, 2, 3])
+3
 
 > push([1], 2, 3)
 [1, 2, 3]
