@@ -354,6 +354,10 @@ namespace Monkey
         {
             PushFrame(new Frame((Closure)fn.Value, basePointer));
             PushArguments(arity);
+
+            // Merge closure (free) variables into locals, since we are doing
+            // the same in the symbol table
+            internalState.CurrentFrame.Locals.AddRange(internalState.CurrentFrame.Closure.Frees);
         }
 
         private void ExecuteGetBuiltInOperation()
