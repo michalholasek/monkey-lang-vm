@@ -9,12 +9,12 @@ implementation of C-like language based on excellent
 0. Download and install [.NET Core](https://docs.microsoft.com/en-us/dotnet/core/)
 1. Open Terminal
 2. `$ git clone git@github.com:michalholasek/monkey-lang-vm.git`
-3. `$ dotnet publish ./src/Monkey.Repl/Monkey.Repl.csproj -o ../../bin`
+3. `$ cd src && dotnet build`
 
 ## How To Run
 1. Open Terminal
 2. `$ cd <monkey-lang-vm directory>`
-2. `$ dotnet ./bin/Monkey.Repl.dll`
+2. `$ dotnet run -p Monkey.Repl`
 
 ## REPL
 ```
