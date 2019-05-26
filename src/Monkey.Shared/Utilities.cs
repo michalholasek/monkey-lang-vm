@@ -62,6 +62,7 @@ namespace Monkey.Shared
                     return StringifyFunction(obj);
                 case ObjectKind.Hash:
                     return StringifyHash(obj);
+                case ObjectKind.Closure:
                 case ObjectKind.Null:
                     return "null";
                 default:
