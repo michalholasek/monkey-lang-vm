@@ -5,6 +5,7 @@ namespace Monkey.Shared
 {
     public class BlockStatementParseResult
     {
+        public List<AssertionError> Errors { get; set; }
         public int Position { get; set; }
         public List<Statement> Statements { get; set; }
     }

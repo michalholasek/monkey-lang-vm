@@ -374,6 +374,11 @@ namespace Monkey.Shared
 
             newState = ParseExpression(newState);
 
+            if (newState.Errors.Count > 0)
+            {
+                return newState;
+            }
+
             var nextToken = GetToken(newState, newState.Position);
 
             while (nextToken != null && nextToken.Kind == SyntaxKind.RightParenthesis)
@@ -563,11 +568,24 @@ namespace Monkey.Shared
                     .Create()
             );
 
+            if (conditionParseResult.Errors.Count > 0)
+            {
+                return conditionParseResult;
+            }
+
             var consequenceParseResult = ParseBlockStatement(Factory.ExpressionParseResult()
                     .Assign(conditionParseResult)
                     .Position(conditionParseResult.Position + Skip.Brace)
                     .Create()
             );
+
+            if (consequenceParseResult.Errors.Count > 0)
+            {
+                return Factory.ExpressionParseResult()
+                    .Assign(currentState)
+                    .Errors(consequenceParseResult.Errors)
+                    .Create();
+            }
 
             var elseToken = currentState.Tokens.Skip(consequenceParseResult.Position).Take(1).FirstOrDefault();
 
@@ -578,6 +596,14 @@ namespace Monkey.Shared
                     .Position(consequenceParseResult.Position + Skip.Else + Skip.Brace)
                     .Create()
                 );
+
+                if (alternativeParseResult.Errors.Count > 0)
+                {
+                    return Factory.ExpressionParseResult()
+                        .Assign(currentState)
+                        .Errors(alternativeParseResult.Errors)
+                        .Create();
+                }
             }
 
             var expression = Factory.IfElseExpression()

@@ -24,6 +24,13 @@ namespace Monkey.Shared
         internal static BlockStatementParseResult ParseBlockStatement(ExpressionParseResult previousState)
         {
             var statements = new List<Statement>();
+            
+            var errors = Assert.BlockLeftBrace(previousState);
+
+            if (errors.Count > 0)
+            {
+                return new BlockStatementParseResult { Errors = errors };
+            }
 
             var newState = Factory.StatementParseResult()
                     .Errors(new List<AssertionError>())
@@ -37,6 +44,12 @@ namespace Monkey.Shared
                 if (newState.Token.Kind != SyntaxKind.Semicolon)
                 {
                     newState = ParseStatement(newState);
+
+                    if (newState.Errors.Count > 0)
+                    {
+                        return new BlockStatementParseResult { Errors = newState.Errors };
+                    }
+
                     statements.Add(newState.Statement);
 
                     newState = Factory.StatementParseResult()
@@ -54,6 +67,13 @@ namespace Monkey.Shared
                 }
             }
 
+            errors = Assert.BlockRightBrace(newState);
+
+            if (errors.Count > 0)
+            {
+                return new BlockStatementParseResult { Errors = errors };
+            }
+
             var semicolon = newState.Tokens
                     .Skip(newState.Position + Skip.Brace)
                     .Take(1)
@@ -62,6 +82,7 @@ namespace Monkey.Shared
 
             return new BlockStatementParseResult
             {
+                Errors = newState.Errors,
                 Position = newState.Position + Skip.Brace + (semicolon != null ? Skip.Semicolon : 0),
                 Statements = statements
             };

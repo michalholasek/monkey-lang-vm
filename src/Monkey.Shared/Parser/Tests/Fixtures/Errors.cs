@@ -404,6 +404,79 @@ namespace Monkey.Tests.Fixtures
                         new Token() { Column = 7, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
                     }
                 })
+            },
+            {
+                "if () { 1; }",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "missing token: if ( <expression><-- ) { 1; }, expected expression" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 7,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.If, Line = 1, Literal = "if" },
+                        new Token() { Column = 5, Kind = SyntaxKind.LeftParenthesis, Line = 1, Literal = "(" },
+                        new Token() { Column = 6, Kind = SyntaxKind.RightParenthesis, Line = 1, Literal = ")" },
+                        new Token() { Column = 8, Kind = SyntaxKind.LeftBrace, Line = 1, Literal = "{" },
+                        new Token() { Column = 10, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 11, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
+                        new Token() { Column = 13, Kind = SyntaxKind.RightBrace, Line = 1, Literal = "}" },
+                        new Token() { Column = 14, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "if (1) 1",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "missing token: if ( 1 ) <brace><-- 1, expected LeftBrace" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 5,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.If, Line = 1, Literal = "if" },
+                        new Token() { Column = 5, Kind = SyntaxKind.LeftParenthesis, Line = 1, Literal = "(" },
+                        new Token() { Column = 6, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 7, Kind = SyntaxKind.RightParenthesis, Line = 1, Literal = ")" },
+                        new Token() { Column = 9, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 10, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "if (1) { 1;",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "missing token: if ( 1 ) { 1; <brace><--, expected RightBrace" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 7,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.If, Line = 1, Literal = "if" },
+                        new Token() { Column = 5, Kind = SyntaxKind.LeftParenthesis, Line = 1, Literal = "(" },
+                        new Token() { Column = 6, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 7, Kind = SyntaxKind.RightParenthesis, Line = 1, Literal = ")" },
+                        new Token() { Column = 9, Kind = SyntaxKind.LeftBrace, Line = 1, Literal = "{" },
+                        new Token() { Column = 11, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 12, Kind = SyntaxKind.Semicolon, Line = 1, Literal = ";" },
+                        new Token() { Column = 13, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
             }
         };
     }

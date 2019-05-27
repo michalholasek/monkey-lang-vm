@@ -70,6 +70,64 @@ namespace Monkey.Shared
 
                 return errors;
             }
+
+            internal static List<AssertionError> BlockLeftBrace(ExpressionParseResult currentState)
+            {
+                var leftBrace = currentState.Tokens.Skip(currentState.Position - Include.Brace).Take(1).FirstOrDefault();
+                var errors = new List<AssertionError>();
+
+                var info = new ErrorInfo
+                {
+                    Code = ErrorCode.MissingOpeningToken,
+                    Kind = ErrorKind.MissingToken,
+                    Offenders = new List<object> { SyntaxKind.LeftBrace },
+                    Position = currentState.Position - Include.Brace,
+                    Source = ErrorSource.Parser,
+                    Tokens = currentState.Tokens
+                };
+
+                if (leftBrace == default(Token) || leftBrace.Kind != SyntaxKind.LeftBrace)
+                {
+                    errors.Add(Error.Create(info));
+                }
+
+                return errors;
+            }
+
+            internal static List<AssertionError> BlockRightBrace(StatementParseResult currentState)
+            {
+                var rightBrace = currentState.Tokens.Skip(currentState.Position).Take(1).FirstOrDefault();
+                var errors = new List<AssertionError>();
+
+                // Position is set beyond last token when the syntax is correct,
+                // hence we need to recover last two tokens ( } or }; ) and check
+                // for closing brace once again
+                if (rightBrace == default(Token))
+                {
+                    rightBrace = currentState.Tokens
+                        .Skip(currentState.Tokens.Count - 2)
+                        .Take(2)
+                        .Where(token => token.Kind == SyntaxKind.RightBrace)
+                        .FirstOrDefault();
+                }
+
+                var info = new ErrorInfo
+                {
+                    Code = ErrorCode.MissingClosingToken,
+                    Kind = ErrorKind.MissingToken,
+                    Offenders = new List<object> { SyntaxKind.RightBrace },
+                    Position = currentState.Position,
+                    Source = ErrorSource.Parser,
+                    Tokens = currentState.Tokens
+                };
+
+                if (rightBrace == default(Token) || rightBrace.Kind != SyntaxKind.RightBrace)
+                {
+                    errors.Add(Error.Create(info));
+                }
+
+                return errors;
+            }
             
             internal static List<AssertionError> PrefixExpressionOperator(ExpressionParseResult currentState, Token op)
             {
@@ -246,6 +304,7 @@ namespace Monkey.Shared
                 case SyntaxKind.EOF:
                 case SyntaxKind.RightBracket:
                 case SyntaxKind.RightBrace:
+                case SyntaxKind.RightParenthesis:
                 case SyntaxKind.Colon:
                 case SyntaxKind.Comma:
                     return true;

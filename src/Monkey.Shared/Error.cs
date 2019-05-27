@@ -42,6 +42,7 @@ namespace Monkey.Shared
         InvalidLetAssignToken,
         InvalidReturnExpression,
         InvalidToken,
+        MissingOpeningToken,
         MissingClosingToken,
         MissingColon,
         MissingComma,
@@ -127,6 +128,7 @@ namespace Monkey.Shared
             { ErrorCode.InvalidLetAssignToken, "@0" },
             { ErrorCode.InvalidReturnExpression, "@0" },
             { ErrorCode.InvalidToken, "@0" },
+            { ErrorCode.MissingOpeningToken, "@0, expected @1" },
             { ErrorCode.MissingClosingToken, "@0, expected @1" },
             { ErrorCode.MissingColon, "@0, expected colon" },
             { ErrorCode.MissingComma, "@0, expected comma" },
@@ -281,6 +283,7 @@ namespace Monkey.Shared
                 case ErrorCode.MissingComma:
                     expression = ComposeExpression(info, arrow: false, placeholder: DeterminePlaceholder(SyntaxKind.Comma));
                     break;
+                case ErrorCode.MissingOpeningToken:
                 case ErrorCode.MissingClosingToken:
                     expression = ComposeExpression(info, arrow: false, placeholder: DeterminePlaceholder((SyntaxKind)info.Offenders.First()));
                     kind = Stringify.Kind((SyntaxKind)info.Offenders.First());
@@ -374,6 +377,7 @@ namespace Monkey.Shared
                     return "<comma><-- ";
                 case SyntaxKind.RightBracket:
                     return "<bracket><-- ";
+                case SyntaxKind.LeftBrace:
                 case SyntaxKind.RightBrace:
                     return "<brace><-- ";
                 default:
