@@ -9,6 +9,7 @@ namespace Monkey.Shared
     {
         public static int Brace { get { return 1; } }
         public static int Bracket { get { return 1; } }
+        public static int Parenthesis { get { return 1; } }
         public static int Semicolon { get { return 1; } }
     }
     
@@ -21,6 +22,7 @@ namespace Monkey.Shared
         public static int Comma { get { return 1; } }
         public static int Else { get { return 1; } }
         public static int EOF { get { return 1; } }
+        public static int Function { get { return 1; } }
         public static int If { get { return 1; } }
         public static int Identifier { get { return 1; } }
         public static int Let { get { return 1; } }

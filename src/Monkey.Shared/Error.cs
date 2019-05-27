@@ -375,6 +375,9 @@ namespace Monkey.Shared
                     return "<colon><-- ";
                 case SyntaxKind.Comma:
                     return "<comma><-- ";
+                case SyntaxKind.LeftParenthesis:
+                case SyntaxKind.RightParenthesis:
+                    return "<paren><-- ";
                 case SyntaxKind.RightBracket:
                     return "<bracket><-- ";
                 case SyntaxKind.LeftBrace:

@@ -310,12 +310,28 @@ namespace Monkey.Shared
         {
             var functionParametersParseResult = ParseFunctionParameters(currentState);
 
+            if (functionParametersParseResult.Errors.Count > 0)
+            {
+                return Factory.ExpressionParseResult()
+                    .Assign(currentState)
+                    .Errors(functionParametersParseResult.Errors)
+                    .Create();
+            }
+
             var newState = Factory.ExpressionParseResult()
                     .Assign(currentState)
                     .Position(functionParametersParseResult.Position + Skip.Brace)
                     .Create();
 
             var bodyParseResult = ParseBlockStatement(newState);
+
+            if (bodyParseResult.Errors.Count > 0)
+            {
+                return Factory.ExpressionParseResult()
+                    .Assign(newState)
+                    .Errors(bodyParseResult.Errors)
+                    .Create();
+            }
 
             var expression = Factory.FunctionExpression()
                     .Parameters(functionParametersParseResult)
@@ -334,6 +350,13 @@ namespace Monkey.Shared
 
         private static FunctionParametersParseResult ParseFunctionParameters(ExpressionParseResult currentState)
         {
+            var errors = Assert.LeftParenthesis(currentState);
+
+            if (errors.Count > 0)
+            {
+                return new FunctionParametersParseResult { Errors = errors };
+            }
+
             var position = currentState.Position;
             var currentToken = GetToken(currentState, position);
             var parameters = new List<Token>();
@@ -357,8 +380,14 @@ namespace Monkey.Shared
                 currentToken = GetToken(currentState, position);
             }
 
+            errors = Assert.RightParenthesis(Factory.ExpressionParseResult()
+                .Assign(currentState)
+                .Position(position)
+                .Create());
+
             return new FunctionParametersParseResult
             {
+                Errors = errors,
                 Parameters = parameters,
                 Position = position + Skip.Parenthesis
             };

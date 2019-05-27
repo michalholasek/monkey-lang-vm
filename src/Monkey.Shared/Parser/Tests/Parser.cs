@@ -198,6 +198,8 @@ namespace Monkey.Tests
         [DataRow("if () { 1; }")]
         [DataRow("if (1) 1")]
         [DataRow("if (1) { 1;")]
+        [DataRow("fn 1")]
+        [DataRow("fn (1")]
         public void Errors(string source)
         {
             var tokens = new Scanner().Scan(source);

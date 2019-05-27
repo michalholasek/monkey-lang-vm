@@ -19,6 +19,7 @@ namespace Monkey.Shared
 
     internal class FunctionParametersParseResult
     {
+        public List<AssertionError> Errors { get; set; }
         public int Position { get; set; }
         public List<Token> Parameters { get; set; }
     }

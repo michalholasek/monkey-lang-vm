@@ -477,6 +477,47 @@ namespace Monkey.Tests.Fixtures
                         new Token() { Column = 13, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
                     }
                 })
+            },
+            {
+                "fn 1",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "missing token: fn <paren><-- 1, expected LeftParenthesis" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 2,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.Function, Line = 1, Literal = "fn" },
+                        new Token() { Column = 5, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 6, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
+            },
+            {
+                "fn (1",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "missing token: fn ( 1 <paren><--, expected RightParenthesis" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 3,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.Function, Line = 1, Literal = "fn" },
+                        new Token() { Column = 5, Kind = SyntaxKind.LeftParenthesis, Line = 1, Literal = "(" },
+                        new Token() { Column = 6, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 7, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
             }
         };
     }
