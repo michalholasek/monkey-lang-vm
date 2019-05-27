@@ -3,40 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using static Monkey.Shared.Scanner.Utilities;
+
 namespace Monkey.Shared
 {
     public partial class Scanner
     {
-        private class InternalState
-        {
-            public StringBuilder Buffer { get; set; }
-            public StringReader Characters { get; set; }
-            public int Column { get; set; }
-            public char CurrentCharacter { get; set; }
-            public int Line { get; set; }
-            public List<Token> Tokens { get; set; }
-        }
-
-        private class Options : InternalState {}
-
-        private class State : InternalState
-        {
-            public State(Options opts)
-            {
-                Buffer = opts.Buffer;
-                Characters = opts.Characters;
-                Column = opts.Column;
-                CurrentCharacter = opts.CurrentCharacter;
-                Line = opts.Line;
-                Tokens = opts.Tokens;
-            }
-        }
-
-        private readonly Options defaults;
+        private readonly ScannerState defaults;
 
         public Scanner()
         {
-            defaults = new Options
+            defaults = new ScannerState
             {
                 Buffer = new StringBuilder(),
                 Column = 2,
@@ -48,7 +25,7 @@ namespace Monkey.Shared
 
         public List<Token> Scan(string source)
         {
-            var currentState = new State(new Options
+            var currentState = new ScannerState
             {
                 Buffer = new StringBuilder(),
                 Characters = new StringReader(source),
@@ -56,7 +33,7 @@ namespace Monkey.Shared
                 CurrentCharacter = defaults.CurrentCharacter,
                 Line = defaults.Line,
                 Tokens = new List<Token>()
-            });
+            };
             
             currentState.Buffer.Clear();
 
@@ -64,15 +41,15 @@ namespace Monkey.Shared
             {
                 currentState.CurrentCharacter = (char)currentState.Characters.Read();
 
-                if (Utilities.IsQuote(currentState.CurrentCharacter))
+                if (IsQuote(currentState.CurrentCharacter))
                 {
                     currentState = TokenizeString(currentState);
                 }
-                else if (Utilities.IsValidLetterCharacter(currentState.CurrentCharacter)|| Char.IsNumber(currentState.CurrentCharacter))
+                else if (IsValidLetterCharacter(currentState.CurrentCharacter)|| Char.IsNumber(currentState.CurrentCharacter))
                 {
                     currentState.Buffer.Append(currentState.CurrentCharacter);
                 }
-                else if (Utilities.IsStickyOperator(currentState.CurrentCharacter))
+                else if (IsStickyOperator(currentState.CurrentCharacter))
                 {
                     currentState = TokenizeStickyOperator(currentState);
                 }
@@ -82,7 +59,7 @@ namespace Monkey.Shared
 
                     if (!Char.IsWhiteSpace(currentState.CurrentCharacter))
                     {
-                        currentState.Tokens.Add(Utilities.CreateToken
+                        currentState.Tokens.Add(Token.Create
                         (
                             currentState.CurrentCharacter.ToString(), currentState.Column, currentState.Line)
                         );
@@ -97,7 +74,7 @@ namespace Monkey.Shared
             // Flush buffered characters
             if (currentState.Buffer.Length > 0)
             {
-                currentState.Tokens.Add(Utilities.CreateToken
+                currentState.Tokens.Add(Token.Create
                 (
                     String.Join(String.Empty, currentState.Buffer),
                     currentState.Column - currentState.Buffer.Length,
@@ -106,14 +83,14 @@ namespace Monkey.Shared
             }
 
             // Create SyntaxKind.EOF token
-            currentState.Tokens.Add(Utilities.CreateToken(String.Empty, currentState.Column, currentState.Line));
+            currentState.Tokens.Add(Token.Create(String.Empty, currentState.Column, currentState.Line));
 
             return currentState.Tokens;
         }
 
-        private State DetermineNextStatePositions(State previousState)
+        private ScannerState DetermineNextStatePositions(ScannerState previousState)
         {
-            var newState = new State(new Options
+            var newState = new ScannerState
             {
                 Buffer = previousState.Buffer,
                 Characters = previousState.Characters,
@@ -121,12 +98,12 @@ namespace Monkey.Shared
                 CurrentCharacter = previousState.CurrentCharacter,
                 Line = previousState.Line,
                 Tokens = previousState.Tokens
-            });
+            };
 
-            if (Utilities.IsNewlineOrReturnCharacter(newState.CurrentCharacter)) 
+            if (IsNewlineOrReturnCharacter(newState.CurrentCharacter)) 
             {
                 // Handle CRLF
-                if (Utilities.IsNewlineOrReturnCharacter(PeekCharacter(newState)))
+                if (IsNewlineOrReturnCharacter(PeekCharacter(newState)))
                 {
                     // Skip peeked LF character
                     newState.Characters.Read();
@@ -142,14 +119,14 @@ namespace Monkey.Shared
             return newState;
         }
 
-        private char PeekCharacter(State currentState)
+        private char PeekCharacter(ScannerState currentState)
         {
             return (char)currentState.Characters.Peek();
         }
 
-        private State TokenizeBuffer(State previousState)
+        private ScannerState TokenizeBuffer(ScannerState previousState)
         {
-            var newState = new State(new Options
+            var newState = new ScannerState
             {
                 Buffer = previousState.Buffer,
                 Characters = previousState.Characters,
@@ -157,11 +134,11 @@ namespace Monkey.Shared
                 CurrentCharacter = previousState.CurrentCharacter,
                 Line = previousState.Line,
                 Tokens = previousState.Tokens
-            });
+            };
 
             if (newState.Buffer.Length > 0)
             {
-                newState.Tokens.Add(Utilities.CreateToken
+                newState.Tokens.Add(Token.Create
                 (
                     String.Join(String.Empty, newState.Buffer),
                     newState.Column - newState.Buffer.Length,
@@ -173,9 +150,9 @@ namespace Monkey.Shared
             return newState;
         }
 
-        private State TokenizeStickyOperator(State previousState)
+        private ScannerState TokenizeStickyOperator(ScannerState previousState)
         {
-            var newState = new State(new Options
+            var newState = new ScannerState
             {
                 Buffer = previousState.Buffer,
                 Characters = previousState.Characters,
@@ -183,11 +160,11 @@ namespace Monkey.Shared
                 CurrentCharacter = previousState.CurrentCharacter,
                 Line = previousState.Line,
                 Tokens = previousState.Tokens
-            });
+            };
 
-            if (Utilities.IsValidStickyOperator(newState.CurrentCharacter, PeekCharacter(newState)))
+            if (IsValidStickyOperator(newState.CurrentCharacter, PeekCharacter(newState)))
             {
-                newState.Tokens.Add(Utilities.CreateToken
+                newState.Tokens.Add(Token.Create
                 (
                     String.Join(String.Empty, newState.CurrentCharacter, PeekCharacter(newState)), newState.Column, newState.Line)
                 );
@@ -198,15 +175,15 @@ namespace Monkey.Shared
             }
             else
             {
-                newState.Tokens.Add(Utilities.CreateToken(newState.CurrentCharacter.ToString(), newState.Column, newState.Line));
+                newState.Tokens.Add(Token.Create(newState.CurrentCharacter.ToString(), newState.Column, newState.Line));
             }
 
             return newState;
         }
 
-        private State TokenizeString(State previousState)
+        private ScannerState TokenizeString(ScannerState previousState)
         {
-            var newState = new State(new Options
+            var newState = new ScannerState
             {
                 Buffer = previousState.Buffer,
                 Characters = previousState.Characters,
@@ -214,14 +191,14 @@ namespace Monkey.Shared
                 CurrentCharacter = previousState.CurrentCharacter,
                 Line = previousState.Line,
                 Tokens = previousState.Tokens
-            });
+            };
 
             StringBuilder buffer = new StringBuilder("\"");
 
             newState.Column++;
             newState.CurrentCharacter = (char)newState.Characters.Read();
 
-            while (!Utilities.IsQuote(newState.CurrentCharacter) && newState.Characters.Peek() > -1)
+            while (!IsQuote(newState.CurrentCharacter) && newState.Characters.Peek() > -1)
             {
                 buffer.Append(newState.CurrentCharacter);
                 newState.Column++;
@@ -230,7 +207,7 @@ namespace Monkey.Shared
 
             buffer.Append("\"");
 
-            newState.Tokens.Add(Utilities.CreateToken(buffer.ToString(), previousState.Column, newState.Line));
+            newState.Tokens.Add(Token.Create(buffer.ToString(), previousState.Column, newState.Line));
 
             return newState;
         }
