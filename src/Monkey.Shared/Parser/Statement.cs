@@ -25,7 +25,7 @@ namespace Monkey.Shared
         {
             var statements = new List<Statement>();
             
-            var errors = Assert.BlockLeftBrace(previousState);
+            var errors = Assert.BlockLeftBrace(previousState.Tokens, previousState.Position - Include.Brace);
 
             if (errors.Count > 0)
             {
@@ -67,7 +67,7 @@ namespace Monkey.Shared
                 }
             }
 
-            errors = Assert.BlockRightBrace(newState);
+            errors = Assert.BlockRightBrace(previousState.Tokens, previousState.Position - Include.Brace);
 
             if (errors.Count > 0)
             {

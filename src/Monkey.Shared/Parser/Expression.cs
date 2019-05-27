@@ -100,7 +100,7 @@ namespace Monkey.Shared
         {
             var op = currentState.Tokens.Skip(currentState.Position).Take(1).First();
 
-            var errors = Assert.PrefixExpressionOperator(currentState, op);
+            var errors = Assert.PrefixExpressionOperator(currentState.Tokens, currentState.Position, op);
 
             if (errors.Count > 0)
             {
@@ -350,7 +350,7 @@ namespace Monkey.Shared
 
         private static FunctionParametersParseResult ParseFunctionParameters(ExpressionParseResult currentState)
         {
-            var errors = Assert.LeftParenthesis(currentState);
+            var errors = Assert.LeftParenthesis(currentState.Tokens, currentState.Position + Skip.Function);
 
             if (errors.Count > 0)
             {
@@ -380,10 +380,7 @@ namespace Monkey.Shared
                 currentToken = GetToken(currentState, position);
             }
 
-            errors = Assert.RightParenthesis(Factory.ExpressionParseResult()
-                .Assign(currentState)
-                .Position(position)
-                .Create());
+            errors = Assert.RightParenthesis(currentState.Tokens, position);
 
             return new FunctionParametersParseResult
             {
@@ -659,7 +656,7 @@ namespace Monkey.Shared
                     .Create();
 
 
-            var errors = Assert.IndexExpression(newState);
+            var errors = Assert.IndexExpression(newState.Tokens, newState.Position - Include.Bracket);
 
             if (errors.Count > 0)
             {
@@ -724,7 +721,7 @@ namespace Monkey.Shared
         {
             var currentToken = currentState.Tokens.Skip(currentState.Position).Take(1).FirstOrDefault();
 
-            var errors = Assert.ExpressionOperand(currentState, currentToken);
+            var errors = Assert.ExpressionOperand(currentState.Tokens, currentState.Position, currentToken);
 
             if (errors.Count > 0)
             {

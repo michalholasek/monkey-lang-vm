@@ -8,9 +8,9 @@ namespace Monkey.Shared
     {
         internal static class Assert
         {
-            internal static List<AssertionError> BlockLeftBrace(ExpressionParseResult currentState)
+            internal static List<AssertionError> BlockLeftBrace(List<Token> tokens, int position)
             {
-                var leftBrace = currentState.Tokens.Skip(currentState.Position - Include.Brace).Take(1).FirstOrDefault();
+                var leftBrace = tokens.Skip(position).Take(1).FirstOrDefault();
                 var errors = new List<AssertionError>();
 
                 var info = new ErrorInfo
@@ -18,9 +18,9 @@ namespace Monkey.Shared
                     Code = ErrorCode.MissingOpeningToken,
                     Kind = ErrorKind.MissingToken,
                     Offenders = new List<object> { SyntaxKind.LeftBrace },
-                    Position = currentState.Position - Include.Brace,
+                    Position = position,
                     Source = ErrorSource.Parser,
-                    Tokens = currentState.Tokens
+                    Tokens = tokens
                 };
 
                 if (leftBrace == default(Token) || leftBrace.Kind != SyntaxKind.LeftBrace)
@@ -31,20 +31,16 @@ namespace Monkey.Shared
                 return errors;
             }
 
-            internal static List<AssertionError> BlockRightBrace(StatementParseResult currentState)
+            internal static List<AssertionError> BlockRightBrace(List<Token> tokens, int position)
             {
                 var errors = new List<AssertionError>();
 
-                var position = currentState.Statement != default(Statement) ?
-                        currentState.Statement.Position - Include.Brace :
-                        currentState.Position - Include.Brace;
-
-                var leftBraceCount = currentState.Tokens
+                var leftBraceCount = tokens
                         .Skip(position)
                         .Where(token => token.Kind == SyntaxKind.LeftBrace)
                         .Count();
 
-                var rightBraceCount = currentState.Tokens
+                var rightBraceCount = tokens
                         .Skip(position)
                         .Where(token => token.Kind == SyntaxKind.RightBrace)
                         .Count();
@@ -56,9 +52,9 @@ namespace Monkey.Shared
                         Code = ErrorCode.MissingClosingToken,
                         Kind = ErrorKind.MissingToken,
                         Offenders = new List<object> { SyntaxKind.RightBrace },
-                        Position = currentState.Position,
+                        Position = tokens.Count,
                         Source = ErrorSource.Parser,
-                        Tokens = currentState.Tokens
+                        Tokens = tokens
                     };
 
                     errors.Add(Error.Create(info));
@@ -67,7 +63,7 @@ namespace Monkey.Shared
                 return errors;
             }
 
-            internal static List<AssertionError> ExpressionOperand(ExpressionParseResult currentState, Token token)
+            internal static List<AssertionError> ExpressionOperand(List<Token> tokens, int position, Token token)
             {
                 var errors = new List<AssertionError>();
 
@@ -75,9 +71,9 @@ namespace Monkey.Shared
                 {
                     Code = ErrorCode.InvalidToken,
                     Kind = ErrorKind.InvalidToken,
-                    Position = currentState.Position,
+                    Position = position,
                     Source = ErrorSource.Parser,
-                    Tokens = currentState.Tokens
+                    Tokens = tokens
                 };
 
                 if (IsMissingExpressionToken(token))
@@ -98,7 +94,7 @@ namespace Monkey.Shared
                 return errors;
             }
 
-            internal static List<AssertionError> IndexExpression(ExpressionParseResult currentState)
+            internal static List<AssertionError> IndexExpression(List<Token> tokens, int position)
             {
                 var errors = new List<AssertionError>();
 
@@ -107,18 +103,18 @@ namespace Monkey.Shared
                     Code = ErrorCode.MissingClosingToken,
                     Kind = ErrorKind.MissingToken,
                     Offenders = new List<object> { SyntaxKind.RightBracket },
-                    Position = currentState.Tokens.Count,
+                    Position = tokens.Count,
                     Source = ErrorSource.Parser,
-                    Tokens = currentState.Tokens
+                    Tokens = tokens
                 };
 
-                var leftBracketCount = currentState.Tokens
-                        .Skip(currentState.Position - Include.Bracket)
+                var leftBracketCount = tokens
+                        .Skip(position)
                         .Where(token => token.Kind == SyntaxKind.LeftBracket)
                         .Count();
 
-                var rightBracketCount = currentState.Tokens
-                        .Skip(currentState.Position - Include.Bracket)
+                var rightBracketCount = tokens
+                        .Skip(position)
                         .Where(token => token.Kind == SyntaxKind.RightBracket)
                         .Count();
 
@@ -130,9 +126,9 @@ namespace Monkey.Shared
                 return errors;
             }
             
-            internal static List<AssertionError> LeftParenthesis(ExpressionParseResult currentState)
+            internal static List<AssertionError> LeftParenthesis(List<Token> tokens, int position)
             {
-                var leftParen = currentState.Tokens.Skip(currentState.Position + Skip.Function).Take(1).FirstOrDefault();
+                var leftParen = tokens.Skip(position).Take(1).FirstOrDefault();
                 var errors = new List<AssertionError>();
 
                 if (leftParen == default(Token) || leftParen.Kind != SyntaxKind.LeftParenthesis)
@@ -142,9 +138,9 @@ namespace Monkey.Shared
                         Code = ErrorCode.MissingOpeningToken,
                         Kind = ErrorKind.MissingToken,
                         Offenders = new List<object> { SyntaxKind.LeftParenthesis },
-                        Position = currentState.Position + Skip.Function,
+                        Position = position,
                         Source = ErrorSource.Parser,
-                        Tokens = currentState.Tokens
+                        Tokens = tokens
                     };
 
                     errors.Add(Error.Create(info));
@@ -153,9 +149,9 @@ namespace Monkey.Shared
                 return errors;
             }
 
-            internal static List<AssertionError> RightParenthesis(ExpressionParseResult currentState)
+            internal static List<AssertionError> RightParenthesis(List<Token> tokens, int position)
             {
-                var rightParen = currentState.Tokens.Skip(currentState.Position).Take(1).FirstOrDefault();
+                var rightParen = tokens.Skip(position).Take(1).FirstOrDefault();
                 var errors = new List<AssertionError>();
 
                 if (rightParen == default(Token) || rightParen.Kind != SyntaxKind.RightParenthesis)
@@ -165,9 +161,9 @@ namespace Monkey.Shared
                         Code = ErrorCode.MissingOpeningToken,
                         Kind = ErrorKind.MissingToken,
                         Offenders = new List<object> { SyntaxKind.RightParenthesis },
-                        Position = currentState.Position,
+                        Position = position,
                         Source = ErrorSource.Parser,
-                        Tokens = currentState.Tokens
+                        Tokens = tokens
                     };
 
                     errors.Add(Error.Create(info));
@@ -176,19 +172,19 @@ namespace Monkey.Shared
                 return errors;
             }
             
-            internal static List<AssertionError> PrefixExpressionOperator(ExpressionParseResult currentState, Token op)
+            internal static List<AssertionError> PrefixExpressionOperator(List<Token> tokens, int position, Token token)
             {
                 var errors = new List<AssertionError>();
 
                 var info = new ErrorInfo
                 {
                     Kind = ErrorKind.UnknownOperator,
-                    Position = currentState.Position,
+                    Position = position,
                     Source = ErrorSource.Parser,
-                    Tokens = currentState.Tokens
+                    Tokens = tokens
                 };
 
-                switch (op.Kind)
+                switch (token.Kind)
                 {
                     case SyntaxKind.Bang:
                     case SyntaxKind.Minus:
