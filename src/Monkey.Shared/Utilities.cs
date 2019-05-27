@@ -7,6 +7,7 @@ namespace Monkey.Shared
 {
     internal static class Include
     {
+        public static int Bracket { get { return 1; } }
         public static int Semicolon { get { return 1; } }
     }
     

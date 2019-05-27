@@ -602,8 +602,24 @@ namespace Monkey.Shared
                     .Assign(currentState)
                     .Precedence(Precedence.Lowest)
                     .Create();
+
+
+            var errors = Assert.IndexExpression(newState);
+
+            if (errors.Count > 0)
+            {
+                return Factory.ExpressionParseResult()
+                    .Assign(newState)
+                    .Errors(errors)
+                    .Create();
+            }
             
             var indexExpresionParseResult = ParseExpression(newState);
+
+            if (indexExpresionParseResult.Errors.Count > 0)
+            {
+                return indexExpresionParseResult;
+            }
 
             var expression = new IndexExpression(left: newState.Expression, index: indexExpresionParseResult.Expression);
 

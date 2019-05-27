@@ -38,6 +38,38 @@ namespace Monkey.Shared
 
                 return errors;
             }
+
+            internal static List<AssertionError> IndexExpression(ExpressionParseResult currentState)
+            {
+                var errors = new List<AssertionError>();
+
+                var info = new ErrorInfo
+                {
+                    Code = ErrorCode.MissingClosingToken,
+                    Kind = ErrorKind.MissingToken,
+                    Offenders = new List<object> { SyntaxKind.RightBracket },
+                    Position = currentState.Tokens.Count,
+                    Source = ErrorSource.Parser,
+                    Tokens = currentState.Tokens
+                };
+
+                var leftBracketCount = currentState.Tokens
+                        .Skip(currentState.Position - Include.Bracket)
+                        .Where(token => token.Kind == SyntaxKind.LeftBracket)
+                        .Count();
+
+                var rightBracketCount = currentState.Tokens
+                        .Skip(currentState.Position - Include.Bracket)
+                        .Where(token => token.Kind == SyntaxKind.RightBracket)
+                        .Count();
+
+                if (leftBracketCount != rightBracketCount)
+                {
+                    errors.Add(Error.Create(info));
+                }
+
+                return errors;
+            }
             
             internal static List<AssertionError> PrefixExpressionOperator(ExpressionParseResult currentState, Token op)
             {

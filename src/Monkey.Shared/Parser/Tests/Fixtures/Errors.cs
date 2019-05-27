@@ -381,6 +381,29 @@ namespace Monkey.Tests.Fixtures
                         new Token() { Column = 8, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
                     }
                 })
+            },
+            {
+                "[1][0",
+                new Program(new ProgramOptions
+                {
+                    Errors = new List<AssertionError>
+                    {
+                        new AssertionError { Message = "missing token: [ 1 ] [ 0 <bracket><--, expected RightBracket" }
+                    },
+                    Kind = NodeKind.Program,
+                    Position = 0,
+                    Range = 5,
+                    Statements = new List<Statement> {},
+                    Tokens = new List<Token>
+                    {
+                        new Token() { Column = 2, Kind = SyntaxKind.LeftBracket, Line = 1, Literal = "[" },
+                        new Token() { Column = 3, Kind = SyntaxKind.Int, Line = 1, Literal = "1" },
+                        new Token() { Column = 4, Kind = SyntaxKind.RightBracket, Line = 1, Literal = "]" },
+                        new Token() { Column = 5, Kind = SyntaxKind.LeftBracket, Line = 1, Literal = "[" },
+                        new Token() { Column = 6, Kind = SyntaxKind.Int, Line = 1, Literal = "0" },
+                        new Token() { Column = 7, Kind = SyntaxKind.EOF, Line = 1, Literal = "" }
+                    }
+                })
             }
         };
     }
