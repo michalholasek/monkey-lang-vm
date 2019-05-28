@@ -57,7 +57,7 @@ Exiting monkey-lang REPL...
 ### Integer Arithmetics
 ```
 > let ten = 5 + 10 - 5;
-> let eleven = (5 * 2) + 1;
+> let eleven = 10 * 2 / 2 + 1;
 > ten
 10
 > eleven
