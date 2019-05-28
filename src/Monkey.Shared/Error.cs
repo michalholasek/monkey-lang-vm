@@ -20,6 +20,7 @@ namespace Monkey.Shared
         ArrayExpressionEvaluation,
         ArrayIndexExpressionEvaluation,
         BangOperatorExpressionEvaluation,
+        BinaryOperationInvalidOperand,
         BooleanInfixExpressionEvaluation,
         BuiltInLenInvalidArgument,
         BuiltInLenUnexpectedNoOfArguments,
@@ -73,7 +74,8 @@ namespace Monkey.Shared
     {
         Compiler,
         Evaluator,
-        Parser
+        Parser,
+        VM
     }
 
     public class ErrorInfo
@@ -106,6 +108,7 @@ namespace Monkey.Shared
             { ErrorCode.ArrayExpressionEvaluation, "@0<-- [@1], expected Array" },
             { ErrorCode.ArrayIndexExpressionEvaluation, "@0[@1<-- ], expected Integer" },
             { ErrorCode.BangOperatorExpressionEvaluation, "!@0<-- , expected Boolean or Integer" },
+            { ErrorCode.BinaryOperationInvalidOperand, "@0, expected @1" },
             { ErrorCode.BooleanInfixExpressionEvaluation, "@0 @1<-- @2" },
             { ErrorCode.BuiltInLenUnexpectedNoOfArguments, "@0(), unexpected number of arguments" },
             { ErrorCode.BuiltInLenInvalidArgument, "len(@1<-- ), expected Array or String" },
@@ -149,6 +152,8 @@ namespace Monkey.Shared
                     return CreateCompilerError(info);
                 case ErrorSource.Parser:
                     return CreateParseError(info);
+                case ErrorSource.VM:
+                    return CreateVMError(info);
                 default:
                     return CreateEvaluationError(info);
             }
@@ -312,6 +317,35 @@ namespace Monkey.Shared
             return new AssertionError(sb.ToString());
         }
 
+        private static AssertionError CreateVMError(ErrorInfo info)
+        {
+            var message = new StringBuilder();
+            var expression = String.Empty;
+            var kind = String.Empty;
+
+            var offenders = new List<string>();
+            var parts = new List<string>();
+
+            message.Append(ErrorKindString[info.Kind]);
+            message.Append(": ");
+
+            switch (info.Code)
+            {
+                case ErrorCode.BinaryOperationInvalidOperand:
+                    offenders.Add(Stringify.Object((Object)info.Offenders.First()));
+                    offenders.Add(Stringify.Opcode((byte)info.Offenders[1]));
+                    offenders.Add(Stringify.Object((Object)info.Offenders.Last()));
+                    expression = ComposeExpression(info, offenders, arrow: true);
+                    parts.Add(expression);
+                    parts.Add(Stringify.Kind(((Object)info.Offenders.First()).Kind));
+                    break;
+            }
+
+            message.Append(ComposeErrorMessage(parts, ErrorMessages[info.Code]));
+
+            return new AssertionError(message.ToString());
+        }
+
         private static string ComposeErrorMessage(List<string> offenders, string template)
         {
             var message = template;
@@ -322,6 +356,25 @@ namespace Monkey.Shared
             }
 
             return message;
+        }
+
+        private static string ComposeExpression(ErrorInfo info, List<string> offenders, bool arrow)
+        {
+            var sb = new StringBuilder();
+
+            for (var i = 0; i < offenders.Count; i++)
+            {
+                sb.Append(offenders[i]);
+
+                if (arrow && i == info.Position)
+                {
+                    sb.Append("<--");
+                }
+
+                sb.Append(" ");
+            }
+
+            return sb.ToString().Trim();
         }
 
         private static string ComposeExpression(ErrorInfo info, bool arrow, string placeholder)

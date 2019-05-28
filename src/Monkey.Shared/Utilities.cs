@@ -75,6 +75,30 @@ namespace Monkey.Shared
             }
         }
 
+        public static string Opcode(byte opcode)
+        {
+            switch (opcode)
+            {
+                case 2:  // Opcode.Add
+                    return "+";
+                case 4:  // Opcode.Subtract
+                    return "-";
+                case 5:  // Opcode.Multiply
+                    return "*";
+                case 6:  // Opcode.Divide
+                    return "/";
+                case 9:  // Opcode.Equal
+                    return "==";
+                case 10: // Opcode.NotEqual
+                    return "!=";
+                case 11: // Opcode.GreaterThan
+                    return ">";
+                default:
+                    return String.Empty;
+                
+            }
+        }
+
         private static string StringifyArray(Object obj)
         {
             var array = (List<Object>)obj.Value;

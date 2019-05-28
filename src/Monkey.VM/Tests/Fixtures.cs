@@ -584,6 +584,14 @@ namespace Monkey.Tests.Fixtures
                     Object.Create(ObjectKind.Error, new AssertionError("invalid argument: push(1<-- , 2), expected Array as first argument"))
                 }
             };
+
+            public static Dictionary<string, Object> Error = new Dictionary<string, Object>
+            {
+                {
+                    "1 + true;",
+                    Object.Create(ObjectKind.Error, new AssertionError("invalid type: 1 + true<--, expected Integer"))
+                }
+            };
         }
 
         public static class Statement

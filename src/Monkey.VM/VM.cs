@@ -33,6 +33,8 @@ namespace Monkey
 
             while (internalState.CurrentFrame.InstructionPointer < internalState.CurrentFrame.Closure.Instructions.Count)
             {
+                if (internalState.Stack.Top != default (Object) && internalState.Stack.Top.Kind == ObjectKind.Error) break;
+
                 internalState.Opcode = internalState.CurrentFrame.Closure.Instructions[internalState.CurrentFrame.InstructionPointer];
                 internalState.CurrentFrame.InstructionPointer++;
 
@@ -225,6 +227,21 @@ namespace Monkey
         {
             Object right = internalState.Stack.Pop();
             Object left = internalState.Stack.Pop();
+
+            if (left.Kind != right.Kind)
+            {
+                var info = new ErrorInfo
+                {
+                    Code = ErrorCode.BinaryOperationInvalidOperand,
+                    Kind = ErrorKind.InvalidType,
+                    Offenders = new List<object> { left, op, right },
+                    Position = 2, // Consider right side as the offender
+                    Source = ErrorSource.VM
+                };
+
+                internalState.Stack.Push(Object.Create(ObjectKind.Error, Error.Create(info)));
+                return;
+            }
 
             switch (left.Kind)
             {

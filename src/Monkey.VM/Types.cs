@@ -65,6 +65,7 @@ namespace Monkey
 
         public void Push(Object obj)
         {
+            Top = obj;
             Stack.Add(obj);
         }
 
