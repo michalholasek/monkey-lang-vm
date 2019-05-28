@@ -191,7 +191,7 @@ namespace Monkey.Shared
 
                 public IfElseExpressionFactory Alternative(BlockStatementParseResult alternativeParseResult)
                 {
-                    if (alternativeParseResult == null)
+                    if (alternativeParseResult == default(BlockStatementParseResult))
                     {
                         return this;
                     }

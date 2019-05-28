@@ -43,7 +43,7 @@ namespace Monkey.Shared
         {
             ErrorInfo info;
 
-            if (args == null || args.Count != 1)
+            if (args == default(List<Object>) || args.Count != 1)
             {
                 info = new ErrorInfo
                 {
@@ -86,7 +86,7 @@ namespace Monkey.Shared
         {
             ErrorInfo info;
 
-            if (args == null || args.Count != 1)
+            if (args == default(List<Object>) || args.Count != 1)
             {
                 info = new ErrorInfo
                 {
@@ -123,7 +123,7 @@ namespace Monkey.Shared
         {
             ErrorInfo info;
 
-            if (args == null || args.Count != 1)
+            if (args == default(List<Object>) || args.Count != 1)
             {
                 info = new ErrorInfo
                 {
@@ -160,7 +160,7 @@ namespace Monkey.Shared
         {
             ErrorInfo info;
 
-            if (args == null || args.Count != 1)
+            if (args == default(List<Object>) || args.Count != 1)
             {
                 info = new ErrorInfo
                 {
@@ -200,7 +200,7 @@ namespace Monkey.Shared
         {
             ErrorInfo info;
 
-            if (args == null || args.Count != 2)
+            if (args == default(List<Object>) || args.Count != 2)
             {
                 info = new ErrorInfo
                 {

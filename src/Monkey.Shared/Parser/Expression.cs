@@ -71,7 +71,7 @@ namespace Monkey.Shared
 
         private static Precedence DetermineOperatorPrecedence(Token op)
         {
-            if (op == null) return Precedence.Lowest;
+            if (op == default(Token)) return Precedence.Lowest;
 
             switch (op.Kind)
             {
@@ -361,7 +361,7 @@ namespace Monkey.Shared
             var currentToken = GetToken(currentState, position);
             var parameters = new List<Token>();
 
-            if (currentToken != null && currentToken.Kind == SyntaxKind.RightParenthesis)
+            if (currentToken != default(Token) && currentToken.Kind == SyntaxKind.RightParenthesis)
             {
                 return new FunctionParametersParseResult
                 {
@@ -407,7 +407,7 @@ namespace Monkey.Shared
 
             var nextToken = GetToken(newState, newState.Position);
 
-            while (nextToken != null && nextToken.Kind == SyntaxKind.RightParenthesis)
+            while (nextToken != default(Token) && nextToken.Kind == SyntaxKind.RightParenthesis)
             {
                 newState = Factory.ExpressionParseResult()
                     .Assign(newState)
@@ -615,7 +615,7 @@ namespace Monkey.Shared
 
             var elseToken = currentState.Tokens.Skip(consequenceParseResult.Position).Take(1).FirstOrDefault();
 
-            if (elseToken != null && elseToken.Kind == SyntaxKind.Else)
+            if (elseToken != default(Token) && elseToken.Kind == SyntaxKind.Else)
             {
                 alternativeParseResult = ParseBlockStatement(Factory.ExpressionParseResult()
                     .Assign(currentState)
@@ -638,7 +638,9 @@ namespace Monkey.Shared
                     .Alternative(alternativeParseResult)
                     .Create();
 
-            var position = alternativeParseResult != null ? alternativeParseResult.Position : consequenceParseResult.Position;
+            var position = alternativeParseResult != default(BlockStatementParseResult) ?
+                    alternativeParseResult.Position :
+                    consequenceParseResult.Position;
 
             return Factory.ExpressionParseResult()
                 .Assign(currentState)

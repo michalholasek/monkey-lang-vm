@@ -73,9 +73,9 @@ namespace Monkey
         private CompilerState CompileBooleanExpression(Expression expression, CompilerState previousState)
         {
             var expressionValue = (bool)((BooleanExpression)expression).Value;
-            var opcode = expressionValue == true ? (byte)Opcode.Name.True : (byte)Opcode.Name.False;
+            var opcode = expressionValue ? (byte)Opcode.Name.True : (byte)Opcode.Name.False;
 
-            return Emit(opcode, new List<int> {}, previousState);
+            return Emit(opcode, new List<int>(), previousState);
         }
 
         private CompilerState CompileCallExpression(Expression expression, CompilerState previousState)
@@ -264,7 +264,7 @@ namespace Monkey
 
             CompilerState alternativeState;
 
-            if (ifElseExpression.Alternative == null)
+            if (ifElseExpression.Alternative == default(BlockStatement))
             {
                 // Emit Opcode.Null as alternative branch
                 alternativeState = Emit((byte)Opcode.Name.Null, new List<int>(), afterJumpInstructionState);
@@ -300,7 +300,7 @@ namespace Monkey
                 return indexExpressionState;
             }
 
-            return Emit((byte)Opcode.Name.Index, new List<int> { }, indexExpressionState);
+            return Emit((byte)Opcode.Name.Index, new List<int>(), indexExpressionState);
         }
 
         private CompilerState CompileInfixExpression(Expression expression, CompilerState previousState)

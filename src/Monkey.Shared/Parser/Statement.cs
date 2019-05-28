@@ -39,7 +39,7 @@ namespace Monkey.Shared
                     .Tokens(previousState.Tokens)
                     .Create();
             
-            while (newState.Token != null && newState.Token.Kind != SyntaxKind.RightBrace)
+            while (newState.Token != default(Token) && newState.Token.Kind != SyntaxKind.RightBrace)
             {
                 if (newState.Token.Kind != SyntaxKind.Semicolon)
                 {
@@ -83,7 +83,7 @@ namespace Monkey.Shared
             return new BlockStatementParseResult
             {
                 Errors = newState.Errors,
-                Position = newState.Position + Skip.Brace + (semicolon != null ? Skip.Semicolon : 0),
+                Position = newState.Position + Skip.Brace + (semicolon != default(Token) ? Skip.Semicolon : 0),
                 Statements = statements
             };
         }

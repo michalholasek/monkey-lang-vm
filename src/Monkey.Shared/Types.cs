@@ -43,7 +43,7 @@ namespace Monkey.Shared
         public Object Get(string identifier)
         {
             var value = inner.Get(identifier);
-            return value != null ? value : outer.Get(identifier);
+            return value != default(Object) ? value : outer.Get(identifier);
         }
 
         public void Set(string identifier, Object value)

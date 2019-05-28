@@ -16,12 +16,12 @@ namespace Monkey
             var functionExpression = (FunctionExpression)obj.Value;
             IEnvironment env = obj.Environment;
 
-            if (functionExpression.Parameters != null && args != null)
+            if (functionExpression.Parameters != default(List<Token>) && args != default(List<Object>))
             {
                 env = EncloseEnvironment(functionExpression.Parameters, args, env);
             }
 
-            if (functionExpression.Body != null)
+            if (functionExpression.Body != default(BlockStatement))
             {
                 return EvaluateStatements(functionExpression.Body.Statements, env);
             }
@@ -166,17 +166,17 @@ namespace Monkey
             CallExpression callExpression = (CallExpression)expression;
             Object obj;
 
-            if (callExpression.Identifier != null)
+            if (callExpression.Identifier != default(Token))
             {
                 obj = env.Get(callExpression.Identifier.Literal);
-                obj = obj == null ? Functions.GetByName(callExpression.Identifier.Literal) : obj;
+                obj = obj == default(Object) ? Functions.GetByName(callExpression.Identifier.Literal) : obj;
             }
             else
             {
                 obj = Object.Create(ObjectKind.Function, callExpression.Function);
             }
 
-            if (callExpression.Arguments != null)
+            if (callExpression.Arguments != default(List<Expression>))
             {
                 args = EvaluateExpressionList(callExpression.Arguments, env);
             }
@@ -223,7 +223,7 @@ namespace Monkey
                 var value = EvaluateExpression(hashExpression.Values[i], env);
 
                 var previousKey = hash.Keys.Where(item => item == key.Value.ToString()).FirstOrDefault();
-                if (previousKey != null)
+                if (previousKey != default(string))
                 {
                     hash[previousKey] = Object.Create(value.Kind, value.Value);
                 }
@@ -258,7 +258,7 @@ namespace Monkey
             }
 
             var hashKey = hashtable.Keys.Where(item => item == keyValue).FirstOrDefault();
-            if (hashKey == null)
+            if (hashKey == default(string))
             {
                 return Object.Create(ObjectKind.Null, null);
             }
@@ -271,7 +271,7 @@ namespace Monkey
             var value = (string)((IdentifierExpression)expression).Value;
             var identifier = env.Get(value);
 
-            if (identifier != null)
+            if (identifier != default(Object))
             {
                 return identifier;
             }
@@ -305,7 +305,7 @@ namespace Monkey
             {
                 return EvaluateStatements(ifElseExpression.Consequence.Statements, env);
             }
-            else if (ifElseExpression.Alternative != null)
+            else if (ifElseExpression.Alternative != default(BlockStatement))
             {
                 return EvaluateStatements(ifElseExpression.Alternative.Statements, env);
             }

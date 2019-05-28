@@ -31,7 +31,7 @@ namespace Monkey
         {
             var obj = Object.Create(ObjectKind.Null, null);
 
-            if (statement.Identifier == null || statement.Expression == null)
+            if (statement.Identifier == default(Token) || statement.Expression == default(Expression))
             {
                 return obj;
             }

@@ -13,18 +13,18 @@ namespace Monkey.Shared
                 var leftBrace = tokens.Skip(position).Take(1).FirstOrDefault();
                 var errors = new List<AssertionError>();
 
-                var info = new ErrorInfo
-                {
-                    Code = ErrorCode.MissingOpeningToken,
-                    Kind = ErrorKind.MissingToken,
-                    Offenders = new List<object> { SyntaxKind.LeftBrace },
-                    Position = position,
-                    Source = ErrorSource.Parser,
-                    Tokens = tokens
-                };
-
                 if (leftBrace == default(Token) || leftBrace.Kind != SyntaxKind.LeftBrace)
                 {
+                    var info = new ErrorInfo
+                    {
+                        Code = ErrorCode.MissingOpeningToken,
+                        Kind = ErrorKind.MissingToken,
+                        Offenders = new List<object> { SyntaxKind.LeftBrace },
+                        Position = position,
+                        Source = ErrorSource.Parser,
+                        Tokens = tokens
+                    };
+                    
                     errors.Add(Error.Create(info));
                 }
 
@@ -98,16 +98,6 @@ namespace Monkey.Shared
             {
                 var errors = new List<AssertionError>();
 
-                var info = new ErrorInfo
-                {
-                    Code = ErrorCode.MissingClosingToken,
-                    Kind = ErrorKind.MissingToken,
-                    Offenders = new List<object> { SyntaxKind.RightBracket },
-                    Position = tokens.Count,
-                    Source = ErrorSource.Parser,
-                    Tokens = tokens
-                };
-
                 var leftBracketCount = tokens
                         .Skip(position)
                         .Where(token => token.Kind == SyntaxKind.LeftBracket)
@@ -120,6 +110,16 @@ namespace Monkey.Shared
 
                 if (leftBracketCount != rightBracketCount)
                 {
+                    var info = new ErrorInfo
+                    {
+                        Code = ErrorCode.MissingClosingToken,
+                        Kind = ErrorKind.MissingToken,
+                        Offenders = new List<object> { SyntaxKind.RightBracket },
+                        Position = tokens.Count,
+                        Source = ErrorSource.Parser,
+                        Tokens = tokens
+                    };
+
                     errors.Add(Error.Create(info));
                 }
 
