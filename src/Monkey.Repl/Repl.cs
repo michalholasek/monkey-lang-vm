@@ -49,22 +49,29 @@ namespace Monkey.Repl
             {
                 var source = string.Join(" ", commands);
 
-                var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
-
                 commands.Clear();
                 Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 1);
 
-                if (compilationResult.Errors.Count > 0)
+                try
                 {
-                    compilationResult.Errors.ForEach(error =>
+                    var compilationResult = compiler.Compile(parser.Parse(scanner.Scan(source)));
+
+                    if (compilationResult.Errors.Count > 0)
                     {
-                        Console.WriteLine(error.Message);
-                    });
+                        compilationResult.Errors.ForEach(error =>
+                        {
+                            Console.WriteLine(error.Message);
+                        });
+                    }
+                    else
+                    {
+                        vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
+                        Console.WriteLine(Stringify.Object((Object)vm.StackTop));
+                    }
                 }
-                else
+                catch
                 {
-                    vm.Run(compilationResult.CurrentScope.Instructions, compilationResult.Constants, compilationResult.BuiltIns);
-                    Console.WriteLine(Stringify.Object((Object)vm.StackTop));
+                    Console.WriteLine("Something went wrong with the execution of your command, sorry!");
                 }
             }
             else
