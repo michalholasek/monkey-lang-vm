@@ -8,7 +8,7 @@ implementation of C-like language based on excellent
 ## How To Install
 0. Download and install [.NET Core](https://docs.microsoft.com/en-us/dotnet/core/)
 1. Open Terminal
-2. `$ git clone git@github.com:michalholasek/monkey-lang-vm.git`
+2. `$ git clone https://github.com/michalholasek/monkey-lang-vm.git`
 
 ## How To Run
 1. Open Terminal
